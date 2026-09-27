@@ -348,7 +348,7 @@ Expected: `label` = `Keysfirst spike`, `icon` = `http://localhost:3000/icon.svg`
 `Invoke-RestMethod -Method Post -ContentType "application/json" -Body '{"account":"11111111111111111111111111111112"}' http://localhost:3000/api/spike`
 Expected: an object whose `transaction` is a long base64 string. Stop the dev server.
 
-- [ ] **Step 11: Commit and push**
+- [x] **Step 11: Commit and push**
 
 ```bash
 git add web
@@ -356,14 +356,14 @@ git commit -m "feat(web): Next.js skeleton and Solana Pay transaction-request sp
 git push
 ```
 
-- [ ] **Step 12: Deploy to Vercel (user, in browser)**
+- [x] **Step 12: Deploy to Vercel (user, in browser)**
 
 1. vercel.com → Add New → Project → import the `keysfirst` GitHub repo.
-2. **Root Directory: `web`**. Framework preset: Next.js. Deploy.
+2. **Root Directory: `web`** and **Framework Preset: Next.js** (if left at `./`, Vercel builds the repo root and every page returns 404). In Settings → Deployment Protection choose Standard Protection or turn Vercel Authentication off, otherwise Phantom mobile cannot reach the site. Deploy.
 3. Record the production URL (e.g. `https://keysfirst-xyz.vercel.app`); this is `APP_URL` from now on.
 4. Check `APP_URL/api/spike` in a browser returns the label JSON.
 
-- [ ] **Step 13: Phone test (user)**
+- [x] **Step 13: Phone test (user)**
 
 1. Phantom mobile: profile icon → Settings → Developer Settings → **Testnet Mode ON**, Solana network **Devnet**.
 2. Copy the phone wallet's address, get devnet SOL at https://faucet.solana.com (paste the address, pick Devnet).
@@ -371,7 +371,7 @@ git push
 4. Expected: Phantom shows "Keysfirst spike", the message, and an approve screen. Approve.
 5. Find the transaction: Phantom → Activity, or https://explorer.solana.com/address/<phone-wallet>?cluster=devnet. It must contain the memo "Keysfirst spike: handover test".
 
-- [ ] **Step 14: Record the result**
+- [x] **Step 14: Record the result**
 
 Write `docs/spike.md`:
 
@@ -387,7 +387,7 @@ Write `docs/spike.md`:
 
 Commit: `git add docs/spike.md` then `git commit -m "docs: record Solana Pay spike result" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"`.
 
-- [ ] **Step 15: If it failed — troubleshoot, then escalate**
+- [x] **Step 15: If it failed — troubleshoot, then escalate** (not needed: PASS on 2026-09-27, see docs/spike.md)
 
 Check in order: (a) Testnet Mode is on and set to Devnet (a mainnet wallet rejects a devnet blockhash); (b) the phone wallet has devnet SOL; (c) `APP_URL/api/spike` answers over HTTPS from the phone's browser; (d) the QR text starts with `solana:https://` and contains no query string; (e) retry after 1 minute (blockhash expiry). If it still fails, **stop and tell the user immediately**: the fallback is the in-app "I have the keys" button (Task 12), same on-chain instruction, and Task 13 then ships the QR as best-effort.
 
@@ -447,13 +447,13 @@ cp ~/keysfirst/target/deploy/keysfirst-keypair.json "$REPO/target/deploy/" 2>/de
 
 Expected: `programs/keysfirst/src/lib.rs` and `programs/keysfirst/tests/test_initialize.rs` exist in the repo.
 
-- [ ] **Step 6: Build and align the program id**
+- [x] **Step 6: Build and align the program id**
 
 Run (Ubuntu shell, in `$REPO`): `anchor build`
 If it stops with a program-id mismatch: `anchor keys sync` then `anchor build` again.
 Expected: `target/deploy/keysfirst.so` and `target/idl/keysfirst.json` exist. First build takes several minutes (the repo is on the Windows drive; that is expected).
 
-- [ ] **Step 7: Back up the program keypair and register devnet**
+- [x] **Step 7: Back up the program keypair and register devnet**
 
 ```bash
 cp target/deploy/keysfirst-keypair.json .keys/keysfirst-program-keypair.json
