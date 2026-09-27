@@ -3355,7 +3355,7 @@ git commit -m "feat(web): core libraries (format, rules, program client, signing
 - Consumes: everything from Task 10.
 - Produces: route `/new` (landlord creates a deal, then is redirected); route `/deal/<deal address>`; `<DealClient id origin />` with a `refresh(): Promise<void>` callback and computed `status`, `role`, `times`, `now`, `amount` (Tasks 12–13 insert components into it); `<Timeline status deal signatures />`, `<ShareLink url text />`, `<OpenInPhantom />`.
 
-- [ ] **Step 1: Write `web/src/components/OpenInPhantom.tsx`**
+- [x] **Step 1: Write `web/src/components/OpenInPhantom.tsx`**
 
 ```tsx
 "use client";
@@ -3388,7 +3388,7 @@ export function OpenInPhantom() {
 }
 ```
 
-- [ ] **Step 2: Write `web/src/components/Timeline.tsx`**
+- [x] **Step 2: Write `web/src/components/Timeline.tsx`**
 
 ```tsx
 import { explorerTx, formatDateTime } from "@/lib/format";
@@ -3422,7 +3422,7 @@ export function Timeline({ status, deal, signatures }: { status: DealStatus; dea
 }
 ```
 
-- [ ] **Step 3: Write `web/src/components/ShareLink.tsx`**
+- [x] **Step 3: Write `web/src/components/ShareLink.tsx`**
 
 ```tsx
 "use client";
@@ -3460,7 +3460,7 @@ export function ShareLink({ url, text }: { url: string; text: string }) {
 }
 ```
 
-- [ ] **Step 4: Write `web/src/app/deal/[id]/page.tsx`**
+- [x] **Step 4: Write `web/src/app/deal/[id]/page.tsx`**
 
 ```tsx
 import { getOrigin } from "@/lib/origin";
@@ -3472,7 +3472,7 @@ export default async function DealPage({ params }: { params: Promise<{ id: strin
 }
 ```
 
-- [ ] **Step 5: Write `web/src/app/deal/[id]/DealClient.tsx`**
+- [x] **Step 5: Write `web/src/app/deal/[id]/DealClient.tsx`**
 
 ```tsx
 "use client";
@@ -3614,7 +3614,7 @@ function explain(status: DealStatus, role: Role, d: DealTimes, now: number, amou
 }
 ```
 
-- [ ] **Step 6: Write `web/src/app/new/page.tsx`**
+- [x] **Step 6: Write `web/src/app/new/page.tsx`**
 
 ```tsx
 "use client";
@@ -3743,10 +3743,12 @@ export default function NewDealPage() {
 }
 ```
 
-- [ ] **Step 7: Verify build**
+- [x] **Step 7: Verify build**
 
 Run: `npm run lint` and `npm run build`
 Expected: both succeed.
+
+Done 2026-09-27. The one change from the code above: `hasn't` in `/new` is written `hasn&apos;t`, because the `react/no-unescaped-entities` lint rule rejects a raw apostrophe in JSX text.
 
 - [ ] **Step 8: Manual check on devnet (user, desktop Chrome with Phantom extension on Devnet)**
 
@@ -3755,7 +3757,7 @@ Expected: both succeed.
 Expected: redirect to `/deal/<address>` showing €600.00, "Waiting for deposit", move-in and deadline, the share box, and a timeline whose "Deal created" step links to a successful Explorer transaction.
 3. Open the same URL in a private window (no wallet): the status card and timeline render, no share box.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add web
