@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keysfirst · Three brand directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@700&family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Gabarito:wght@900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1d1f23;--mute:#5d626b;--rule:#e2e4e8;--bg:#f7f7f8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1180px;margin:0 auto;padding:32px 20px 80px}
+h1{font-size:clamp(28px,4vw,40px);line-height:1.1;margin:0 0 10px;letter-spacing:-.01em}
+.intro{max-width:760px;color:var(--mute);margin:0 0 28px;font-size:17px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media (max-width:960px){.cards{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid var(--rule);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+.hero{height:170px;padding:20px;display:flex;flex-direction:column;justify-content:space-between}
+.hero .name{font-size:40px;line-height:.95}
+.hero small{font-weight:600;font-size:13px}
+.body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:12px;flex:1}
+.body p{margin:0}
+.leads{font-size:14px;color:var(--mute)}
+.leads b{color:var(--ink)}
+.pal{display:flex;gap:6px}
+.pal span{width:34px;height:34px;border-radius:8px;border:1px solid rgba(0,0,0,.08)}
+dl{margin:0;display:grid;grid-template-columns:92px 1fr;gap:6px 10px;font-size:14px}
+dt{color:var(--mute)}
+dd{margin:0}
+.open{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;min-height:46px;border-radius:12px;background:var(--ink);color:#fff;text-decoration:none;font-weight:600}
+.open:focus-visible{outline:3px solid #2563eb;outline-offset:2px}
+.badge{align-self:flex-start;background:#FFE14D;color:#16181D;font-weight:700;font-size:12.5px;border-radius:6px;padding:3px 8px}
+.rec{margin-top:28px;background:#fff;border:1px solid var(--rule);border-radius:18px;padding:22px}
+.rec h2{margin:0 0 8px;font-size:22px}
+.rec ul{margin:8px 0 0;padding-left:20px}
+.rec li{margin:4px 0}
+.same{margin-top:18px;color:var(--mute);font-size:14.5px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Keysfirst: three brand directions</h1>
+  <p class="intro">All three keep the promise "The deposit moves only when the keys do", plain English, the devnet label and the exact status labels. They differ in how they earn trust: through clarity (A), warmth (B) or confidence (C). Each board shows the logo idea, palette with contrast ratios, fonts, graphic style, motion, tone of voice, the landing hero (desktop and phone) and the deal page (tenant and landlord). Open them on your phone too.</p>
+
+  <div class="cards">
+    <article class="card">
+      <div class="hero" style="background:#FFE14D;color:#16181D"><small>A · calm and precise</small><span class="name" style="font-family:'Barlow Semi Condensed';font-weight:700">Clear Rules</span></div>
+      <div class="body">
+        <span class="badge">Recommended</span>
+        <p>Every deal reads like a timetable: what happens, when, and what happens if it doesn't. German information design plus a student's highlighter.</p>
+        <p class="leads">Leads with <b>safe, calm, trustworthy</b>. Human through copy and pictograms.</p>
+        <div class="pal" aria-label="Palette"><span style="background:#16181D"></span><span style="background:#FFE14D"></span><span style="background:#fff"></span><span style="background:#0B7A47"></span><span style="background:#1A56DB"></span></div>
+        <dl><dt>Fonts</dt><dd>Barlow Semi Condensed + Barlow</dd><dt>Graphics</dt><dd>Pictograms, rules as rows</dd><dt>Motion</dt><dd>Split-flap status, ticking countdown</dd><dt>Feels like</dt><dd>Revolut's precision, Wise's clarity</dd></dl>
+        <a class="open" href="a-clear-rules.html">Open board A</a>
+      </div>
+    </article>
+    <article class="card">
+      <div class="hero" style="background:#FFB088;color:#1C2541"><small>B · warm and human</small><span class="name" style="font-family:'Bricolage Grotesque';font-weight:800;letter-spacing:-.03em">Doorstep</span></div>
+      <div class="body">
+        <p>The friendly hand at the door of a new home. Arched front door, key tag, doormat; lowercase wordmark whose i is a keyhole.</p>
+        <p class="leads">Leads with <b>human, safe</b>. Calm and modern through restraint.</p>
+        <div class="pal" aria-label="Palette"><span style="background:#1C2541"></span><span style="background:#FFB088"></span><span style="background:#FFF1E8"></span><span style="background:#B5451B"></span><span style="background:#D8A13A"></span></div>
+        <dl><dt>Fonts</dt><dd>Bricolage Grotesque + Figtree</dd><dt>Graphics</dt><dd>Warm flat illustrations</dd><dt>Motion</dt><dd>Key turns, door swings open</dd><dt>Feels like</dt><dd>Airbnb's warmth</dd></dl>
+        <a class="open" href="b-doorstep.html">Open board B</a>
+      </div>
+    </article>
+    <article class="card">
+      <div class="hero" style="background:#0A2B1F;color:#34E39A"><small>C · bright and confident</small><span class="name" style="font-family:Gabarito;font-weight:900;letter-spacing:-.04em">Green Light</span></div>
+      <div class="body">
+        <p>The moment that matters is a green light at the door, so the green becomes the brand. Amber means locked, green means released.</p>
+        <p class="leads">Leads with <b>modern, trustworthy</b>. Human through an upbeat voice.</p>
+        <div class="pal" aria-label="Palette"><span style="background:#34E39A"></span><span style="background:#0A2B1F"></span><span style="background:#E8FAF1"></span><span style="background:#FFB224"></span><span style="background:#2E5BFF"></span></div>
+        <dl><dt>Fonts</dt><dd>Gabarito + Onest</dd><dt>Graphics</dt><dd>Bold shapes, big numbers</dd><dt>Motion</dt><dd>Green wipe from the QR code</dd><dt>Feels like</dt><dd>Wise's energy</dd></dl>
+        <a class="open" href="c-green-light.html">Open board C</a>
+      </div>
+    </article>
+  </div>
+
+  <section class="rec">
+    <h2>Why A</h2>
+    <ul>
+      <li><b>Five-second test:</b> its hero is the rulebook itself (pay, scan at the door, or money back after the deadline), so a visitor sees how the money moves before reading any marketing.</li>
+      <li><b>Trust for €600:</b> it is the calmest and most "financial" of the three, and it reads as fair to landlords as well as tenants.</li>
+      <li><b>Thursday:</b> type, rules and pictograms need far less custom illustration than B, and it avoids C's "yet another green money app" risk.</li>
+      <li><b>What it needs:</b> warm, plain copy, and yellow used strictly as a highlighter, never as a warning.</li>
+    </ul>
+    <p class="same">Whichever you pick, I'll turn it into brand guidelines and tokens in <code>docs/</code>, then the spec and plan. Small changes (a different accent, a font swap, borrowing B's door for the 404 page) are easy at that point.</p>
+  </section>
+</main>
+</body>
+</html>
