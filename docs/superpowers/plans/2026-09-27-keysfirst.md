@@ -16,7 +16,7 @@
 - Never print, paste or commit private keys or seed phrases. Secrets live only in `~/.config/solana/id.json` (WSL), `.keys/` and `web/.env.local` (both gitignored), and Vercel environment variables.
 - Anchor CLI / `anchor-lang` / `anchor-spl` **1.2.0**. The TypeScript client package is **`@anchor-lang/core`** (not `@coral-xyz/anchor`, renamed in Anchor 1.1.1).
 - Anchor 1.x API facts used below: `CpiContext::new(program_id: Pubkey, accounts)` and `CpiContext::new_with_signer(program_id, accounts, seeds)` take the program **id**; duplicate mutable accounts are rejected only for serializing types (`Account`, `InterfaceAccount`); `anchor init` generates Rust LiteSVM tests run with `cargo test`.
-- Program and tests run in **WSL Ubuntu** in `/mnt/c/Users/STAGE/Desktop/keysfirst`. From Windows, run them as: `wsl -d Ubuntu -- bash -lc 'cd /mnt/c/Users/STAGE/Desktop/keysfirst && <command>'`. Program test command: `anchor build && cargo test` (tests load `target/deploy/keysfirst.so`, so always build first).
+- Program and tests run in **WSL Ubuntu** in `/mnt/c/Users/STAGE/Desktop/keysfirst`. From Windows, run them as: `wsl -d Ubuntu -e bash -lc 'cd /mnt/c/Users/STAGE/Desktop/keysfirst && <command>'`. Program test command: `anchor build && cargo test` (tests load `target/deploy/keysfirst.so`, so always build first).
 - Web commands run in **Windows PowerShell** in `C:\Users\STAGE\Desktop\keysfirst\web`. Git runs from Windows.
 - Program constants (keep web mirror in `web/src/lib/rules.ts` identical): handover opens `24 * 60 * 60` s before move-in; handover window max `14 * 24 * 60 * 60` s; max lock at funding `180 * 24 * 60 * 60` s; title max 64 bytes; PDA seed `b"deal"`.
 - Token: Token-2022 mint "Test EUR (devnet)", symbol `tEUR`, 6 decimals. Program must also work with classic SPL Token (mainnet EURC).
@@ -146,7 +146,7 @@ Thumbs.db
 - Spec: docs/superpowers/specs/2026-09-27-keysfirst-design.md
 - Plan: docs/superpowers/plans/2026-09-27-keysfirst.md (tick checkboxes as tasks complete)
 - Devnet only. Never print, paste or commit private keys or seed phrases.
-- Program/tests run in WSL: `wsl -d Ubuntu -- bash -lc 'cd /mnt/c/Users/STAGE/Desktop/keysfirst && anchor build && cargo test'`
+- Program/tests run in WSL: `wsl -d Ubuntu -e bash -lc 'cd /mnt/c/Users/STAGE/Desktop/keysfirst && anchor build && cargo test'`
 - Web runs in PowerShell in `web/`: `npm run dev`, `npm test`, `npm run build`, `npm run lint`.
 - Ask the user before adding dependencies or changing the deal rules in the spec (section 6).
 - UI copy: plain English, no blockchain jargon; amounts in €.
@@ -169,14 +169,14 @@ git add .gitignore .gitattributes CLAUDE.md README.md docs
 git commit -m "chore: repository foundation, design spec and implementation plan" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
-- [ ] **Step 7: Publish the repo (user, in browser)**
+- [x] **Step 7: Publish the repo (user, in browser)**
 
 1. On github.com create a **public, empty** repository named `keysfirst` (no README, no license, no .gitignore).
 2. Run the two commands GitHub shows under "push an existing repository", e.g.:
    `git remote add origin https://github.com/<your-account>/keysfirst.git` then `git push -u origin main`.
 Expected: the spec and plan are visible on GitHub.
 
-- [ ] **Step 8: Admin (user)**
+- [x] **Step 8: Admin (user)**
 
 1. Follow https://x.com/SuperteamDE (submission requirement).
 2. Message the sponsor on Telegram (@merdussss): "Hi! Building for the WHU Solana challenge. The listing shows October 8 as the deadline, the hackathon brief says October 4, 23:59. Which one counts? Thanks!" Record the answer in `CLAUDE.md` under a new line `- Deadline confirmed: ...`.
@@ -194,23 +194,25 @@ This proves the riskiest assumption before anything else: Phantom mobile on devn
 **Interfaces:**
 - Produces: `RPC_URL: string` from `@/lib/config`; `getOrigin(): Promise<string>` from `@/lib/origin` (server-only); `/icon.svg`; a deployed Vercel URL (record it — later tasks call it `APP_URL`).
 
-- [ ] **Step 1: Generate the app** (PowerShell, repo root)
+- [x] **Step 1: Generate the app** (PowerShell, repo root)
 
 Run: `npx create-next-app@latest web --yes --ts --tailwind --eslint --app --src-dir --import-alias "@/*" --use-npm`
 Expected: `Success! Created web at ...\keysfirst\web`. It must not create a nested git repo (it detects the parent repo); if `web\.git` exists, delete that folder.
 
-- [ ] **Step 2: Install spike dependencies**
+- [x] **Step 2: Install spike dependencies**
 
 Run (in `web/`): `npm install @solana/web3.js qrcode.react`
 Expected: both appear in `web/package.json` dependencies. If npm reports a React peer-dependency conflict, re-run with `--legacy-peer-deps`.
 
-- [ ] **Step 3: Write `web/src/lib/config.ts`** (extended in Task 10)
+In `web/tsconfig.json` change `"target": "ES2017"` to `"target": "ES2020"` (Task 10 uses BigInt literals such as `100n`, which need ES2020).
+
+- [x] **Step 3: Write `web/src/lib/config.ts`** (extended in Task 10)
 
 ```ts
 export const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || "https://api.devnet.solana.com";
 ```
 
-- [ ] **Step 4: Write `web/src/lib/origin.ts`**
+- [x] **Step 4: Write `web/src/lib/origin.ts`**
 
 ```ts
 import { headers } from "next/headers";
@@ -224,13 +226,13 @@ export async function getOrigin(): Promise<string> {
 }
 ```
 
-- [ ] **Step 5: Write `web/public/icon.svg`** (Solana Pay wallets show this icon; must be absolute-URL reachable)
+- [x] **Step 5: Write `web/public/icon.svg`** (Solana Pay wallets show this icon; must be absolute-URL reachable)
 
 ```svg
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#047857"/><circle cx="24" cy="32" r="10" fill="none" stroke="#fff" stroke-width="5"/><path d="M34 32h20M46 32v8M52 32v6" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg>
 ```
 
-- [ ] **Step 6: Write the spike endpoint `web/src/app/api/spike/route.ts`**
+- [x] **Step 6: Write the spike endpoint `web/src/app/api/spike/route.ts`**
 
 Solana Pay transaction request: the wallet sends `GET` (label + icon), then `POST {"account": "<wallet pubkey>"}` and expects `{"transaction": "<base64>", "message": "..."}`.
 
@@ -277,7 +279,7 @@ export async function POST(req: Request) {
 }
 ```
 
-- [ ] **Step 7: Write the spike page**
+- [x] **Step 7: Write the spike page**
 
 `web/src/app/spike/SpikeQr.tsx`:
 
@@ -314,7 +316,7 @@ export default async function SpikePage() {
 }
 ```
 
-- [ ] **Step 8: Replace `web/src/app/page.tsx`** (temporary; real landing page in Task 14)
+- [x] **Step 8: Replace `web/src/app/page.tsx`** (temporary; real landing page in Task 14)
 
 ```tsx
 export default function Home() {
@@ -327,14 +329,14 @@ export default function Home() {
 }
 ```
 
-- [ ] **Step 9: Write `web/.env.example`** (extended in Task 9)
+- [x] **Step 9: Write `web/.env.example`** (extended in Task 9)
 
 ```bash
 # Devnet RPC endpoint. A free dedicated devnet key (e.g. Helius) avoids public rate limits during the demo.
 NEXT_PUBLIC_RPC_URL=https://api.devnet.solana.com
 ```
 
-- [ ] **Step 10: Verify locally**
+- [x] **Step 10: Verify locally**
 
 Run (in `web/`): `npm run lint` then `npm run build`
 Expected: both succeed.
@@ -399,17 +401,17 @@ Check in order: (a) Testnet Mode is on and set to Devnet (a mainnet wallet rejec
 **Interfaces:**
 - Produces: a building Anchor 1.2.0 workspace whose program id (`declare_id!`) matches `target/deploy/keysfirst-keypair.json`; a funded devnet deploy wallet at `~/.config/solana/id.json` (WSL).
 
-- [ ] **Step 1: Install WSL (user, admin PowerShell)**
+- [x] **Step 1: Install WSL (user, admin PowerShell)**
 
 Run: `wsl --install -d Ubuntu`, reboot when asked, then open "Ubuntu" from the Start menu and create a Linux user name and password.
 Expected: an Ubuntu shell prompt.
 
-- [ ] **Step 2: Install Rust, Solana CLI and Anchor (Ubuntu shell)**
+- [x] **Step 2: Install Rust, Solana CLI and Anchor (Ubuntu shell)**
 
 Run: `curl --proto '=https' --tlsv1.2 -sSfL https://solana-install.solana.workers.dev | bash`
 Expected: the summary prints versions for Rust, Solana CLI, Anchor CLI (plus Surfpool, Node.js, Yarn).
 
-- [ ] **Step 3: Make the tools visible to non-interactive shells**
+- [x] **Step 3: Make the tools visible to non-interactive shells**
 
 `~/.bashrc` returns early for non-interactive shells, so commands launched from Windows (`wsl ... bash -lc`) need PATH in `~/.profile`:
 
@@ -418,10 +420,10 @@ echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$HOME/.a
 ```
 
 Verify from **Windows PowerShell**:
-`wsl -d Ubuntu -- bash -lc 'anchor --version && solana --version && cargo --version'`
+`wsl -d Ubuntu -e bash -lc 'anchor --version && solana --version && cargo --version'`
 Expected: `anchor-cli 1.2.0`, a `solana-cli` line, a `cargo` line. If Anchor is not 1.2.0: `avm install 1.2.0 && avm use 1.2.0`.
 
-- [ ] **Step 4: Create the devnet deploy wallet (Ubuntu shell)**
+- [x] **Step 4: Create the devnet deploy wallet (Ubuntu shell)**
 
 ```bash
 solana-keygen new --no-bip39-passphrase --silent -o ~/.config/solana/id.json
@@ -432,7 +434,7 @@ solana airdrop 2
 
 Expected: an address is printed (public, safe to share). If the airdrop is rate-limited, paste the address into https://faucet.solana.com (Devnet). Keep topping up until `solana balance` shows **≥ 5 SOL** before Task 9.
 
-- [ ] **Step 5: Generate a scaffold and copy it into the repo (Ubuntu shell)**
+- [x] **Step 5: Generate a scaffold and copy it into the repo (Ubuntu shell)**
 
 ```bash
 cd ~ && anchor init keysfirst --no-git --no-install

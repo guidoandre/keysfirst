@@ -22,3 +22,6 @@ next-env.d.ts
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Local Claude Code preview config
+.claude/
