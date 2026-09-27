@@ -2653,7 +2653,7 @@ Verify `git status` does not list `web/.keys/` or `web/.env.local`.
   - `hooks.ts`: `useNow(intervalMs?) -> unix seconds (0 until mounted)`, `useMounted() -> boolean`
   - `<WalletButton />`, `<Providers>`
 
-- [ ] **Step 1: Write `web/vitest.config.ts`**
+- [x] **Step 1: Write `web/vitest.config.ts`**
 
 ```ts
 import { fileURLToPath } from "node:url";
@@ -2665,7 +2665,7 @@ export default defineConfig({
 });
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `web/src/lib/format.test.ts`:
 
@@ -2825,12 +2825,12 @@ describe("friendlyError", () => {
 });
 ```
 
-- [ ] **Step 3: Run to see them fail**
+- [x] **Step 3: Run to see them fail**
 
 Run: `npm test`
 Expected: FAIL — cannot resolve `./format`, `./rules`, `./send`.
 
-- [ ] **Step 4: Write `web/src/lib/format.ts`**
+- [x] **Step 4: Write `web/src/lib/format.ts`**
 
 ```ts
 export const DECIMALS = 6;
@@ -2882,7 +2882,7 @@ export function phantomBrowseUrl(pageUrl: string): string {
 }
 ```
 
-- [ ] **Step 5: Write `web/src/lib/rules.ts`**
+- [x] **Step 5: Write `web/src/lib/rules.ts`**
 
 ```ts
 import { formatDateTime } from "./format";
@@ -2990,7 +2990,7 @@ export function timelineSteps(
 }
 ```
 
-- [ ] **Step 6: Write `web/src/lib/send.ts`**
+- [x] **Step 6: Write `web/src/lib/send.ts`**
 
 ```ts
 import { Transaction, type Connection, type PublicKey, type TransactionInstruction } from "@solana/web3.js";
@@ -3033,12 +3033,12 @@ export function friendlyError(error: unknown): string {
 }
 ```
 
-- [ ] **Step 7: Run the unit tests**
+- [x] **Step 7: Run the unit tests**
 
 Run: `npm test`
 Expected: PASS — 3 files, all tests green.
 
-- [ ] **Step 8: Replace `web/src/lib/config.ts`**
+- [x] **Step 8: Replace `web/src/lib/config.ts`**
 
 ```ts
 import { PublicKey } from "@solana/web3.js";
@@ -3055,7 +3055,7 @@ export const MINT = new PublicKey(mint);
 export const TOKEN_PROGRAM_ID = TOKEN_2022_PROGRAM_ID;
 ```
 
-- [ ] **Step 9: Write `web/src/lib/program.ts`**
+- [x] **Step 9: Write `web/src/lib/program.ts`**
 
 ```ts
 import { AnchorProvider, Program, type BN, type IdlAccounts } from "@anchor-lang/core";
@@ -3102,7 +3102,7 @@ export async function dealSignatures(connection: Connection, deal: PublicKey): P
 }
 ```
 
-- [ ] **Step 10: Write `web/src/lib/instructions.ts`**
+- [x] **Step 10: Write `web/src/lib/instructions.ts`**
 
 ```ts
 import { BN, type Program } from "@anchor-lang/core";
@@ -3213,7 +3213,7 @@ export function cancelDealIx(program: KeysfirstProgram, deal: PublicKey, data: D
 }
 ```
 
-- [ ] **Step 11: Write `web/src/lib/hooks.ts`**
+- [x] **Step 11: Write `web/src/lib/hooks.ts`**
 
 ```ts
 "use client";
@@ -3243,11 +3243,11 @@ export function useMounted(): boolean {
 }
 ```
 
-- [ ] **Step 12: Install the wallet adapter**
+- [x] **Step 12: Install the wallet adapter**
 
 Run: `npm install @solana/wallet-adapter-base @solana/wallet-adapter-react @solana/wallet-adapter-react-ui`
 
-- [ ] **Step 13: Write `web/src/app/providers.tsx`**
+- [x] **Step 13: Write `web/src/app/providers.tsx`**
 
 ```tsx
 "use client";
@@ -3269,7 +3269,7 @@ export function Providers({ children }: { children: ReactNode }) {
 }
 ```
 
-- [ ] **Step 14: Write `web/src/components/WalletButton.tsx`**
+- [x] **Step 14: Write `web/src/components/WalletButton.tsx`**
 
 ```tsx
 "use client";
@@ -3287,13 +3287,13 @@ export function WalletButton() {
 }
 ```
 
-- [ ] **Step 15: Replace `web/src/app/globals.css`**
+- [x] **Step 15: Replace `web/src/app/globals.css`**
 
 ```css
 @import "tailwindcss";
 ```
 
-- [ ] **Step 16: Replace `web/src/app/layout.tsx`**
+- [x] **Step 16: Replace `web/src/app/layout.tsx`**
 
 ```tsx
 import type { Metadata } from "next";
@@ -3332,12 +3332,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 }
 ```
 
-- [ ] **Step 17: Verify**
+- [x] **Step 17: Verify**
 
 Run: `npm test`, `npm run lint`, `npm run build`
 Expected: all succeed. Troubleshooting: if the browser console later shows `Buffer is not defined`, run `npm install buffer` and add `import { Buffer } from "buffer"; globalThis.Buffer ??= Buffer;` at the top of `providers.tsx`. If `idl as Keysfirst` fails to type-check, use `idl as unknown as Keysfirst`. If lint flags `scripts/`, add `"scripts/**"` to `globalIgnores([...])` in `web/eslint.config.mjs`.
 
-- [ ] **Step 18: Commit**
+- [x] **Step 18: Commit**
 
 ```bash
 git add web
