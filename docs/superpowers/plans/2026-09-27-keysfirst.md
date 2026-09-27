@@ -501,7 +501,7 @@ Verify `git status` shows no `target/` or `.keys/` files staged.
   - Test helpers in `tests/common/mod.rs`: `setup()`, `setup_with(token_program)`, `Env { svm, landlord, tenant, stranger, mint_authority, mint, token_program }`, `Env::key(Who)`, `Env::run(ix, Who)`, `Env::run_many(&[ix], Who)`, `Who::{Landlord, Tenant, Stranger}`, `DealParams`, `set_time`, `send`, `assert_ok`, `assert_err`, `create_mint`, `mint_tokens`, `mint_to`, `ata`, `ata_for`, `balance`, `exists`, `lamports`, `deal_pda`, `get_deal`, `ix_create_deal`, `create_deal`; constants `T0, DAY, DECIMALS, EUR, AMOUNT, START_BALANCE`.
 - PDA: deal = `[b"deal", landlord, deal_id.to_le_bytes()]`; vault = associated token account of (deal, mint, token program).
 
-- [ ] **Step 1: Save the program id, then clear the scaffold code**
+- [x] **Step 1: Save the program id, then clear the scaffold code**
 
 Run (Ubuntu shell, repo root): `grep declare_id programs/keysfirst/src/lib.rs`
 Write down the id inside `declare_id!("...")`. Then:
@@ -511,7 +511,7 @@ rm -rf programs/keysfirst/src/* programs/keysfirst/tests/*
 mkdir -p programs/keysfirst/src/instructions programs/keysfirst/tests/common
 ```
 
-- [ ] **Step 2: Add dependencies in `programs/keysfirst/Cargo.toml`**
+- [x] **Step 2: Add dependencies in `programs/keysfirst/Cargo.toml`**
 
 Keep everything else as it is (the `[dev-dependencies]` block already has the litesvm 0.16 versions from Task 2) and change only these lines:
 
@@ -527,7 +527,7 @@ anchor-spl = "1.2.0"
 
 Also set the package `description` to `"Rental deposit escrow: the money moves only when the keys do"`.
 
-- [ ] **Step 3: Write the test harness `programs/keysfirst/tests/common/mod.rs`**
+- [x] **Step 3: Write the test harness `programs/keysfirst/tests/common/mod.rs`**
 
 ```rust
 //! Shared test helpers: a fresh LiteSVM chain with the Keysfirst program,
@@ -807,7 +807,7 @@ pub fn create_deal(env: &mut Env, p: &DealParams) -> Pubkey {
 
 If the compiler reports that `Clock` does not implement the sysvar traits LiteSVM expects (a crate-version split), add `solana-clock = "3"` to `[dev-dependencies]` and replace `prelude::Clock` with `solana_clock::Clock` in the `use` block.
 
-- [ ] **Step 4: Write the failing tests `programs/keysfirst/tests/create_deal.rs`**
+- [x] **Step 4: Write the failing tests `programs/keysfirst/tests/create_deal.rs`**
 
 ```rust
 mod common;
@@ -885,12 +885,12 @@ fn rejects_a_deadline_in_the_past() {
 }
 ```
 
-- [ ] **Step 5: Run the tests to see them fail**
+- [x] **Step 5: Run the tests to see them fail**
 
 Run (Ubuntu shell): `cargo test --test create_deal`
 Expected: compile errors such as `unresolved import keysfirst::constants` (the program has no code yet).
 
-- [ ] **Step 6: Write `programs/keysfirst/src/constants.rs`**
+- [x] **Step 6: Write `programs/keysfirst/src/constants.rs`**
 
 ```rust
 /// Seed for each deal account: [DEAL_SEED, landlord, deal_id (little-endian u64)].
@@ -910,7 +910,7 @@ pub const MAX_HANDOVER_WINDOW: i64 = 14 * 24 * 60 * 60;
 pub const MAX_LOCK_DURATION: i64 = 180 * 24 * 60 * 60;
 ```
 
-- [ ] **Step 7: Write `programs/keysfirst/src/error.rs`**
+- [x] **Step 7: Write `programs/keysfirst/src/error.rs`**
 
 ```rust
 use anchor_lang::prelude::*;
@@ -950,7 +950,7 @@ pub enum KeysfirstError {
 }
 ```
 
-- [ ] **Step 8: Write `programs/keysfirst/src/state.rs`**
+- [x] **Step 8: Write `programs/keysfirst/src/state.rs`**
 
 ```rust
 use anchor_lang::prelude::*;
@@ -994,7 +994,7 @@ pub struct Deal {
 }
 ```
 
-- [ ] **Step 9: Write `programs/keysfirst/src/instructions/create_deal.rs`**
+- [x] **Step 9: Write `programs/keysfirst/src/instructions/create_deal.rs`**
 
 ```rust
 use anchor_lang::prelude::*;
@@ -1082,7 +1082,7 @@ pub fn handle_create_deal(
 }
 ```
 
-- [ ] **Step 10: Write `programs/keysfirst/src/instructions/mod.rs`**
+- [x] **Step 10: Write `programs/keysfirst/src/instructions/mod.rs`**
 
 ```rust
 pub mod create_deal;
@@ -1090,7 +1090,7 @@ pub mod create_deal;
 pub use create_deal::*;
 ```
 
-- [ ] **Step 11: Write `programs/keysfirst/src/lib.rs`** (use the id saved in Step 1)
+- [x] **Step 11: Write `programs/keysfirst/src/lib.rs`** (use the id saved in Step 1)
 
 ```rust
 use anchor_lang::prelude::*;
@@ -1125,12 +1125,12 @@ pub mod keysfirst {
 }
 ```
 
-- [ ] **Step 12: Build and run the tests**
+- [x] **Step 12: Build and run the tests**
 
 Run: `anchor build && cargo test --test create_deal`
 Expected: `test result: ok. 7 passed`. If `anchor build` reports a program-id mismatch, run `anchor keys sync` and rebuild.
 
-- [ ] **Step 13: Commit** (PowerShell)
+- [x] **Step 13: Commit** (PowerShell)
 
 ```bash
 git add programs Cargo.lock
