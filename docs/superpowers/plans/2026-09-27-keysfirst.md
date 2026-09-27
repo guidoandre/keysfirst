@@ -3776,7 +3776,7 @@ git commit -m "feat(web): create-deal page and live deal page with status timeli
 - Consumes: `availableActions` (rules), instruction builders, `signAndSend`, `friendlyError`, `refresh` from `DealClient`.
 - Produces: `POST /api/faucet {account}` → mints 1,000 tEUR and tops up 0.05 SOL if the wallet has < 0.02 SOL; `<DealActions address deal status role actions onDone />`; `<TestFundsButton />`. The in-app "I have the keys" button is the fallback for the Solana Pay QR (same `confirm_handover` instruction).
 
-- [ ] **Step 1: Write `web/src/app/api/faucet/route.ts`**
+- [x] **Step 1: Write `web/src/app/api/faucet/route.ts`**
 
 ```ts
 import {
@@ -3826,7 +3826,7 @@ export async function POST(req: Request) {
 }
 ```
 
-- [ ] **Step 2: Write `web/src/components/TestFundsButton.tsx`**
+- [x] **Step 2: Write `web/src/components/TestFundsButton.tsx`**
 
 ```tsx
 "use client";
@@ -3870,7 +3870,7 @@ export function TestFundsButton() {
 }
 ```
 
-- [ ] **Step 3: Write `web/src/components/DealActions.tsx`**
+- [x] **Step 3: Write `web/src/components/DealActions.tsx`**
 
 ```tsx
 "use client";
@@ -3980,7 +3980,7 @@ export function DealActions({
 }
 ```
 
-- [ ] **Step 4: Wire it into `web/src/app/deal/[id]/DealClient.tsx`**
+- [x] **Step 4: Wire it into `web/src/app/deal/[id]/DealClient.tsx`**
 
 1. Add imports: `import { DealActions } from "@/components/DealActions";` and add `availableActions,` to the `@/lib/rules` import list.
 2. After the line `const amount = formatEur(deal.amount.toString());` add:
@@ -3995,7 +3995,7 @@ export function DealActions({
       <DealActions address={address} deal={deal} status={status} role={role} actions={actions} onDone={refresh} />
 ```
 
-- [ ] **Step 5: Verify build**
+- [x] **Step 5: Verify build**
 
 Run: `npm test`, `npm run lint`, `npm run build`
 Expected: all succeed.
@@ -4011,7 +4011,7 @@ Run `npm run dev`. With `.env.local` present, the faucet works locally.
 6. Third deal: create and fund, wait > 5 minutes, open as any third account: "Return the deposit to the tenant" appears and works.
 7. Fourth deal: create, then as Landlord "Cancel this deal". Expected: "Cancelled".
 
-- [ ] **Step 7: Commit and deploy**
+- [x] **Step 7: Commit and deploy**
 
 ```bash
 git add web

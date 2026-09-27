@@ -3,12 +3,14 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { DealActions } from "@/components/DealActions";
 import { ShareLink } from "@/components/ShareLink";
 import { Timeline } from "@/components/Timeline";
 import { explorerAddress, formatDateTime, formatEur } from "@/lib/format";
 import { useNow } from "@/lib/hooks";
 import { dealSignatures, getProgram, type DealAccount } from "@/lib/program";
 import {
+  availableActions,
   handoverOpensAt,
   roleOf,
   STATUS_LABEL,
@@ -72,6 +74,7 @@ export function DealClient({ id, origin }: { id: string; origin: string }) {
   const times: DealTimes = { moveIn: deal.moveIn.toNumber(), deadline: deal.deadline.toNumber() };
   const role = roleOf(deal.landlord.toBase58(), deal.tenant.toBase58(), publicKey?.toBase58());
   const amount = formatEur(deal.amount.toString());
+  const actions = availableActions(status, role, times, now);
 
   return (
     <div className="space-y-5">
@@ -93,6 +96,7 @@ export function DealClient({ id, origin }: { id: string; origin: string }) {
         </dl>
         <p className="mt-4 text-sm leading-relaxed text-stone-700">{explain(status, role, times, now, amount)}</p>
       </section>
+      <DealActions address={address} deal={deal} status={status} role={role} actions={actions} onDone={refresh} />
       {status === "open" && role === "landlord" && (
         <ShareLink url={`${origin}/deal/${id}`} text={`Pay the ${amount} deposit for "${deal.title}" safely with Keysfirst:`} />
       )}
