@@ -73,6 +73,13 @@ export interface TimelineStep {
   signature?: string;
 }
 
+/** How many successful transactions a deal in this status has behind it (one per timeline step). */
+export function timelineTransactionCount(status: DealStatus): number {
+  if (status === "open") return 1;
+  if (status === "funded" || status === "cancelled") return 2;
+  return 3;
+}
+
 /** Successful transactions touching a deal, oldest first: create, fund, settle (or create, cancel). */
 export function timelineSteps(
   status: DealStatus,

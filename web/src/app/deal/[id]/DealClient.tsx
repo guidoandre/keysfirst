@@ -2,7 +2,7 @@
 
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { DealActions } from "@/components/DealActions";
 import { HandoverQR } from "@/components/HandoverQR";
 import { ShareLink } from "@/components/ShareLink";
@@ -16,6 +16,7 @@ import {
   roleOf,
   STATUS_LABEL,
   statusOf,
+  timelineTransactionCount,
   type DealStatus,
   type DealTimes,
   type Role,
@@ -45,19 +46,26 @@ export function DealClient({ id, origin }: { id: string; origin: string }) {
   const [loadError, setLoadError] = useState<string | null>(null);
   const now = useNow();
 
+  const signatureCount = useRef(0);
+
+  // The public devnet RPC rate-limits per network (a laptop and a phone on the same Wi-Fi share it),
+  // so each poll reads only the deal and fetches the transaction list only while a timeline link is missing.
   const refresh = useCallback(async () => {
     if (!address) return;
-    const [data, sigs] = await Promise.all([
-      program.account.deal.fetchNullable(address),
-      dealSignatures(connection, address),
-    ]);
+    const data = await program.account.deal.fetchNullable(address);
     setDeal(data);
-    setSignatures(sigs);
+    if (data && signatureCount.current < timelineTransactionCount(statusOf(data.status))) {
+      const sigs = await dealSignatures(connection, address);
+      signatureCount.current = sigs.length;
+      setSignatures(sigs);
+    }
   }, [address, connection, program]);
 
   // Poll so the landlord's screen flips to "Released" seconds after the tenant signs.
+  // Hidden tabs don't poll; they reload as soon as they are shown again.
   useEffect(() => {
     const load = () => {
+      if (document.hidden) return;
       refresh().then(
         () => setLoadError(null),
         (e: unknown) => setLoadError(e instanceof Error ? e.message : String(e)),
@@ -65,9 +73,11 @@ export function DealClient({ id, origin }: { id: string; origin: string }) {
     };
     const first = setTimeout(load, 0);
     const timer = setInterval(load, 2_000);
+    document.addEventListener("visibilitychange", load);
     return () => {
       clearTimeout(first);
       clearInterval(timer);
+      document.removeEventListener("visibilitychange", load);
     };
   }, [refresh]);
 

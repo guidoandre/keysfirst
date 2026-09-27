@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { availableActions, handoverProblem, roleOf, statusOf, timelineSteps, type DealTimes } from "./rules";
+import {
+  availableActions,
+  handoverProblem,
+  roleOf,
+  statusOf,
+  timelineSteps,
+  timelineTransactionCount,
+  type DealTimes,
+} from "./rules";
 
 const DAY = 86_400;
 const t: DealTimes = { moveIn: 1_000_000, deadline: 1_000_000 + 3 * DAY };
@@ -73,5 +81,15 @@ describe("timelineSteps", () => {
   });
   it("cancelled deals have two steps", () => {
     expect(timelineSteps("cancelled", times, ["a", "b"]).map((s) => s.label)).toEqual(["Deal created", "Cancelled"]);
+  });
+});
+
+describe("timelineTransactionCount", () => {
+  it("counts the transactions each status has behind it", () => {
+    expect(timelineTransactionCount("open")).toBe(1);
+    expect(timelineTransactionCount("funded")).toBe(2);
+    expect(timelineTransactionCount("released")).toBe(3);
+    expect(timelineTransactionCount("refunded")).toBe(3);
+    expect(timelineTransactionCount("cancelled")).toBe(2);
   });
 });

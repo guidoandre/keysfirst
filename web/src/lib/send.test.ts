@@ -14,6 +14,10 @@ describe("friendlyError", () => {
     expect(friendlyError(new Error("Program log: Error: insufficient funds"))).toMatch(/Not enough Test EUR/);
     expect(friendlyError(new Error("Connect your wallet first."))).toBe("Connect your wallet first.");
   });
+  it("explains devnet rate limits", () => {
+    const e = new Error('429 : {"jsonrpc":"2.0","error":{"code": 429, "message":"Too many requests for a specific RPC call"}}');
+    expect(friendlyError(e)).toMatch(/Solana devnet is busy/);
+  });
   it("falls back to a generic hint", () => {
     expect(friendlyError("boom")).toMatch(/Solana Devnet/);
   });
