@@ -14,6 +14,12 @@ describe("friendlyError", () => {
     expect(friendlyError(new Error("Program log: Error: insufficient funds"))).toMatch(/Not enough Test EUR/);
     expect(friendlyError(new Error("Connect your wallet first."))).toBe("Connect your wallet first.");
   });
+  it("explains a settlement that already happened (the vault is closed)", () => {
+    const e = new Error(
+      "Simulation failed. Logs: [\"Program log: AnchorError caused by account: vault. Error Code: AccountNotInitialized. Error Number: 3012. Error Message: The program expected this account to be already initialized.\"]",
+    );
+    expect(friendlyError(e)).toBe("This deal has already been settled. Reload the page to see its status.");
+  });
   it("explains devnet rate limits", () => {
     const e = new Error('429 : {"jsonrpc":"2.0","error":{"code": 429, "message":"Too many requests for a specific RPC call"}}');
     expect(friendlyError(e)).toMatch(/Solana devnet is busy/);

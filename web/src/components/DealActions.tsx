@@ -6,13 +6,20 @@ import { useMemo, useState } from "react";
 import { explorerTx, formatEur } from "@/lib/format";
 import { cancelDealIx, confirmHandoverIx, fundIx, refundIx } from "@/lib/instructions";
 import { getProgram, type DealAccount } from "@/lib/program";
-import type { Action, DealStatus, Role } from "@/lib/rules";
+import { STATUS_LABEL, statusOf, type Action, type DealStatus, type Role } from "@/lib/rules";
 import { friendlyError, signAndSend } from "@/lib/send";
 import { OpenInPhantom } from "./OpenInPhantom";
 import { TestFundsButton } from "./TestFundsButton";
 import { WalletButton } from "./WalletButton";
 
 type ButtonAction = Exclude<Action, "showQr">;
+
+const REQUIRED_STATUS: Record<ButtonAction, DealStatus> = {
+  fund: "open",
+  confirmInApp: "funded",
+  refund: "funded",
+  cancel: "open",
+};
 
 export function DealActions({
   address, deal, status, role, actions, onDone,
@@ -68,6 +75,14 @@ export function DealActions({
     setError(null);
     setSignature(null);
     try {
+      // A page that sat in the background (e.g. while the tenant scanned the QR) can show a button
+      // the deal no longer allows; check the live status before asking the wallet to sign.
+      const live = statusOf((await program.account.deal.fetch(address)).status);
+      if (live !== REQUIRED_STATUS[action]) {
+        await onDone();
+        setError(`This deal is already “${STATUS_LABEL[live]}”. The page has been updated.`);
+        return;
+      }
       setSignature(await signAndSend(connection, wallet, [await build[action]()]));
       await onDone();
     } catch (e) {

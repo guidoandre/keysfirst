@@ -29,6 +29,8 @@ export function friendlyError(error: unknown): string {
   const logs = (error as { logs?: unknown })?.logs;
   const text = [error instanceof Error ? error.message : String(error), ...(Array.isArray(logs) ? logs : [])].join("\n");
   if (text.includes("Connect your wallet first.")) return "Connect your wallet first.";
+  // Settling closes the vault, so a second settlement fails on the missing vault before any deal rule runs.
+  if (text.includes("AccountNotInitialized")) return "This deal has already been settled. Reload the page to see its status.";
   const programMessage = text.match(/Error Message: ([^"\n\]]+)/);
   if (programMessage) return `${programMessage[1].trim().replace(/\.$/, "")}.`;
   if (/User rejected/i.test(text)) return "You cancelled the request in your wallet.";
