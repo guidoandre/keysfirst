@@ -6,7 +6,7 @@
 
 **Architecture:** One Anchor program (`programs/keysfirst`) with five instructions (`create_deal`, `fund`, `confirm_handover`, `refund`, `cancel_deal`) holding each deposit in a token account owned by a per-deal PDA; tested in Rust with LiteSVM (clock warping). One Next.js app (`web/`) on Vercel that reads deal accounts directly from devnet, builds instructions with the Anchor TS client, lets Phantom sign them, and serves the Solana Pay transaction-request endpoint and a devnet faucet. No database, no backend state, no admin key.
 
-**Tech Stack:** Anchor 1.2.0 (anchor-lang, anchor-spl), Rust (toolchain pinned by `anchor init`), litesvm 0.10.0; Next.js 16 (App Router, TypeScript, Tailwind), `@anchor-lang/core` 1.2.x, `@solana/web3.js` 1.x, `@solana/spl-token` 0.4.x, `@solana/wallet-adapter-{base,react,react-ui}`, `qrcode.react` 4.x; dev-only: `vitest`, `@solana/spl-token-metadata`.
+**Tech Stack:** Anchor 1.2.0 (anchor-lang, anchor-spl), Rust (toolchain pinned by `anchor init`), litesvm 0.16.0 (the template's 0.10.0 cannot load SBPF v3 programs); Next.js 16 (App Router, TypeScript, Tailwind), `@anchor-lang/core` 1.2.x, `@solana/web3.js` 1.x, `@solana/spl-token` 0.4.x, `@solana/wallet-adapter-{base,react,react-ui}`, `qrcode.react` 4.x; dev-only: `vitest`, `@solana/spl-token-metadata`.
 
 **Spec:** `docs/superpowers/specs/2026-09-27-keysfirst-design.md` (read it first; this plan implements it).
 
@@ -15,6 +15,7 @@
 - Solana **devnet only**. Never mainnet, never real money.
 - Never print, paste or commit private keys or seed phrases. Secrets live only in `~/.config/solana/id.json` (WSL), `.keys/` and `web/.env.local` (both gitignored), and Vercel environment variables.
 - Anchor CLI / `anchor-lang` / `anchor-spl` **1.2.0**. The TypeScript client package is **`@anchor-lang/core`** (not `@coral-xyz/anchor`, renamed in Anchor 1.1.1).
+- Anchor 1.2 builds programs as **SBPF v3** by default, and Solana is phasing out v0–v2 deployments (SIMD-0500): keep v3. The `anchor init` template pins `litesvm = "0.10.0"`, which rejects v3 programs in `add_program` with `InvalidAccountData` (known issue: agave 3.1's sbpf parser). Dev-dependencies must be: `litesvm = "0.16.0"`, `solana-message = "4.2.4"`, `solana-transaction = "4.1.5"`, `solana-signer = "3.0.1"`, `solana-keypair = "3.1.2"`. litesvm 0.16's agave 4.x crates also need a newer host Rust than the template's 1.89.0: `rust-toolchain.toml` pins `channel = "1.98.1"` (platform-tools ignore this file, so the on-chain build is unaffected).
 - Anchor 1.x API facts used below: `CpiContext::new(program_id: Pubkey, accounts)` and `CpiContext::new_with_signer(program_id, accounts, seeds)` take the program **id**; duplicate mutable accounts are rejected only for serializing types (`Account`, `InterfaceAccount`); `anchor init` generates Rust LiteSVM tests run with `cargo test`.
 - Program and tests run in **WSL Ubuntu** in `/mnt/c/Users/STAGE/Desktop/keysfirst`. From Windows, run them as: `wsl -d Ubuntu -e bash -lc 'cd /mnt/c/Users/STAGE/Desktop/keysfirst && <command>'`. Program test command: `anchor build && cargo test` (tests load `target/deploy/keysfirst.so`, so always build first).
 - Web commands run in **Windows PowerShell** in `C:\Users\STAGE\Desktop\keysfirst\web`. Git runs from Windows.
@@ -467,12 +468,12 @@ Open `Anchor.toml`. Under the existing `[programs.localnet]` block add a `[progr
 keysfirst = "<the id printed by anchor keys list>"
 ```
 
-- [ ] **Step 8: Run the scaffold test**
+- [x] **Step 8: Run the scaffold test**
 
 Run: `cargo test`
-Expected: `test test_initialize ... ok`, `test result: ok. 1 passed`.
+Expected: `test test_initialize ... ok`, `test result: ok. 1 passed`. If it panics at `add_program(...).unwrap()` with `InvalidAccountData`, replace the `[dev-dependencies]` block in `programs/keysfirst/Cargo.toml` with the versions listed in Global Constraints (litesvm 0.16.0 etc.), set `channel = "1.98.1"` in `rust-toolchain.toml`, and run `cargo test` again.
 
-- [ ] **Step 9: Commit** (PowerShell)
+- [x] **Step 9: Commit** (PowerShell)
 
 ```bash
 git add Anchor.toml Cargo.toml Cargo.lock rust-toolchain.toml programs
@@ -512,7 +513,7 @@ mkdir -p programs/keysfirst/src/instructions programs/keysfirst/tests/common
 
 - [ ] **Step 2: Add dependencies in `programs/keysfirst/Cargo.toml`**
 
-Keep everything `anchor init` generated (including the `[dev-dependencies]` versions) and change only these lines:
+Keep everything else as it is (the `[dev-dependencies]` block already has the litesvm 0.16 versions from Task 2) and change only these lines:
 
 ```toml
 [features]
@@ -4005,13 +4006,13 @@ Then repeat steps 2–4 of the manual check on `APP_URL` (Vercel) to confirm the
 ### Task 13: Solana Pay handover (QR endpoint + landlord screen)
 
 **Files:**
-- Create: `web/src/app/api/handover/[id]/route.ts`, `web/src/components/HandoverQR.tsx`
+- Create: `web/src/app/api/handover/[id]/route.ts`, `web/src/components/HandoverQR.tsx`, `web/src/app/deal/[id]/handover/page.tsx`
 - Modify: `web/src/app/deal/[id]/DealClient.tsx`
 - Delete: `web/src/app/api/spike/`, `web/src/app/spike/`
 
 **Interfaces:**
 - Consumes: `getProgram`, `confirmHandoverIx`, `handoverProblem`, `statusOf`, `formatEur`.
-- Produces: Solana Pay transaction-request endpoint `GET/POST /api/handover/<deal address>`; QR value `solana:<origin>/api/handover/<deal address>` (no query string); `<HandoverQR dealId origin />`; the landlord's green "Released" banner.
+- Produces: Solana Pay transaction-request endpoint `GET/POST /api/handover/<deal address>`; QR value `<origin>/deal/<deal address>/handover` (https, camera-friendly) whose page links to `solana:<origin>/api/handover/<deal address>`; `<HandoverQR dealId origin />`; the landlord's green "Released" banner.
 
 - [ ] **Step 1: Write `web/src/app/api/handover/[id]/route.ts`**
 
@@ -4105,20 +4106,50 @@ Expected: HTTP 400 with message `Only the tenant who paid the deposit can confir
 
 import { QRCodeSVG } from "qrcode.react";
 
-/** Landlord shows this at the door; the tenant scans it with Phantom and approves. */
+/**
+ * Landlord shows this at the door. It encodes a plain https link because the iPhone Camera
+ * cannot open `solana:` codes (see docs/spike.md); the linked page hands off to Phantom.
+ */
 export function HandoverQR({ dealId, origin }: { dealId: string; origin: string }) {
-  const value = `solana:${origin}/api/handover/${dealId}`;
+  const value = `${origin}/deal/${dealId}/handover`;
   return (
     <section className="rounded-2xl border-2 border-emerald-600 bg-white p-5 text-center">
       <h2 className="text-lg font-semibold">Key handover</h2>
       <p className="mx-auto mt-1 max-w-sm text-sm text-stone-600">
-        Ask the tenant to check the room, then scan this code with the Phantom app. Hand over the keys only when this
-        page says “Released”.
+        Ask the tenant to check the room, then scan this code with their phone camera and tap “Approve in Phantom”.
+        Hand over the keys only when this page says “Released”.
       </p>
       <div className="mx-auto mt-4 w-fit rounded-xl bg-white p-3">
         <QRCodeSVG value={value} size={260} marginSize={2} />
       </div>
     </section>
+  );
+}
+```
+
+- [ ] **Step 3b: Write the tenant's hand-off page `web/src/app/deal/[id]/handover/page.tsx`**
+
+The QR opens this page in the phone's browser; one tap hands the Solana Pay request to Phantom (proven in the spike).
+
+```tsx
+import { getOrigin } from "@/lib/origin";
+
+export default async function HandoverPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const solanaPayUrl = `solana:${await getOrigin()}/api/handover/${id}`;
+  return (
+    <div className="space-y-5 rounded-2xl border border-stone-200 bg-white p-6 text-center">
+      <h1 className="text-2xl font-semibold">Confirm the key handover</h1>
+      <p className="text-sm text-stone-600">
+        Only continue if you have checked the room and are holding the keys. Approving pays the landlord immediately.
+      </p>
+      <a href={solanaPayUrl} className="block rounded-xl bg-violet-600 px-4 py-4 text-lg font-semibold text-white">
+        Approve in Phantom
+      </a>
+      <p className="text-xs text-stone-500">
+        Approve within a minute: the request expires quickly. If it does, tap the button again for a fresh one.
+      </p>
+    </div>
   );
 }
 ```
@@ -4162,7 +4193,7 @@ Setup: the **Tenant** wallet must exist in both the Phantom extension (laptop) a
 1. Laptop, Phantom "Landlord": create a deal (Move-in: Now, 5 minutes).
 2. Phone, Phantom "Tenant": open the deal link inside Phantom's browser, get test funds, pay €600.
 3. Laptop as Landlord: reload the deal page. Expected: the green-bordered QR "Key handover" appears.
-4. Phone: Phantom → scan icon → scan the QR. Expected: "Keysfirst key handover", the release message, approve.
+4. Phone: scan the QR with the **iPhone Camera**, open the link, tap "Approve in Phantom". Expected: "Keysfirst key handover", the release message, approve within a minute.
 5. Expected within ~3 seconds on the laptop: green "Released ✓ €600.00 is in your wallet. Hand over the keys."; timeline step 3 links to the Explorer transaction.
 6. Negative check: scan the QR of a funded deal with the Landlord wallet on the phone. Expected: Phantom shows an error (the endpoint refuses non-tenants).
 Record the Explorer link of step 5 in `docs/spike.md` under "Real handover (Task 13)". If step 4 fails while the spike passed, compare the two endpoints' responses (the only differences are the program instruction and the tenant check) and use superpowers:systematic-debugging; the in-app button from Task 12 remains the working fallback.

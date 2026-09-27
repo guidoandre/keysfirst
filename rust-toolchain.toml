@@ -1,0 +1,7 @@
+[toolchain]
+# Host toolchain for `cargo test` and the IDL build. The template pinned 1.89.0 (Anchor's minimum),
+# but litesvm 0.16's agave 4.x crates need a newer stable Rust. The on-chain program itself is
+# compiled by Solana's platform-tools, which ignore this file.
+channel = "1.98.1"
+components = ["rustfmt","clippy"]
+profile = "minimal"

@@ -9,3 +9,5 @@
 - UI copy: plain English, no blockchain jargon; amounts in €.
 - After each milestone: what works, what doesn't, what's next.
 - Deadline confirmed by the sponsor: Sun 4 Oct 2026, 23:59 (German time). Target submission: Sat 3 Oct.
+- APP_URL (Vercel production, root dir `web`, public): https://keysfirst.vercel.app
+- Phantom domain review form submitted on 2026-09-27 for https://keysfirst.vercel.app (new-domain warning). Re-check the warning before recording the demo.

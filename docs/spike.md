@@ -13,7 +13,13 @@
 4. **Phantom shows strong warnings for an unknown site**: "Conferma (non sicuro)" and a checkbox "capisco che continuando potrei perdere tutti i miei fondi". Bad for the demo video; needs a mitigation (e.g. request a Phantom domain review) and must be re-checked with the real program instruction.
 5. **Speed matters**: the first attempt did not land because the transaction's recent blockhash expired while the user read the warnings (~60–90 s validity). The handover screen must tell the tenant to approve promptly, and a retry simply re-fetches a fresh transaction.
 
-## Options for the handover QR on iPhone (decide before Task 13)
+## Follow-up fix (same day): camera-friendly QR — PASS
+
+The QR on `/spike` now encodes `https://keysfirst.vercel.app/spike/go`. The iPhone Camera opens it in Safari, and the
+"Open in Phantom" button hands the `solana:` request to Phantom. Tested on the iPhone: works. Task 13 in the plan now uses
+this design (option B below) for the real handover.
+
+## Options for the handover QR on iPhone (decided: B)
 
 - A. Phantom's home-screen scanner, if it accepts `solana:` codes (to test).
 - B. QR encodes an `https://keysfirst.vercel.app/...` page (the iPhone Camera opens it in Safari) with a big "Approve in Phantom" button that opens the `solana:` link — one extra tap, works with any camera.
