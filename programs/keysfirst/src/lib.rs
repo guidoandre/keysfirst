@@ -42,4 +42,9 @@ pub mod keysfirst {
     pub fn refund(ctx: Context<Refund>) -> Result<()> {
         instructions::refund::handle_refund(ctx)
     }
+
+    /// Landlord withdraws a deal nobody has paid into yet.
+    pub fn cancel_deal(ctx: Context<CancelDeal>) -> Result<()> {
+        instructions::cancel_deal::handle_cancel_deal(ctx)
+    }
 }

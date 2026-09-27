@@ -343,3 +343,21 @@ pub fn ix_refund_custom(env: &Env, deal: Pubkey, caller: Pubkey, tenant: Pubkey)
 pub fn ix_refund(env: &Env, deal: Pubkey, caller: Pubkey) -> Instruction {
     ix_refund_custom(env, deal, caller, env.tenant.pubkey())
 }
+
+pub fn ix_cancel(env: &Env, deal: Pubkey, signer: Pubkey) -> Instruction {
+    Instruction::new_with_bytes(
+        keysfirst::id(),
+        &keysfirst::instruction::CancelDeal {}.data(),
+        keysfirst::accounts::CancelDeal {
+            landlord: signer,
+            deal,
+            mint: env.mint,
+            vault: ata(env, &deal),
+            landlord_token: ata(env, &signer),
+            token_program: env.token_program,
+            associated_token_program: associated_token::ID,
+            system_program: system_program::ID,
+        }
+        .to_account_metas(None),
+    )
+}

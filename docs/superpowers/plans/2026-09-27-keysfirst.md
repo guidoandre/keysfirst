@@ -2001,7 +2001,7 @@ git commit -m "feat(program): refund returns the deposit to the tenant after the
 **Interfaces:**
 - Produces: instruction `cancel_deal()`; accounts `landlord (signer), deal, mint, vault, landlord_token, token_program, associated_token_program, system_program`. Open deals only; any tokens someone sent to the empty vault go to the landlord; vault closed. Test helper `ix_cancel(env, deal, signer)` (uses the signer's own token account so authorization errors surface as `NotLandlord`).
 
-- [ ] **Step 1: Append to `tests/common/mod.rs`**
+- [x] **Step 1: Append to `tests/common/mod.rs`**
 
 ```rust
 pub fn ix_cancel(env: &Env, deal: Pubkey, signer: Pubkey) -> Instruction {
@@ -2023,7 +2023,7 @@ pub fn ix_cancel(env: &Env, deal: Pubkey, signer: Pubkey) -> Instruction {
 }
 ```
 
-- [ ] **Step 2: Write the failing tests `tests/cancel_deal.rs`**
+- [x] **Step 2: Write the failing tests `tests/cancel_deal.rs`**
 
 ```rust
 mod common;
@@ -2073,12 +2073,12 @@ fn a_cancelled_deal_cannot_be_funded() {
 }
 ```
 
-- [ ] **Step 3: Run to see it fail**
+- [x] **Step 3: Run to see it fail**
 
 Run: `cargo test --test cancel_deal`
 Expected: compile error `cannot find ... CancelDeal`.
 
-- [ ] **Step 4: Write `programs/keysfirst/src/instructions/cancel_deal.rs`**
+- [x] **Step 4: Write `programs/keysfirst/src/instructions/cancel_deal.rs`**
 
 ```rust
 use anchor_lang::prelude::*;
@@ -2150,7 +2150,7 @@ pub fn handle_cancel_deal(ctx: Context<CancelDeal>) -> Result<()> {
 }
 ```
 
-- [ ] **Step 5: Register**
+- [x] **Step 5: Register**
 
 `instructions/mod.rs`: add `pub mod cancel_deal;` and `pub use cancel_deal::*;`. Final file:
 
@@ -2178,12 +2178,12 @@ pub use refund::*;
     }
 ```
 
-- [ ] **Step 6: Build and run all tests**
+- [x] **Step 6: Build and run all tests**
 
 Run: `anchor build && cargo test`
 Expected: cancel_deal 4 passed; every suite passes.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add programs
