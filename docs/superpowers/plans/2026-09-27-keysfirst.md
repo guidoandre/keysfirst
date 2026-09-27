@@ -3752,7 +3752,7 @@ Expected: both succeed.
 
 Done 2026-09-27. The one change from the code above: `hasn't` in `/new` is written `hasn&apos;t`, because the `react/no-unescaped-entities` lint rule rejects a raw apostrophe in JSX text.
 
-- [ ] **Step 8: Manual check on devnet (user, desktop Chrome with Phantom extension on Devnet)**
+- [x] **Step 8: Manual check on devnet (user, desktop Chrome with Phantom extension on Devnet)**
 
 1. `npm run dev`, open http://localhost:3000/new, connect Phantom (the landlord wallet needs a little devnet SOL; `faucet.solana.com`).
 2. Create a deal: "Room in Vallendar", 600, Move-in → Now, "5 minutes (demo only)". Approve in Phantom.

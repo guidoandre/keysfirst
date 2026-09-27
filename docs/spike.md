@@ -41,3 +41,25 @@ Deal: https://explorer.solana.com/address/8cTvC1gnouTSxswytgt1as8FXgLmp1yJU6bfVo
 Release transaction: https://explorer.solana.com/tx/2htuMct8EphQG9qRW6sVCLriczPM78kBFKDxV2KRv3NMcpsq7E5Cd6aJfULA5L93wZkqJkcVxjb9BYAjKFmFMgeg?cluster=devnet
 
 Still to do: the phone test with Phantom mobile and the iPhone Camera (Task 13 Step 7).
+
+## Real handover on the phone (Task 13 Step 7), first run — PASS
+
+2026-09-27, on https://keysfirst.vercel.app. Landlord created the deal with the Phantom extension on the laptop; the tenant
+(Phantom on iPhone) paid inside Phantom's browser, scanned the landlord's QR with the iPhone Camera and approved in Phantom.
+
+- Deal: https://explorer.solana.com/address/BpPSuTQ1DZGaxDrKg3RtyMhgdCAwWuooZ18MBwQy2uZ8?cluster=devnet
+- Deposit locked: https://explorer.solana.com/tx/2qcqzVLHnZ1AxmEW2LVwtGEjsmJqdafUaqLJM7HywbDmCcpSD8b4eaMzpcpdhC5bMSUPFkDAr8hza5PLa3ZUCQQt?cluster=devnet
+- Released via Solana Pay QR: https://explorer.solana.com/tx/61vM95BVu83Fq6rfJGzrpcGJRjXXWxjYhzx7rjqyw22MDevtb8T8APTgonCNSbk25Hufty6gzCGYBx5QgX2bA9bD?cluster=devnet
+
+Two bugs found and fixed during this run:
+
+1. **"Loading the deal…" forever in Phantom's browser.** The public devnet RPC answered 429 (rate limit per network: laptop and
+   phone share the Wi-Fi). Each deal page sent ~30 requests per 10 s, most of them automatic retries. Fixed in `be84556`
+   (no retries on 429, no polling in hidden tabs, transaction list fetched only while a timeline link is missing).
+   Measured after the fix: ~5–9 requests per 10 s while visible, 0 while hidden. For the demo, use a dedicated devnet RPC.
+2. **Red "account to be already initialized" after the release.** The tenant's page had been in the background during the
+   scan and still showed "I have the keys"; tapping it tried a second settlement, which the program rejected before sending
+   (no failed transaction on-chain). Fixed in `7fae92b`: buttons re-check the live status first, and the raw error reads
+   "This deal has already been settled".
+
+Still open: the negative check (scanning with a non-tenant wallet must be refused) and the Phantom "unsafe" warning.
