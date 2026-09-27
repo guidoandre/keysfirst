@@ -4014,6 +4014,13 @@ Run `npm run dev`. With `.env.local` present, the faucet works locally.
 6. Third deal: create and fund, wait > 5 minutes, open as any third account: "Return the deposit to the tenant" appears and works.
 7. Fourth deal: create, then as Landlord "Cancel this deal". Expected: "Cancelled".
 
+Done 2026-09-27 on the live app (landlord `3BNf…zA4e`, tenant `ApG9…4MhF`), verified on-chain:
+- Items 1–3 and the release: the phone QR handover in Task 13 Step 7 (release by the tenant's signature).
+- Item 5 (landlord refund): https://explorer.solana.com/address/AnF9w2n588Z9mVtAvLNUkzwcpo8iL1jNBm3ZW7FH6r5A?cluster=devnet
+- Item 6 (refund after the deadline): https://explorer.solana.com/address/DocPYHJpCdS9xX19jPoiHXJ63Q4dj8xYehdopZJ91hYJ?cluster=devnet. The refund was signed by the tenant's wallet, not a third one; the third-wallet case is covered by the program tests and gets rehearsed in Task 15.
+- Item 7 (cancel): https://explorer.solana.com/address/5tvWz55PNGVXZ7XSp8wYX8YgwLNCwQMZUMcw99Ro8tad?cluster=devnet
+- Not exercised yet: the in-app "I have the keys" button (item 4); rehearse it in Task 15.
+
 - [x] **Step 7: Commit and deploy**
 
 ```bash
