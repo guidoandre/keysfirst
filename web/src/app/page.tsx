@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { OpenInPhantom } from "@/components/OpenInPhantom";
 import { TestFundsButton } from "@/components/TestFundsButton";
 
 const STEPS = [
@@ -68,6 +69,7 @@ export default function Home() {
           <li>In Phantom: Settings → Developer Settings → turn on Testnet Mode and choose Solana Devnet.</li>
           <li>Connect your wallet (top right), then get free test funds:</li>
         </ol>
+        <OpenInPhantom />
         <TestFundsButton />
       </section>
     </div>
