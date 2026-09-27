@@ -7,6 +7,6 @@ export function GET(req: Request) {
     name: "Test EUR (devnet)",
     symbol: "tEUR",
     description: "Worthless test token for the Keysfirst devnet prototype.",
-    image: `${origin}/icon.svg`,
+    image: `${origin}/icon.png`,
   });
 }

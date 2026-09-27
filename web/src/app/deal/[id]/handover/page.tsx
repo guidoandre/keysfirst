@@ -12,6 +12,10 @@ export default async function HandoverPage({ params }: { params: Promise<{ id: s
       <a href={solanaPayUrl} className="block rounded-xl bg-violet-600 px-4 py-4 text-lg font-semibold text-white">
         Approve in Phantom
       </a>
+      <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
+        Phantom must be on the wallet that paid the deposit. With any other wallet, Phantom only says it could not load
+        the request: switch wallets in Phantom and tap the button again.
+      </p>
       <p className="text-xs text-stone-500">
         Approve within a minute: the request expires quickly. If it does, tap the button again for a fresh one.
       </p>

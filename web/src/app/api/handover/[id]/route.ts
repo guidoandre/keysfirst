@@ -24,7 +24,7 @@ export function OPTIONS() {
 /** Solana Pay step 1: the wallet shows who is asking. */
 export function GET(req: Request) {
   const origin = new URL(req.url).origin;
-  return Response.json({ label: "Keysfirst key handover", icon: `${origin}/icon.svg` }, { headers: CORS });
+  return Response.json({ label: "Keysfirst key handover", icon: `${origin}/icon.png` }, { headers: CORS });
 }
 
 /** Solana Pay step 2: the wallet sends its address and gets the release transaction to sign. */
