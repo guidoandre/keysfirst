@@ -1,1 +1,157 @@
 @import "tailwindcss";
+
+/* ── Layer 1 · Primitives: raw brand values (no utilities; never used in components) ── */
+:root {
+  --k-ink: #16181d;
+  --k-ink-muted: #aeb4bc;
+  --k-graphite: #545b66;
+  --k-stone: #6b7079;
+  --k-line: #8a919b;
+  --k-rule: #d8dbdf;
+  --k-mist: #f4f5f2;
+  --k-paper: #ffffff;
+  --k-marker: #ffe14d;
+  --k-marker-soft: #fff6c2;
+  --k-green: #0b7a47;
+  --k-green-soft: #e3f4ea;
+  --k-blue: #1a56db;
+  --k-blue-soft: #e6eefc;
+  --k-red: #c0262d;
+  --k-red-soft: #fbe9ea;
+}
+
+/* ── Layer 2 · Semantic tokens → Tailwind utilities (bg-*, text-*, border-*, fill-*, …) ── */
+@theme inline {
+  --color-*: initial; /* only brand colours exist: no stray emerald-700 */
+  --color-white: var(--k-paper);
+  --color-canvas: var(--k-paper);          /* page */
+  --color-subtle: var(--k-mist);           /* quiet panels, bands */
+  --color-inverse: var(--k-ink);           /* dark bands, primary buttons */
+  --color-fg: var(--k-ink);                /* text */
+  --color-fg-muted: var(--k-graphite);     /* secondary text */
+  --color-fg-subtle: var(--k-stone);       /* captions, timestamps, waiting */
+  --color-fg-inverse: var(--k-paper);
+  --color-fg-inverse-muted: var(--k-ink-muted);
+  --color-rule: var(--k-rule);             /* dividers, card borders: decorative */
+  --color-field: var(--k-line);            /* input/control borders: 3.2:1 */
+  --color-accent: var(--k-marker);         /* the Highlighter */
+  --color-accent-soft: var(--k-marker-soft);
+  --color-released: var(--k-green);
+  --color-released-soft: var(--k-green-soft);
+  --color-returned: var(--k-blue);
+  --color-returned-soft: var(--k-blue-soft);
+  --color-danger: var(--k-red);
+  --color-danger-soft: var(--k-red-soft);
+
+  --font-sans: var(--font-barlow), system-ui, sans-serif;
+  --font-display: var(--font-barlow-condensed), "Arial Narrow", system-ui, sans-serif;
+}
+
+@theme {
+  /* Type scale (fluid between 375 px and 1280 px) */
+  --text-hero: clamp(2.75rem, 1.55rem + 4.4vw, 4.75rem);
+  --text-hero--line-height: 0.94;
+  --text-hero--letter-spacing: -0.015em;
+  --text-title: clamp(2.25rem, 1.75rem + 2vw, 3.5rem);
+  --text-title--line-height: 1;
+  --text-title--letter-spacing: -0.01em;
+  --text-section: clamp(1.75rem, 1.5rem + 1vw, 2.25rem);
+  --text-section--line-height: 1.1;
+  --text-card: clamp(1.25rem, 1.15rem + 0.4vw, 1.375rem);
+  --text-card--line-height: 1.2;
+  --text-amount: clamp(3rem, 2.45rem + 2.2vw, 4rem);
+  --text-amount--line-height: 1;
+  --text-lead: clamp(1.0625rem, 0.97rem + 0.45vw, 1.25rem);
+  --text-lead--line-height: 1.5;
+  --text-body: clamp(1rem, 0.97rem + 0.15vw, 1.0625rem);
+  --text-body--line-height: 1.55;
+  --text-label: 0.8125rem;
+  --text-label--line-height: 1;
+  --text-label--letter-spacing: 0.08em;
+  /* Tailwind's text-xs / text-sm / text-base stay for UI text */
+
+  /* Radii */
+  --radius-sm: 0.375rem;   /* 6px: chips, small plates */
+  --radius-md: 0.625rem;   /* 10px: buttons, inputs, logo plate */
+  --radius-lg: 0.875rem;   /* 14px: cards, timetables */
+  --radius-xl: 1.25rem;    /* 20px: sheets, dialogs */
+
+  /* Content widths → max-w-app / max-w-read / max-w-page */
+  --container-app: 40rem;    /* deal page, create flow, hand-off */
+  --container-read: 42rem;   /* guide, FAQ, long text */
+  --container-page: 72rem;   /* marketing pages, dashboard */
+
+  /* Elevation: borders do most of the work; shadows only for things that float */
+  --shadow-pop: 0 18px 40px -20px rgb(22 24 29 / 0.45);
+  --shadow-sheet: 0 -16px 48px -16px rgb(22 24 29 / 0.4);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-in: cubic-bezier(0.5, 0, 0.9, 0.4);
+  --animate-rise: rise 200ms var(--ease-out) both;
+  --animate-flip: flip 420ms var(--ease-out);
+  --animate-marker: marker 600ms var(--ease-out) 150ms both;
+  --animate-sheet: sheet 250ms var(--ease-out) both;
+  --animate-released: released 450ms var(--ease-out) both;
+  --animate-pulse-dot: pulse-dot 1.6s ease-in-out infinite;
+  --animate-spin: spin 0.9s linear infinite;
+
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+  @keyframes flip {
+    0% { transform: rotateX(0); } 45% { transform: rotateX(-90deg); }
+    55% { transform: rotateX(90deg); } 100% { transform: rotateX(0); }
+  }
+  @keyframes marker { from { background-size: 0% 100%; } }
+  @keyframes sheet { from { transform: translateY(100%); } }
+  @keyframes released { from { opacity: 0; transform: perspective(800px) rotateX(-70deg); } }
+  @keyframes pulse-dot { 50% { opacity: 0.35; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+}
+
+/* ── Layer 3 · Component tokens ── */
+:root {
+  --btn-h: 3rem;          /* 48px: default buttons (touch target ≥ 44px) */
+  --btn-h-lg: 3.5rem;     /* 56px: money actions (pay, release, create) */
+  --btn-h-sm: 2.5rem;     /* 40px: header only; hit area padded to 44px */
+  --field-h: 3rem;
+  --header-h: 4rem;
+  --ribbon-h: 2rem;
+  --qr-size: min(78vw, 56vh, 22rem);
+  /* focus: white gap, ink ring (≥3:1 on any surface), Highlighter halo */
+  --focus-ring: 0 0 0 2px var(--k-paper), 0 0 0 4px var(--k-ink), 0 0 0 7px var(--k-marker);
+}
+
+@layer base {
+  html { color-scheme: light; -webkit-text-size-adjust: 100%; }
+  body { background: var(--color-canvas); color: var(--color-fg); font-family: var(--font-sans); }
+  h1, h2, h3, h4 { font-family: var(--font-display); text-wrap: balance; }
+  p, li { text-wrap: pretty; }
+  ::selection { background: var(--k-marker); color: var(--k-ink); }
+  :focus-visible { outline: 2px solid transparent; outline-offset: 2px; box-shadow: var(--focus-ring); }
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 1ms !important; animation-iteration-count: 1 !important;
+      transition-duration: 1ms !important; scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* The Highlighter stroke behind a word: <span class="marker">keys</span> (+ animate-marker to draw it in once) */
+@utility marker {
+  background-image: linear-gradient(transparent 56%, var(--k-marker) 56%, var(--k-marker) 94%, transparent 94%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  padding-inline: 0.06em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* Small caps label: <p class="label">Your next step</p> */
+@utility label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-label);
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
