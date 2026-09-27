@@ -168,7 +168,7 @@ Rules: sentence case for headings and buttons; uppercase only for small labels; 
 
 ## 5. Imagery
 
-- **Pictograms, not pictures.** A 48-unit grid, 90° and 45° lines, round heads, solid ink shapes and 4-unit strokes, plus one Highlighter accent. In the tradition of Otl Aicher's pictograms for Munich 1972 (inspiration, not copies).
+- **Pictograms, not pictures.** A 56-unit grid, 90° and 45° lines, round heads, solid ink shapes and 4-unit outlines (3-unit interior detail), plus one Highlighter accent. In the tradition of Otl Aicher's pictograms for Munich 1972 (inspiration, not copies).
 - **UI icons:** a 24 px grid, 2 px stroke, square caps and mitred joins, ink or currentColor. Always paired with a text label or an `aria-label`.
 - **Guide illustrations:** simplified phone and laptop screens drawn in the same line language, with labels. Phantom is named in words; never draw its logo or copy its screens pixel for pixel.
 - **Timetables as graphics:** rules and timelines are drawn as rows (time | what happens | outcome), with the "now" row highlighted.

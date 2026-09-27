@@ -248,14 +248,14 @@ All live in `web/src/components/` (primitives in `components/ui/`). Server compo
 | Component | Spec |
 |---|---|
 | `Logo` | `variant: "lockup" | "mark"`, `tone: "default" | "inverse"`; inline SVG from the brand construction; lockup has `aria-label="Keysfirst"` and links home |
-| `Icon` | Inline SVG set on a 24 px grid, 2 px stroke, square caps: `lock, key, check, clock, hourglass, arrow-right, arrow-up-right, return, copy, share, wallet, menu, close, phone, qr, alert, info, chevron-down, door, euro, refresh, external`. `aria-hidden` unless given a `label` |
-| `Pictogram` | 48-unit grid, solid ink + one Highlighter accent: `pay-into-lock, scan-at-door, keys-change-hands, back-to-you, tenant, landlord, fake-listing, deadline, phone-wallet, laptop-wallet, share-link`. Decorative (`aria-hidden`) next to a text heading |
+| `Icon` | Inline SVG set on a 24 px grid, 2 px stroke, square caps: `lock, key, check, clock, hourglass, arrow-right, external, return, copy, share, wallet, menu, close, phone, qr, alert, info, chevron-down, door, refresh, spinner, logout`. `aria-hidden` unless given a `label` |
+| `Pictogram` | 56-unit grid, solid ink + one Highlighter accent: `pay-into-lock, scan-at-door, keys-change-hands, back-to-you, tenant, landlord, fake-listing, deadline, phone-wallet, laptop-wallet, share-link`. Decorative (`aria-hidden`) next to a text heading |
 
 ### Primitives (`components/ui/`)
 
 | Component | Variants and states |
 |---|---|
-| `Button` / `ButtonLink` | `variant: primary (bg-inverse text-fg-inverse) · secondary (bg-canvas border-2 border-fg) · quiet (text link with Highlighter underline) · danger (border-2 border-danger text-danger)`; `size: sm · md (48) · lg (56)`; `loading`, `disabled` + `reason`; `fullWidth` on phones for primary actions; `ButtonLink` wraps `next/link` or an external `<a>` (adds `arrow-up-right` + `rel="noreferrer"` for external) |
+| `Button` / `ButtonLink` | `variant: primary (bg-inverse text-fg-inverse) · secondary (bg-canvas border-2 border-fg) · quiet (text link with Highlighter underline) · danger (border-2 border-danger text-danger)`; `size: sm · md (48) · lg (56)`; `loading`, `disabled` + `reason`; `fullWidth` on phones for primary actions; `ButtonLink` wraps `next/link` or an external `<a>` (adds the `external` icon + `rel="noreferrer"` for external) |
 | `Field` | Label above (never placeholder-only), optional hint, error slot; wraps `input`, `select`, `datetime-local`; `h-(--field-h) border-[1.5px] border-field rounded-md`; character counter for the room title |
 | `Segmented` | Radio group styled as buttons (`role="radiogroup"`), used for the handover window and dashboard filter; arrow-key navigation from native radios |
 | `StatusChip` | See §6; `size: sm · md`; label text always present (colour is never the only signal) |
