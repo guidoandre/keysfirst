@@ -2200,7 +2200,7 @@ git commit -m "feat(program): cancel_deal lets the landlord withdraw an unfunded
 **Interfaces:**
 - Consumes: all helpers from Tasks 3–7. Proves spec §6 invariants 1–7 across every ending.
 
-- [ ] **Step 1: Write `tests/invariants.rs`**
+- [x] **Step 1: Write `tests/invariants.rs`**
 
 ```rust
 //! Properties that must hold for every deal, whatever path it takes.
@@ -2369,16 +2369,30 @@ fn works_with_the_classic_token_program_used_by_eurc() {
 }
 ```
 
-- [ ] **Step 2: Run**
+- [x] **Step 2: Run**
 
 Run: `anchor build && cargo test`
 Expected: invariants 6 passed; total across suites = 7 + 8 + 9 + 8 + 4 + 6 = **42 passed, 0 failed**. These tests exercise code that already exists; if one fails, it is a real bug — use superpowers:systematic-debugging, fix the program, and keep the test.
 
-- [ ] **Step 3: Record the count**
+- [x] **Step 3: Record the count**
 
 Save the exact `cargo test` summary lines; Task 16 puts the total in the README.
 
-- [ ] **Step 4: Commit**
+Recorded 2026-09-27 (`anchor build && cargo test`, litesvm 0.16, 0 warnings):
+
+```
+tests/cancel_deal.rs       test result: ok. 4 passed; 0 failed
+tests/confirm_handover.rs  test result: ok. 9 passed; 0 failed
+tests/create_deal.rs       test result: ok. 7 passed; 0 failed
+tests/fund.rs              test result: ok. 8 passed; 0 failed
+tests/invariants.rs        test result: ok. 6 passed; 0 failed
+tests/refund.rs            test result: ok. 8 passed; 0 failed
+Total: 42 passed, 0 failed
+```
+
+The Task 3 harness compiled unchanged against litesvm 0.16 (no `Pubkey`/`Address` or `Clock` sysvar changes were needed).
+
+- [x] **Step 4: Commit**
 
 ```bash
 git add programs
