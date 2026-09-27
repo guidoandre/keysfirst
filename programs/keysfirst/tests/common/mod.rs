@@ -299,3 +299,23 @@ pub fn funded_deal(env: &mut Env, p: &DealParams) -> Pubkey {
     assert_ok(&env.run(ix, Who::Tenant));
     deal
 }
+
+pub fn ix_confirm(env: &Env, deal: Pubkey, signer: Pubkey) -> Instruction {
+    let landlord = env.landlord.pubkey();
+    Instruction::new_with_bytes(
+        keysfirst::id(),
+        &keysfirst::instruction::ConfirmHandover {}.data(),
+        keysfirst::accounts::ConfirmHandover {
+            tenant: signer,
+            deal,
+            landlord,
+            mint: env.mint,
+            vault: ata(env, &deal),
+            landlord_token: ata(env, &landlord),
+            token_program: env.token_program,
+            associated_token_program: associated_token::ID,
+            system_program: system_program::ID,
+        }
+        .to_account_metas(None),
+    )
+}

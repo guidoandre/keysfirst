@@ -32,4 +32,9 @@ pub mod keysfirst {
     pub fn fund(ctx: Context<Fund>) -> Result<()> {
         instructions::fund::handle_fund(ctx)
     }
+
+    /// Tenant, holding the keys, releases the deposit to the landlord.
+    pub fn confirm_handover(ctx: Context<ConfirmHandover>) -> Result<()> {
+        instructions::confirm_handover::handle_confirm_handover(ctx)
+    }
 }

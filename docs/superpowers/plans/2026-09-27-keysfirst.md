@@ -1394,7 +1394,7 @@ git commit -m "feat(program): fund locks the exact deposit in the deal vault" -m
 - Consumes: Task 3–4 items; `HANDOVER_OPENS_BEFORE_MOVE_IN`.
 - Produces: `instructions::payout::pay_out_and_close_vault(deal, vault, mint, recipient_token, rent_receiver: AccountInfo, token_program) -> Result<u64>` (used by Tasks 6–7). Instruction `confirm_handover()`; accounts `tenant (signer, pays), deal, landlord, mint, vault, landlord_token, token_program, associated_token_program, system_program`. Test helper `ix_confirm(env, deal, signer)`.
 
-- [ ] **Step 1: Append to `tests/common/mod.rs`**
+- [x] **Step 1: Append to `tests/common/mod.rs`**
 
 ```rust
 pub fn ix_confirm(env: &Env, deal: Pubkey, signer: Pubkey) -> Instruction {
@@ -1418,7 +1418,7 @@ pub fn ix_confirm(env: &Env, deal: Pubkey, signer: Pubkey) -> Instruction {
 }
 ```
 
-- [ ] **Step 2: Write the failing tests `tests/confirm_handover.rs`**
+- [x] **Step 2: Write the failing tests `tests/confirm_handover.rs`**
 
 ```rust
 mod common;
@@ -1544,12 +1544,12 @@ fn recreates_the_landlord_token_account_if_it_was_closed() {
 }
 ```
 
-- [ ] **Step 3: Run to see it fail**
+- [x] **Step 3: Run to see it fail**
 
 Run: `cargo test --test confirm_handover`
 Expected: compile error `cannot find ... ConfirmHandover`.
 
-- [ ] **Step 4: Write `programs/keysfirst/src/instructions/payout.rs`**
+- [x] **Step 4: Write `programs/keysfirst/src/instructions/payout.rs`**
 
 ```rust
 use anchor_lang::prelude::*;
@@ -1606,7 +1606,7 @@ pub fn pay_out_and_close_vault<'info>(
 }
 ```
 
-- [ ] **Step 5: Write `programs/keysfirst/src/instructions/confirm_handover.rs`**
+- [x] **Step 5: Write `programs/keysfirst/src/instructions/confirm_handover.rs`**
 
 ```rust
 use anchor_lang::prelude::*;
@@ -1689,7 +1689,7 @@ pub fn handle_confirm_handover(ctx: Context<ConfirmHandover>) -> Result<()> {
 }
 ```
 
-- [ ] **Step 6: Register**
+- [x] **Step 6: Register**
 
 `instructions/mod.rs`: add `pub mod confirm_handover;`, `pub mod payout;`, `pub use confirm_handover::*;` (do **not** glob-export `payout`).
 
@@ -1702,12 +1702,12 @@ pub fn handle_confirm_handover(ctx: Context<ConfirmHandover>) -> Result<()> {
     }
 ```
 
-- [ ] **Step 7: Build and run all tests**
+- [x] **Step 7: Build and run all tests**
 
 Run: `anchor build && cargo test`
 Expected: create_deal 7, fund 8, confirm_handover 9 passed; 0 failed.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add programs
