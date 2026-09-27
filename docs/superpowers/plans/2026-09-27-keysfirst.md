@@ -1150,7 +1150,7 @@ git commit -m "feat(program): deal account and create_deal with LiteSVM test har
 - Consumes: `Deal`, `DealStatus`, `KeysfirstError`, `DEAL_SEED`, `MAX_LOCK_DURATION` (Task 3).
 - Produces: instruction `fund()` (no arguments; amount comes from the deal); accounts `tenant (signer), deal, mint, tenant_token, vault, token_program`. Test helpers `ix_fund_custom(env, deal, funder, mint, tenant_token)`, `ix_fund(env, deal, funder)`, `funded_deal(env, &DealParams) -> Pubkey`.
 
-- [ ] **Step 1: Append fund helpers to `programs/keysfirst/tests/common/mod.rs`**
+- [x] **Step 1: Append fund helpers to `programs/keysfirst/tests/common/mod.rs`**
 
 ```rust
 pub fn ix_fund_custom(env: &Env, deal: Pubkey, funder: Pubkey, mint: Pubkey, tenant_token: Pubkey) -> Instruction {
@@ -1182,7 +1182,7 @@ pub fn funded_deal(env: &mut Env, p: &DealParams) -> Pubkey {
 }
 ```
 
-- [ ] **Step 2: Write the failing tests `programs/keysfirst/tests/fund.rs`**
+- [x] **Step 2: Write the failing tests `programs/keysfirst/tests/fund.rs`**
 
 ```rust
 mod common;
@@ -1277,12 +1277,12 @@ fn fails_without_enough_money_and_leaves_the_deal_open() {
 }
 ```
 
-- [ ] **Step 3: Run to see it fail**
+- [x] **Step 3: Run to see it fail**
 
 Run: `cargo test --test fund`
 Expected: compile error `cannot find struct ... Fund in module keysfirst::instruction`.
 
-- [ ] **Step 4: Write `programs/keysfirst/src/instructions/fund.rs`**
+- [x] **Step 4: Write `programs/keysfirst/src/instructions/fund.rs`**
 
 ```rust
 use anchor_lang::prelude::*;
@@ -1356,7 +1356,7 @@ pub fn handle_fund(ctx: Context<Fund>) -> Result<()> {
 }
 ```
 
-- [ ] **Step 5: Register the instruction**
+- [x] **Step 5: Register the instruction**
 
 In `programs/keysfirst/src/instructions/mod.rs` add `pub mod fund;` and `pub use fund::*;` (keep modules alphabetical).
 
@@ -1369,12 +1369,12 @@ In `programs/keysfirst/src/lib.rs`, inside `pub mod keysfirst`, after `create_de
     }
 ```
 
-- [ ] **Step 6: Build and run all tests**
+- [x] **Step 6: Build and run all tests**
 
 Run: `anchor build && cargo test`
 Expected: create_deal 7 passed, fund 8 passed, 0 failed.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add programs

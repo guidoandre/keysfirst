@@ -27,4 +27,9 @@ pub mod keysfirst {
     ) -> Result<()> {
         instructions::create_deal::handle_create_deal(ctx, deal_id, amount, move_in, deadline, title)
     }
+
+    /// Tenant locks the exact deposit in the vault.
+    pub fn fund(ctx: Context<Fund>) -> Result<()> {
+        instructions::fund::handle_fund(ctx)
+    }
 }

@@ -271,3 +271,31 @@ pub fn create_deal(env: &mut Env, p: &DealParams) -> Pubkey {
     assert_ok(&env.run(ix, Who::Landlord));
     deal_pda(&env.landlord.pubkey(), p.deal_id)
 }
+
+pub fn ix_fund_custom(env: &Env, deal: Pubkey, funder: Pubkey, mint: Pubkey, tenant_token: Pubkey) -> Instruction {
+    Instruction::new_with_bytes(
+        keysfirst::id(),
+        &keysfirst::instruction::Fund {}.data(),
+        keysfirst::accounts::Fund {
+            tenant: funder,
+            deal,
+            mint,
+            tenant_token,
+            vault: ata(env, &deal),
+            token_program: env.token_program,
+        }
+        .to_account_metas(None),
+    )
+}
+
+pub fn ix_fund(env: &Env, deal: Pubkey, funder: Pubkey) -> Instruction {
+    ix_fund_custom(env, deal, funder, env.mint, ata(env, &funder))
+}
+
+/// Creates the deal and has the tenant fund it.
+pub fn funded_deal(env: &mut Env, p: &DealParams) -> Pubkey {
+    let deal = create_deal(env, p);
+    let ix = ix_fund(env, deal, env.tenant.pubkey());
+    assert_ok(&env.run(ix, Who::Tenant));
+    deal
+}
