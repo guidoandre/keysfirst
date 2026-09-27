@@ -62,4 +62,14 @@ Two bugs found and fixed during this run:
    (no failed transaction on-chain). Fixed in `7fae92b`: buttons re-check the live status first, and the raw error reads
    "This deal has already been settled".
 
-Still open: the negative check (scanning with a non-tenant wallet must be refused) and the Phantom "unsafe" warning.
+Negative check (same evening) — PASS: a second deal was funded by the tenant, then the QR was scanned with a different
+Phantom account. Phantom showed only its own generic error ("could not load this transaction request… QR expired, invalid or
+server unavailable"), offered no approve button, and the landlord's page stayed on "Deposit locked". Switching back to the
+tenant account and approving released the deposit.
+
+Observations for the demo:
+
+- Phantom still shows the "unsafe" warning when approving the release (domain review submitted 2026-09-27, pending).
+- Phantom does not display the endpoint's refusal message, only its generic error, so the hand-off page should tell the tenant
+  which wallet to use.
+- Phantom draws the request icon as a black square: it does not render `icon.svg`; a PNG icon should fix it.

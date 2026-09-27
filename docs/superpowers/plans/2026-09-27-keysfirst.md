@@ -4214,7 +4214,7 @@ git commit -m "feat(web): Solana Pay handover QR with live release confirmation 
 git push
 ```
 
-- [ ] **Step 7: End-to-end phone test on `APP_URL` (user)**
+- [x] **Step 7: End-to-end phone test on `APP_URL` (user)**
 
 Setup: the **Tenant** wallet must exist in both the Phantom extension (laptop) and Phantom mobile (import the same recovery phrase on the phone, or create it on the phone and import into the extension — do this yourself in Phantom, never paste it anywhere else). Phone in Testnet Mode → Devnet.
 1. Laptop, Phantom "Landlord": create a deal (Move-in: Now, 5 minutes).
