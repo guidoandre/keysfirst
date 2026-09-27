@@ -4035,7 +4035,7 @@ Then repeat steps 2–4 of the manual check on `APP_URL` (Vercel) to confirm the
 - Consumes: `getProgram`, `confirmHandoverIx`, `handoverProblem`, `statusOf`, `formatEur`.
 - Produces: Solana Pay transaction-request endpoint `GET/POST /api/handover/<deal address>`; QR value `<origin>/deal/<deal address>/handover` (https, camera-friendly) whose page links to `solana:<origin>/api/handover/<deal address>`; `<HandoverQR dealId origin />`; the landlord's green "Released" banner.
 
-- [ ] **Step 1: Write `web/src/app/api/handover/[id]/route.ts`**
+- [x] **Step 1: Write `web/src/app/api/handover/[id]/route.ts`**
 
 ```ts
 import { Connection, PublicKey, Transaction } from "@solana/web3.js";
@@ -4107,7 +4107,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 }
 ```
 
-- [ ] **Step 2: Verify the endpoint locally**
+- [x] **Step 2: Verify the endpoint locally**
 
 Run `npm run dev`. Create and fund a deal as in Task 12 (5-minute window, move-in now). Then:
 
@@ -4120,7 +4120,9 @@ Expected: `transaction` (base64) and `message` starting `Release €600.00 to th
 Same POST with the **landlord** address:
 Expected: HTTP 400 with message `Only the tenant who paid the deposit can confirm the handover...` (PowerShell shows it as an error).
 
-- [ ] **Step 3: Write `web/src/components/HandoverQR.tsx`**
+Done 2026-09-27 with a throwaway script instead of Phantom (throwaway landlord and tenant wallets funded by the faucet); it also signed the returned transaction and confirmed the release on devnet. Results in `docs/spike.md`.
+
+- [x] **Step 3: Write `web/src/components/HandoverQR.tsx`**
 
 ```tsx
 "use client";
@@ -4148,7 +4150,7 @@ export function HandoverQR({ dealId, origin }: { dealId: string; origin: string 
 }
 ```
 
-- [ ] **Step 3b: Write the tenant's hand-off page `web/src/app/deal/[id]/handover/page.tsx`**
+- [x] **Step 3b: Write the tenant's hand-off page `web/src/app/deal/[id]/handover/page.tsx`**
 
 The QR opens this page in the phone's browser; one tap hands the Solana Pay request to Phantom (proven in the spike).
 
@@ -4175,7 +4177,7 @@ export default async function HandoverPage({ params }: { params: Promise<{ id: s
 }
 ```
 
-- [ ] **Step 4: Wire it into `DealClient.tsx`**
+- [x] **Step 4: Wire it into `DealClient.tsx`**
 
 1. Add `import { HandoverQR } from "@/components/HandoverQR";`.
 2. At the top of the returned `<div className="space-y-5">`, before the status card `<section>`, insert the landlord's release banner:
@@ -4195,12 +4197,14 @@ export default async function HandoverPage({ params }: { params: Promise<{ id: s
       {actions.includes("showQr") && <HandoverQR dealId={id} origin={origin} />}
 ```
 
-- [ ] **Step 5: Remove the spike**
+- [x] **Step 5: Remove the spike**
 
 Delete `web/src/app/api/spike/` and `web/src/app/spike/`.
 Run: `npm test`, `npm run lint`, `npm run build` — all succeed.
 
-- [ ] **Step 6: Commit and deploy**
+If `next build` then fails with `Cannot find module '../../../src/app/spike/...'` in `.next/dev/types/validator.ts`, those are stale types written by `next dev`: delete `web/.next/dev` and build again.
+
+- [x] **Step 6: Commit and deploy**
 
 ```bash
 git add -A web

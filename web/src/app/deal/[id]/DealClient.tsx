@@ -4,6 +4,7 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { DealActions } from "@/components/DealActions";
+import { HandoverQR } from "@/components/HandoverQR";
 import { ShareLink } from "@/components/ShareLink";
 import { Timeline } from "@/components/Timeline";
 import { explorerAddress, formatDateTime, formatEur } from "@/lib/format";
@@ -78,6 +79,12 @@ export function DealClient({ id, origin }: { id: string; origin: string }) {
 
   return (
     <div className="space-y-5">
+      {status === "released" && role === "landlord" && (
+        <div className="rounded-2xl bg-emerald-600 p-6 text-center text-white">
+          <p className="text-3xl font-bold">Released ✓</p>
+          <p className="mt-1">{amount} is in your wallet. Hand over the keys.</p>
+        </div>
+      )}
       <section className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
         <p className="text-sm text-stone-500">{deal.title}</p>
         <p className="mt-1 text-4xl font-semibold">{amount}</p>
@@ -96,6 +103,7 @@ export function DealClient({ id, origin }: { id: string; origin: string }) {
         </dl>
         <p className="mt-4 text-sm leading-relaxed text-stone-700">{explain(status, role, times, now, amount)}</p>
       </section>
+      {actions.includes("showQr") && <HandoverQR dealId={id} origin={origin} />}
       <DealActions address={address} deal={deal} status={status} role={role} actions={actions} onDone={refresh} />
       {status === "open" && role === "landlord" && (
         <ShareLink url={`${origin}/deal/${id}`} text={`Pay the ${amount} deposit for "${deal.title}" safely with Keysfirst:`} />

@@ -24,3 +24,20 @@ this design (option B below) for the real handover.
 - A. Phantom's home-screen scanner, if it accepts `solana:` codes (to test).
 - B. QR encodes an `https://keysfirst.vercel.app/...` page (the iPhone Camera opens it in Safari) with a big "Approve in Phantom" button that opens the `solana:` link — one extra tap, works with any camera.
 - C. In-app "I have the keys" button (already planned as the fallback).
+
+## Real handover endpoint, scripted check (Task 13 Step 2) — PASS
+
+2026-09-27, local dev server against devnet, with throwaway landlord and tenant wallets (funded by the faucet wallet).
+The script created and funded a €600 deal, then called `/api/handover/<deal>` exactly as a Solana Pay wallet does:
+
+- `GET` → `{"label":"Keysfirst key handover", ...}`
+- `POST` as the landlord → 400 "Only the tenant who paid the deposit can confirm the handover. Switch Phantom to that wallet."
+- `POST` with an invalid address → 400 "Invalid request."
+- `POST` as the tenant → 200, a transaction plus the message "Release €600.00 to the landlord. Only approve if you are holding the keys."
+- The tenant signed that transaction unchanged → deal `released`, landlord holds 600 tEUR, vault closed.
+- `POST` again → 400 "There is no locked deposit to release for this deal."
+
+Deal: https://explorer.solana.com/address/8cTvC1gnouTSxswytgt1as8FXgLmp1yJU6bfVopj8xTy?cluster=devnet
+Release transaction: https://explorer.solana.com/tx/2htuMct8EphQG9qRW6sVCLriczPM78kBFKDxV2KRv3NMcpsq7E5Cd6aJfULA5L93wZkqJkcVxjb9BYAjKFmFMgeg?cluster=devnet
+
+Still to do: the phone test with Phantom mobile and the iPhone Camera (Task 13 Step 7).
