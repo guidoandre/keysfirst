@@ -37,4 +37,9 @@ pub mod keysfirst {
     pub fn confirm_handover(ctx: Context<ConfirmHandover>) -> Result<()> {
         instructions::confirm_handover::handle_confirm_handover(ctx)
     }
+
+    /// Deposit goes back to the tenant: the landlord at any time, anyone after the deadline.
+    pub fn refund(ctx: Context<Refund>) -> Result<()> {
+        instructions::refund::handle_refund(ctx)
+    }
 }

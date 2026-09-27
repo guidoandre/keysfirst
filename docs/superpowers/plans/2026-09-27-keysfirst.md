@@ -1727,7 +1727,7 @@ git commit -m "feat(program): confirm_handover releases the deposit on the tenan
 - Consumes: `pay_out_and_close_vault` (Task 5).
 - Produces: instruction `refund()`; accounts `caller (signer, pays), deal, tenant, landlord, mint, vault, tenant_token, token_program, associated_token_program, system_program`. Rule: Funded only; the landlord at any time; anyone strictly after the deadline; money always goes to the tenant's own associated token account. Test helpers `ix_refund_custom(env, deal, caller, tenant)`, `ix_refund(env, deal, caller)`.
 
-- [ ] **Step 1: Append to `tests/common/mod.rs`**
+- [x] **Step 1: Append to `tests/common/mod.rs`**
 
 ```rust
 pub fn ix_refund_custom(env: &Env, deal: Pubkey, caller: Pubkey, tenant: Pubkey) -> Instruction {
@@ -1755,7 +1755,7 @@ pub fn ix_refund(env: &Env, deal: Pubkey, caller: Pubkey) -> Instruction {
 }
 ```
 
-- [ ] **Step 2: Write the failing tests `tests/refund.rs`**
+- [x] **Step 2: Write the failing tests `tests/refund.rs`**
 
 ```rust
 mod common;
@@ -1877,12 +1877,12 @@ fn cannot_refund_an_unfunded_deal() {
 }
 ```
 
-- [ ] **Step 3: Run to see it fail**
+- [x] **Step 3: Run to see it fail**
 
 Run: `cargo test --test refund`
 Expected: compile error `cannot find ... Refund`.
 
-- [ ] **Step 4: Write `programs/keysfirst/src/instructions/refund.rs`**
+- [x] **Step 4: Write `programs/keysfirst/src/instructions/refund.rs`**
 
 ```rust
 use anchor_lang::prelude::*;
@@ -1965,7 +1965,7 @@ pub fn handle_refund(ctx: Context<Refund>) -> Result<()> {
 }
 ```
 
-- [ ] **Step 5: Register**
+- [x] **Step 5: Register**
 
 `instructions/mod.rs`: add `pub mod refund;` and `pub use refund::*;`.
 `lib.rs`, inside `pub mod keysfirst`, add:
@@ -1977,12 +1977,12 @@ pub fn handle_refund(ctx: Context<Refund>) -> Result<()> {
     }
 ```
 
-- [ ] **Step 6: Build and run all tests**
+- [x] **Step 6: Build and run all tests**
 
 Run: `anchor build && cargo test`
 Expected: refund 8 passed; all earlier suites still pass.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add programs
