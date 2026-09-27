@@ -1,0 +1,24 @@
+# Rust / Anchor
+target/
+test-ledger/
+.anchor/
+**/*-keypair.json
+
+# Secrets (never commit)
+.keys/
+.env
+.env.*
+!.env.example
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+.vercel/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
