@@ -8,7 +8,8 @@ import { MINT, RPC_URL, TOKEN_PROGRAM_ID } from "@/lib/config";
 import { DECIMALS } from "@/lib/format";
 
 const TEST_EUR = 1_000n * 10n ** BigInt(DECIMALS);
-const SOL_TOP_UP = 0.05 * LAMPORTS_PER_SOL;
+// Small on purpose: the endpoint is open, so every top-up is SOL anyone could drain with fresh wallets.
+const SOL_TOP_UP = 0.02 * LAMPORTS_PER_SOL;
 const SOL_MINIMUM = 0.02 * LAMPORTS_PER_SOL;
 
 export const dynamic = "force-dynamic";

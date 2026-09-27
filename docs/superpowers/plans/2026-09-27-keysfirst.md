@@ -3774,7 +3774,7 @@ git commit -m "feat(web): create-deal page and live deal page with status timeli
 
 **Interfaces:**
 - Consumes: `availableActions` (rules), instruction builders, `signAndSend`, `friendlyError`, `refresh` from `DealClient`.
-- Produces: `POST /api/faucet {account}` → mints 1,000 tEUR and tops up 0.05 SOL if the wallet has < 0.02 SOL; `<DealActions address deal status role actions onDone />`; `<TestFundsButton />`. The in-app "I have the keys" button is the fallback for the Solana Pay QR (same `confirm_handover` instruction).
+- Produces: `POST /api/faucet {account}` → mints 1,000 tEUR and tops up 0.02 SOL if the wallet has < 0.02 SOL (lowered from 0.05 on 2026-09-27 by user decision: the open endpoint could otherwise be drained in ~60 calls); `<DealActions address deal status role actions onDone />`; `<TestFundsButton />`. The in-app "I have the keys" button is the fallback for the Solana Pay QR (same `confirm_handover` instruction).
 
 - [x] **Step 1: Write `web/src/app/api/faucet/route.ts`**
 
@@ -3789,7 +3789,8 @@ import { MINT, RPC_URL, TOKEN_PROGRAM_ID } from "@/lib/config";
 import { DECIMALS } from "@/lib/format";
 
 const TEST_EUR = 1_000n * 10n ** BigInt(DECIMALS);
-const SOL_TOP_UP = 0.05 * LAMPORTS_PER_SOL;
+// Small on purpose: the endpoint is open, so every top-up is SOL anyone could drain with fresh wallets.
+const SOL_TOP_UP = 0.02 * LAMPORTS_PER_SOL;
 const SOL_MINIMUM = 0.02 * LAMPORTS_PER_SOL;
 
 export const dynamic = "force-dynamic";
