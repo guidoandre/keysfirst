@@ -4235,7 +4235,7 @@ Record the Explorer link of step 5 in `docs/spike.md` under "Real handover (Task
 **Interfaces:**
 - Produces: `/` explains the product in plain words with a devnet setup guide and a link to `/new`; WhatsApp/Telegram previews show a Keysfirst image and, for deal links, "€600.00 deposit · Room in Vallendar".
 
-- [ ] **Step 1: Replace `web/src/app/page.tsx`**
+- [x] **Step 1: Replace `web/src/app/page.tsx`**
 
 ```tsx
 import Link from "next/link";
@@ -4315,7 +4315,7 @@ export default function Home() {
 }
 ```
 
-- [ ] **Step 2: Write `web/src/app/opengraph-image.tsx`**
+- [x] **Step 2: Write `web/src/app/opengraph-image.tsx`**
 
 ```tsx
 import { ImageResponse } from "next/og";
@@ -4345,7 +4345,7 @@ export default function OpenGraphImage() {
 }
 ```
 
-- [ ] **Step 3: Add `generateMetadata` to `web/src/app/deal/[id]/page.tsx`**
+- [x] **Step 3: Add `generateMetadata` to `web/src/app/deal/[id]/page.tsx`**
 
 Replace the file with:
 
@@ -4369,7 +4369,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const deal = await getProgram(new Connection(RPC_URL, "confirmed")).account.deal.fetchNullable(new PublicKey(id));
     if (!deal) return { title: "Keysfirst deal" };
     const title = `${formatEur(deal.amount.toString())} deposit · ${deal.title}`;
-    return { title, description: DESCRIPTION, openGraph: { title, description: DESCRIPTION } };
+    // Next merges metadata shallowly: setting openGraph here drops the root's image unless we repeat it.
+    const images = [{ url: "/opengraph-image", width: 1200, height: 630 }];
+    return { title, description: DESCRIPTION, openGraph: { title, description: DESCRIPTION, images } };
   } catch {
     return { title: "Keysfirst deal" };
   }
@@ -4381,14 +4383,17 @@ export default async function DealPage({ params }: Props) {
 }
 ```
 
-- [ ] **Step 4: Verify**
+- [x] **Step 4: Verify**
 
 Run: `npm test`, `npm run lint`, `npm run build`. Then `npm run dev`:
 - `/` renders all sections on a 375 px wide window (browser dev tools, mobile view) without horizontal scrolling.
 - `/opengraph-image` returns a green PNG.
 - A deal page's HTML `<head>` contains `og:title` = `€600.00 deposit · <title>`.
+- The same `<head>` also contains `og:image` (`/opengraph-image`).
 
-- [ ] **Step 5: Commit and deploy**
+Done 2026-09-27. The first version of Step 3 had no `images` and deal links came out without `og:image`: Next merges metadata shallowly, so a page's own `openGraph` replaces the root's, including the image from `opengraph-image.tsx`. Step 3 above now repeats the image.
+
+- [x] **Step 5: Commit and deploy**
 
 ```bash
 git add web
