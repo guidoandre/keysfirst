@@ -42,6 +42,7 @@ export function DealClient({ id, origin }: { id: string; origin: string }) {
   }, [id]);
   const [deal, setDeal] = useState<DealAccount | null | undefined>(undefined);
   const [signatures, setSignatures] = useState<string[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const now = useNow();
 
   const refresh = useCallback(async () => {
@@ -57,7 +58,10 @@ export function DealClient({ id, origin }: { id: string; origin: string }) {
   // Poll so the landlord's screen flips to "Released" seconds after the tenant signs.
   useEffect(() => {
     const load = () => {
-      refresh().catch(() => undefined);
+      refresh().then(
+        () => setLoadError(null),
+        (e: unknown) => setLoadError(e instanceof Error ? e.message : String(e)),
+      );
     };
     const first = setTimeout(load, 0);
     const timer = setInterval(load, 2_000);
@@ -68,7 +72,18 @@ export function DealClient({ id, origin }: { id: string; origin: string }) {
   }, [refresh]);
 
   if (!address) return <Notice>This is not a valid deal link.</Notice>;
-  if (deal === undefined || now === 0) return <Notice>Loading the deal…</Notice>;
+  if (deal === undefined || now === 0) {
+    return (
+      <Notice>
+        Loading the deal…
+        {loadError && (
+          <span className="mt-3 block break-words text-xs text-red-700">
+            Can&apos;t reach Solana devnet yet, retrying. Details: {loadError}
+          </span>
+        )}
+      </Notice>
+    );
+  }
   if (deal === null) return <Notice>Deal not found. If it was just created, wait a few seconds.</Notice>;
 
   const status = statusOf(deal.status);
