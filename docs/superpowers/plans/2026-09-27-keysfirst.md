@@ -2617,11 +2617,13 @@ NEXT_PUBLIC_MINT=
 FAUCET_SECRET_KEY=
 ```
 
-- [ ] **Step 11: Configure Vercel (user)**
+- [x] **Step 11: Configure Vercel (user)**
 
 1. Optional but recommended: create a free Helius account, copy the **devnet** RPC URL.
 2. Vercel → Project → Settings → Environment Variables (Production + Preview): `NEXT_PUBLIC_RPC_URL`, `NEXT_PUBLIC_MINT`, `FAUCET_SECRET_KEY` — copy the last two from `web/.env.local` yourself; do not paste them into chat.
 3. Redeploy. Check `APP_URL/test-eur.json` returns the JSON.
+
+Done 2026-09-27. In Vercel's current form, `NEXT_PUBLIC_*` variables must be type **Config** (Vercel warns if they are Secret) and `FAUCET_SECRET_KEY` type **Secret** (listed once per environment). Checked on production: the new pages render, `/api/faucet` minted Test EUR, `/api/handover/<deal>` answers, and deal links have `og:image`.
 
 - [x] **Step 12: Commit**
 
