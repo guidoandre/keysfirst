@@ -1,0 +1,1125 @@
+{
+  "address": "BeRg2HQAhUELdoedXaz8HnKnTt9TeQeD7n94iQxFLcbP",
+  "metadata": {
+    "name": "keysfirst",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Rental deposit escrow: the money moves only when the keys do"
+  },
+  "docs": [
+    "Keysfirst: a rental deposit that moves only when the keys do."
+  ],
+  "instructions": [
+    {
+      "name": "cancel_deal",
+      "docs": [
+        "Landlord withdraws a deal nobody has paid into yet."
+      ],
+      "discriminator": [
+        158,
+        86,
+        193,
+        45,
+        168,
+        111,
+        48,
+        29
+      ],
+      "accounts": [
+        {
+          "name": "landlord",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "deal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal.landlord",
+                "account": "Deal"
+              },
+              {
+                "kind": "account",
+                "path": "deal.deal_id",
+                "account": "Deal"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "deal"
+              },
+              {
+                "kind": "account",
+                "path": "token_program"
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "landlord_token",
+          "docs": [
+            "Receives anything someone sent to the empty vault, so the vault can close."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "landlord"
+              },
+              {
+                "kind": "account",
+                "path": "token_program"
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "confirm_handover",
+      "docs": [
+        "Tenant, holding the keys, releases the deposit to the landlord."
+      ],
+      "discriminator": [
+        208,
+        188,
+        83,
+        62,
+        124,
+        176,
+        6,
+        49
+      ],
+      "accounts": [
+        {
+          "name": "tenant",
+          "docs": [
+            "Must be the tenant who funded the deal. Pays the fee."
+          ],
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "deal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal.landlord",
+                "account": "Deal"
+              },
+              {
+                "kind": "account",
+                "path": "deal.deal_id",
+                "account": "Deal"
+              }
+            ]
+          }
+        },
+        {
+          "name": "landlord",
+          "docs": [
+            "Receives the vault's rent back (they paid it at creation)."
+          ],
+          "writable": true,
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "mint",
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "deal"
+              },
+              {
+                "kind": "account",
+                "path": "token_program"
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "landlord_token",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "landlord"
+              },
+              {
+                "kind": "account",
+                "path": "token_program"
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_deal",
+      "docs": [
+        "Landlord opens a deal. Creates the deal record and its empty vault."
+      ],
+      "discriminator": [
+        198,
+        212,
+        144,
+        151,
+        97,
+        56,
+        149,
+        113
+      ],
+      "accounts": [
+        {
+          "name": "landlord",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "deal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "landlord"
+              },
+              {
+                "kind": "arg",
+                "path": "deal_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "Holds the deposit. Owned by the deal account, so only the program's rules can move it."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "deal"
+              },
+              {
+                "kind": "account",
+                "path": "token_program"
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "landlord_token",
+          "docs": [
+            "Prepared now so the tenant never pays for it at the handover."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "landlord"
+              },
+              {
+                "kind": "account",
+                "path": "token_program"
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "deal_id",
+          "type": "u64"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "move_in",
+          "type": "i64"
+        },
+        {
+          "name": "deadline",
+          "type": "i64"
+        },
+        {
+          "name": "title",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "fund",
+      "docs": [
+        "Tenant locks the exact deposit in the vault."
+      ],
+      "discriminator": [
+        218,
+        188,
+        111,
+        221,
+        152,
+        113,
+        174,
+        7
+      ],
+      "accounts": [
+        {
+          "name": "tenant",
+          "docs": [
+            "Whoever pays becomes the tenant (open link)."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "deal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal.landlord",
+                "account": "Deal"
+              },
+              {
+                "kind": "account",
+                "path": "deal.deal_id",
+                "account": "Deal"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "tenant_token",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "deal"
+              },
+              {
+                "kind": "account",
+                "path": "token_program"
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "refund",
+      "docs": [
+        "Deposit goes back to the tenant: the landlord at any time, anyone after the deadline."
+      ],
+      "discriminator": [
+        2,
+        96,
+        183,
+        251,
+        63,
+        208,
+        46,
+        46
+      ],
+      "accounts": [
+        {
+          "name": "caller",
+          "docs": [
+            "The landlord (any time) or anyone (after the deadline). Pays the fee."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "deal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal.landlord",
+                "account": "Deal"
+              },
+              {
+                "kind": "account",
+                "path": "deal.deal_id",
+                "account": "Deal"
+              }
+            ]
+          }
+        },
+        {
+          "name": "tenant",
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "landlord",
+          "docs": [
+            "Receives the vault's rent back (they paid it at creation)."
+          ],
+          "writable": true,
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "mint",
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "deal"
+              },
+              {
+                "kind": "account",
+                "path": "token_program"
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "tenant_token",
+          "docs": [
+            "Always the tenant's own token account; recreated if they closed it."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "tenant"
+              },
+              {
+                "kind": "account",
+                "path": "token_program"
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Deal",
+      "discriminator": [
+        125,
+        223,
+        160,
+        234,
+        71,
+        162,
+        182,
+        219
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidAmount",
+      "msg": "The deposit must be more than zero"
+    },
+    {
+      "code": 6001,
+      "name": "TitleTooLong",
+      "msg": "The room description is too long (max 64 bytes)"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidSchedule",
+      "msg": "The handover deadline must be after move-in and at most 14 days later"
+    },
+    {
+      "code": 6003,
+      "name": "DeadlinePassed",
+      "msg": "The handover deadline has passed"
+    },
+    {
+      "code": 6004,
+      "name": "LockTooLong",
+      "msg": "Paying now would lock the deposit for more than 180 days"
+    },
+    {
+      "code": 6005,
+      "name": "DealNotOpen",
+      "msg": "This deal is not waiting for a deposit"
+    },
+    {
+      "code": 6006,
+      "name": "DealNotFunded",
+      "msg": "This deal has no locked deposit"
+    },
+    {
+      "code": 6007,
+      "name": "LandlordCannotFund",
+      "msg": "The landlord cannot pay their own deposit"
+    },
+    {
+      "code": 6008,
+      "name": "NotTenant",
+      "msg": "Only the tenant who paid can confirm the handover"
+    },
+    {
+      "code": 6009,
+      "name": "NotLandlord",
+      "msg": "Only the landlord can do this"
+    },
+    {
+      "code": 6010,
+      "name": "HandoverNotOpenYet",
+      "msg": "The handover opens 24 hours before move-in"
+    },
+    {
+      "code": 6011,
+      "name": "DeadlineNotReached",
+      "msg": "Only the landlord can return the deposit before the deadline"
+    },
+    {
+      "code": 6012,
+      "name": "WrongMint",
+      "msg": "This token does not match the deal"
+    },
+    {
+      "code": 6013,
+      "name": "WrongTenant",
+      "msg": "This account is not the deal's tenant"
+    },
+    {
+      "code": 6014,
+      "name": "WrongLandlord",
+      "msg": "This account is not the deal's landlord"
+    }
+  ],
+  "types": [
+    {
+      "name": "Deal",
+      "docs": [
+        "One rental deposit. Stays on-chain after settlement as a public receipt."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "landlord",
+            "type": "pubkey"
+          },
+          {
+            "name": "tenant",
+            "docs": [
+              "Pubkey::default() until someone funds the deal."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "deal_id",
+            "type": "u64"
+          },
+          {
+            "name": "amount",
+            "docs": [
+              "Exact deposit in the token's base units."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "move_in",
+            "docs": [
+              "Unix seconds."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "deadline",
+            "docs": [
+              "Unix seconds. After this, anyone can return the deposit to the tenant."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "funded_at",
+            "type": "i64"
+          },
+          {
+            "name": "settled_at",
+            "type": "i64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "DealStatus"
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "title",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DealStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Open"
+          },
+          {
+            "name": "Funded"
+          },
+          {
+            "name": "Released"
+          },
+          {
+            "name": "Refunded"
+          },
+          {
+            "name": "Cancelled"
+          }
+        ]
+      }
+    }
+  ]
+}

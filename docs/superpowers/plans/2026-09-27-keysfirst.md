@@ -2412,7 +2412,7 @@ git commit -m "test(program): invariants for conservation, exactly-once settleme
 - Consumes: built program (Tasks 3–8), `APP_URL` (Task 1), deploy wallet with ≥ 5 devnet SOL (Task 2).
 - Produces: deployed program id (same as `declare_id!`); IDL at `web/src/idl/`; Test EUR mint address `NEXT_PUBLIC_MINT`; server secret `FAUCET_SECRET_KEY` (faucet wallet = mint authority); npm scripts `sync-idl`, `create-test-eur`.
 
-- [ ] **Step 1: Check the budget (Ubuntu shell, repo root)**
+- [x] **Step 1: Check the budget (Ubuntu shell, repo root)**
 
 ```bash
 anchor build
@@ -2422,12 +2422,14 @@ solana rent $(stat -c%s target/deploy/keysfirst.so)
 
 Expected: balance ≥ 2 × the rent shown + 0.5 SOL. If not, top up at https://faucet.solana.com.
 
-- [ ] **Step 2: Deploy**
+- [x] **Step 2: Deploy**
 
 Run: `anchor deploy --provider.cluster devnet`
 Expected: `Program Id: <id>` equal to `declare_id!`, plus a signature; Anchor 1.x also uploads the IDL. Verify: `solana program show <id> --url devnet` shows `Authority: <your deploy wallet>`.
 
-- [ ] **Step 3: Record it in `docs/deployments.md`**
+Done 2026-09-27. Anchor's IDL upload shells out to `npx`; in a non-interactive WSL shell that resolved to the Windows `npx` (nvm is only loaded by `~/.bashrc`), which failed with `Keypair file not found`. Fix: load nvm in `~/.profile` (`export NVM_DIR="$HOME/.nvm"; [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"`), then upload only the IDL: `anchor idl init -f target/idl/keysfirst.json <id> --provider.cluster devnet`. `anchor deploy` is deprecated in 1.2 in favour of `anchor program deploy` (same behaviour).
+
+- [x] **Step 3: Record it in `docs/deployments.md`**
 
 ```markdown
 # Deployments (Solana devnet)
@@ -2442,7 +2444,7 @@ Expected: `Program Id: <id>` equal to `declare_id!`, plus a signature; Anchor 1.
 | Web app | <APP_URL> |
 ```
 
-- [ ] **Step 4: Install web dependencies (PowerShell, `web/`)**
+- [x] **Step 4: Install web dependencies (PowerShell, `web/`)**
 
 ```bash
 npm install @anchor-lang/core @solana/spl-token
@@ -2451,7 +2453,9 @@ npm install -D @solana/spl-token-metadata vitest
 
 (Add `--legacy-peer-deps` only if npm reports a peer conflict.)
 
-- [ ] **Step 5: Write `web/scripts/sync-idl.mjs`**
+Done 2026-09-27 with `vitest@^4` (4.1.11): vitest 5 requires `@types/node` ^22 or ≥24 as a peer, but the Next template pins ^20. Vitest 4 accepts ^20, so no `--legacy-peer-deps` is needed (that flag would also be needed on every later install, including Vercel's).
+
+- [x] **Step 5: Write `web/scripts/sync-idl.mjs`**
 
 ```js
 // Copies the IDL and TypeScript types produced by `anchor build` into the web app.
@@ -2471,7 +2475,7 @@ for (const [from, to] of [
 }
 ```
 
-- [ ] **Step 6: Write `web/scripts/create-test-eur.mjs`**
+- [x] **Step 6: Write `web/scripts/create-test-eur.mjs`**
 
 ```js
 // Creates the "Test EUR (devnet)" Token-2022 mint with on-chain name and symbol.
@@ -2567,7 +2571,7 @@ upsertEnv(path.resolve(".env.local"), {
 console.log("Saved NEXT_PUBLIC_MINT and FAUCET_SECRET_KEY to web/.env.local (the secret is not printed).");
 ```
 
-- [ ] **Step 7: Add npm scripts and sync the IDL**
+- [x] **Step 7: Add npm scripts and sync the IDL**
 
 In `web/package.json` `"scripts"` add:
 
@@ -2580,7 +2584,7 @@ In `web/package.json` `"scripts"` add:
 Run: `npm run sync-idl`
 Expected: two `Copied ...` lines; `web/src/idl/keysfirst.json` has `"address": "<program id>"`.
 
-- [ ] **Step 8: Write the token metadata route `web/src/app/test-eur.json/route.ts`**
+- [x] **Step 8: Write the token metadata route `web/src/app/test-eur.json/route.ts`**
 
 ```ts
 export const dynamic = "force-dynamic";
@@ -2597,12 +2601,12 @@ export function GET(req: Request) {
 }
 ```
 
-- [ ] **Step 9: Create the mint**
+- [x] **Step 9: Create the mint**
 
 Run: `npm run create-test-eur -- <APP_URL>` → it prints the faucet address and exits asking for SOL. Send that address **3 devnet SOL** (faucet.solana.com, or `solana transfer <faucet address> 3 --allow-unfunded-recipient` from the deploy wallet in WSL). Run the same command again.
 Expected: `Test EUR mint: <address>`, an Explorer link, and the "Saved ... (the secret is not printed)" line. Fill the mint and faucet addresses into `docs/deployments.md`.
 
-- [ ] **Step 10: Update `web/.env.example`**
+- [x] **Step 10: Update `web/.env.example`**
 
 ```bash
 # Devnet RPC endpoint. A free dedicated devnet key (e.g. Helius) avoids public rate limits during the demo.
@@ -2619,7 +2623,7 @@ FAUCET_SECRET_KEY=
 2. Vercel → Project → Settings → Environment Variables (Production + Preview): `NEXT_PUBLIC_RPC_URL`, `NEXT_PUBLIC_MINT`, `FAUCET_SECRET_KEY` — copy the last two from `web/.env.local` yourself; do not paste them into chat.
 3. Redeploy. Check `APP_URL/test-eur.json` returns the JSON.
 
-- [ ] **Step 12: Commit**
+- [x] **Step 12: Commit**
 
 ```bash
 git add docs/deployments.md web/package.json web/package-lock.json web/scripts web/src/idl web/src/app/test-eur.json web/.env.example
