@@ -207,7 +207,7 @@ export function showReleasedScreen(o: { role: Role; status: DealStatus; handover
 export function actionLabel(action: Action, role: Role, amount: string): string {
   switch (action) {
     case "fund":
-      return `Pay ${amount} into the lock`;
+      return `Lock ${amount} from your balance`;
     case "showQr":
       return "Start the handover";
     case "confirmInApp":

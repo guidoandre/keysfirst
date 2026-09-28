@@ -8,6 +8,12 @@ import { actionLabel, loginLabel, type NextStepView } from "@/lib/deal-view";
 import { explorerTx } from "@/lib/format";
 import type { Action, Role } from "@/lib/rules";
 
+/** Card payment for the tenant-to-be whose balance doesn't cover the deposit (spec §4.3). */
+export interface CardOffer {
+  total: string;
+  breakdown: string;
+}
+
 /** One primary action for this viewer right now; secondary actions below; errors and receipts inline. */
 export function NextStep({
   view,
@@ -19,6 +25,9 @@ export function NextStep({
   error,
   signature,
   onAction,
+  card = null,
+  cardBusy = false,
+  onPayByCard,
 }: {
   view: NextStepView;
   role: Role;
@@ -30,6 +39,9 @@ export function NextStep({
   error: string | null;
   signature: string | null;
   onAction: (action: Action) => void;
+  card?: CardOffer | null;
+  cardBusy?: boolean;
+  onPayByCard?: () => void;
 }) {
   const { primary, secondary } = view;
   return (
@@ -45,16 +57,25 @@ export function NextStep({
 
       {primary &&
         (connected ? (
-          <Button
-            size="lg"
-            fullWidth
-            loading={busy === primary}
-            loadingText="Waiting for your wallet…"
-            disabled={busy !== null}
-            onClick={() => onAction(primary)}
-          >
-            {actionLabel(primary, role, amount)}
-          </Button>
+          primary === "fund" && card && onPayByCard ? (
+            <div className="space-y-2">
+              <Button size="lg" fullWidth loading={cardBusy} loadingText="Opening the card payment…" disabled={busy !== null || cardBusy} onClick={onPayByCard}>
+                Pay {card.total} by card
+              </Button>
+              <p className="text-sm text-fg-muted">{card.breakdown}</p>
+            </div>
+          ) : (
+            <Button
+              size="lg"
+              fullWidth
+              loading={busy === primary}
+              loadingText={primary === "fund" ? "Locking your deposit…" : "Confirming…"}
+              disabled={busy !== null}
+              onClick={() => onAction(primary)}
+            >
+              {actionLabel(primary, role, amount)}
+            </Button>
+          )
         ) : (
           <LoginButton label={loginLabel(primary)} variant="primary" size="lg" fullWidth />
         ))}
@@ -67,7 +88,7 @@ export function NextStep({
               variant={action === "cancel" ? "danger" : "secondary"}
               fullWidth
               loading={busy === action}
-              loadingText="Waiting for your wallet…"
+              loadingText="Confirming…"
               disabled={busy !== null}
               onClick={() => onAction(action)}
             >

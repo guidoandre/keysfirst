@@ -118,7 +118,7 @@ describe("countdownFor", () => {
 
 describe("labels", () => {
   it("names each action for the viewer", () => {
-    expect(actionLabel("fund", "visitor", amount)).toBe("Pay €600.00 into the lock");
+    expect(actionLabel("fund", "visitor", amount)).toBe("Lock €600.00 from your balance");
     expect(actionLabel("showQr", "landlord", amount)).toBe("Start the handover");
     expect(actionLabel("confirmInApp", "tenant", amount)).toBe("I have the keys: release the deposit");
     expect(actionLabel("refund", "landlord", amount)).toBe("Give the deposit back to your tenant");

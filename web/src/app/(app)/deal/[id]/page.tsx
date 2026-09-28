@@ -7,7 +7,7 @@ import { getProgram } from "@/lib/program";
 import { withTimeout } from "@/lib/timeout";
 import { DealClient } from "./DealClient";
 
-type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string }> };
+type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string; paid?: string }> };
 
 const DESCRIPTION =
   "Protected by Keysfirst: the landlord gets the deposit only when you confirm the key handover.";
@@ -29,6 +29,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function DealPage({ params, searchParams }: Props) {
   const { id } = await params;
-  const { created } = await searchParams;
-  return <DealClient id={id} origin={await getOrigin()} created={created === "1"} />;
+  const { created, paid } = await searchParams;
+  return <DealClient id={id} origin={await getOrigin()} created={created === "1"} paid={paid?.startsWith("cs_") ? paid : null} />;
 }
