@@ -2001,6 +2001,9 @@ Search `faq.ts` for `#funds`, `Get test funds`, `Phantom` afterwards: only the `
 | `components/marketing/CtaBand.tsx:28` | `New to wallets? Get started in 5 minutes` | `New here? Get started in 5 minutes` |
 | `components/site/ErrorView.tsx:18` and `app/global-error.tsx:15` | `Nothing moves without your approval in Phantom.` | `Nothing moves without your approval.` |
 | `content/scenarios.ts:56-57` | question `What if I scan with the wrong wallet?`, answer `Nothing moves. Phantom can't load the request; switch to the wallet that paid and scan again.` | question `What if I scan while logged in with the wrong account?`, answer `Nothing moves. Only the account that paid can confirm; log in with that account and scan again.` |
+| `app/(app)/new/CreateDealFlow.tsx:232` | `Creating the link costs a tiny network fee in test SOL.` | `Creating the link is free: Keysfirst covers the network costs.` |
+| `app/(app)/new/CreateDealFlow.tsx:238` | `The exact amount, from their own wallet.` | `The exact amount, by card.` |
+| `app/(app)/new/CreateDealFlow.tsx:282` and `app/(app)/dev/ui/UiGallery.tsx:112` | `loadingText="Waiting for your wallet…"` | `loadingText="Creating your link…"` (gallery: `"Confirming…"`) |
 | `app/(app)/dev/ui/UiGallery.tsx:203-204` | sheet title `Log in with your wallet`, text about Phantom | title `Your account`, text `Log in with your email or Google.` |
 
 - [ ] **Step 4: Privacy policy**
