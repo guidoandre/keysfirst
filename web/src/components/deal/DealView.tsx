@@ -8,7 +8,7 @@ import { CountdownPanel } from "./CountdownPanel";
 import { DealDetails } from "./DealDetails";
 import { DealHero } from "./DealHero";
 import { DealTimetable } from "./DealTimetable";
-import { NextStep } from "./NextStep";
+import { NextStep, type CardOffer } from "./NextStep";
 import { ShareBox } from "./ShareBox";
 
 export interface DealViewProps {
@@ -25,6 +25,9 @@ export interface DealViewProps {
   error: string | null;
   signature: string | null;
   onAction: (action: Action) => void;
+  card?: CardOffer | null;
+  cardBusy?: boolean;
+  onPayByCard?: () => void;
 }
 
 /** The deal page's layout, from plain data (the dev gallery renders it with sample deals). */
@@ -62,6 +65,9 @@ export function DealView(p: DealViewProps) {
         error={p.error}
         signature={p.signature}
         onAction={p.onAction}
+        card={p.card}
+        cardBusy={p.cardBusy}
+        onPayByCard={p.onPayByCard}
       />
       {/* Spec §6.4: while the deal is open and before the deadline (also before payment opens, 180 days ahead). */}
       {role === "landlord" && (phase === "open" || phase === "open-too-early") && (

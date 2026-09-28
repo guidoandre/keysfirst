@@ -20,7 +20,7 @@ export const metadata: Metadata = { title: "Confirm the key handover", robots: {
 const GERMAN_TIME = "Europe/Berlin";
 const at = (unixSeconds: number) => `${formatShortDateTime(unixSeconds, GERMAN_TIME)} (German time)`;
 
-const CHECKLIST = ["You are inside the room.", "You have the keys, or they are in front of you.", "Phantom is on the wallet that paid the deposit."];
+const CHECKLIST = ["You are inside the room.", "You have the keys, or they are in front of you.", "You are logged in with the account that paid the deposit."];
 
 /** The deal's address, or null when the link's id isn't an address at all (checked before any devnet read). */
 function parseDealId(id: string): PublicKey | null {
@@ -106,22 +106,21 @@ export default async function HandoverPage({ params }: { params: Promise<{ id: s
               </li>
             ))}
           </ul>
-          <a href={solanaPayUrl} className={cx(buttonClass({ size: "lg", fullWidth: true }), "mt-8")}>
-            Approve in Phantom
-          </a>
-          <p className="mt-3 text-center text-sm text-fg-muted">Approving pays the landlord immediately. Only continue with the keys in hand.</p>
-          <Callout tone="info" className="mt-6" title="Use the wallet that paid">
-            Phantom must be on the wallet that paid the deposit. With any other wallet, Phantom only says it could not load the request: switch
-            wallets in Phantom and tap the button again.
-          </Callout>
-          <p className="mt-4 text-sm text-fg-muted">
-            Approve within a minute: the request expires quickly. If it does, tap the button again for a fresh one.
+          <Link href={`/deal/${id}`} className={cx(buttonClass({ size: "lg", fullWidth: true }), "mt-8")}>
+            Continue
+          </Link>
+          <p className="mt-3 text-center text-sm text-fg-muted">
+            On the next page, tap &ldquo;I have the keys&rdquo;. That pays the landlord immediately: only continue with the keys in hand.
           </p>
-          <p className="mt-6">
-            <Link href={`/deal/${id}`} className={buttonClass({ variant: "quiet" })}>
-              Open the deal page instead
-            </Link>
-          </p>
+          <details className="mt-8 rounded-md border border-rule p-4">
+            <summary className="cursor-pointer font-semibold">Using Phantom?</summary>
+            <p className="mt-3 text-sm text-fg-muted">
+              Phantom must be on the wallet that paid the deposit. Approve within a minute; if the request expires, tap the button again.
+            </p>
+            <a href={solanaPayUrl} className={cx(buttonClass({ variant: "secondary", fullWidth: true }), "mt-3")}>
+              Approve in Phantom
+            </a>
+          </details>
         </>
       )}
     </div>

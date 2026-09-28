@@ -25,7 +25,7 @@ export function CtaBand() {
         </div>
         <p data-reveal="" className="lg:col-span-2">
           <Link href="/start" prefetch={false} className={cx(buttonClass({ variant: "quiet" }), "text-fg-inverse")}>
-            New to wallets? Get started in 5 minutes
+            New here? Get started in 5 minutes
           </Link>
         </p>
       </div>

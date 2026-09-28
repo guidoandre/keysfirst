@@ -12,7 +12,7 @@ export default function GlobalError({ retry }: { error: Error & { digest?: strin
         <main className="max-w-read py-16">
           <p className="label text-fg-muted">Keysfirst</p>
           <h1 className="mt-3 font-display text-title font-bold">Something went wrong.</h1>
-          <p className="mt-4 text-lead text-fg-muted">Nothing moves without your approval in Phantom. Try again, or reload the page.</p>
+          <p className="mt-4 text-lead text-fg-muted">Nothing moves without your approval. Try again, or reload the page.</p>
           <button
             type="button"
             onClick={() => retry()}

@@ -1,7 +1,6 @@
 "use client";
 
-import { useWallet } from "@solana/wallet-adapter-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { DealCard } from "@/components/deal/DealCard";
 import { AskLandlord } from "@/components/marketing/AskLandlord";
 import { Button, ButtonLink } from "@/components/ui/Button";
@@ -10,6 +9,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Icon } from "@/components/ui/Icon";
 import { Segmented } from "@/components/ui/Segmented";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useAccount } from "@/components/wallet/AccountProvider";
+import { BalanceCard } from "@/components/wallet/BalanceCard";
 import { LoginButton } from "@/components/wallet/LoginButton";
 import { countByFilter, filterDeals, sortDeals, urgencyOf, type DealFilter, type DealSummary, type Urgency } from "@/lib/dashboard";
 import { useMounted, useNow } from "@/lib/hooks";
@@ -79,10 +80,15 @@ export function DealList({ deals, now }: { deals: DealSummary[]; now: number }) 
 export function MyDeals() {
   const mounted = useMounted();
   const now = useNow();
-  const { wallet: selected, connecting, connected } = useWallet();
+  const { ready, refreshBalance } = useAccount();
   const { state, refresh, wallet } = useMyDeals();
-  // A returning visitor reconnects automatically: show the skeleton, not "Log in", while that happens.
-  const waitingForWallet = !mounted || now === 0 || connecting || (selected !== null && !connected);
+  // A deal released or refunded elsewhere changes the balance: read it fresh whenever this page opens.
+  useEffect(() => {
+    const timer = setTimeout(() => void refreshBalance(), 0);
+    return () => clearTimeout(timer);
+  }, [refreshBalance]);
+  // A returning visitor's session is restored automatically: show the skeleton, not "Log in", while that happens.
+  const waitingForWallet = !mounted || now === 0 || !ready;
 
   let content: ReactNode;
   if (waitingForWallet) {
@@ -140,6 +146,11 @@ export function MyDeals() {
           </div>
         )}
       </div>
+      {wallet && (
+        <div className="mt-8">
+          <BalanceCard />
+        </div>
+      )}
       <div className="mt-8">{content}</div>
     </div>
   );

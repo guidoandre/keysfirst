@@ -1,6 +1,6 @@
 "use client";
 
-import { useConnection } from "@solana/wallet-adapter-react";
+import { useConnection } from "./connection";
 import { PublicKey } from "@solana/web3.js";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { acceptPoll, type PollAnswer } from "./deal-poll";

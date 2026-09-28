@@ -1,10 +1,9 @@
 "use client";
 
-import { useWallet } from "@solana/wallet-adapter-react";
 import { Logo } from "@/components/brand/Logo";
 import { MobileMenu } from "@/components/site/MobileMenu";
 import { NavLinks, type NavItem } from "@/components/site/NavLinks";
-import { useMounted } from "@/lib/hooks";
+import { useAccount } from "./AccountProvider";
 import { LoginButton } from "./LoginButton";
 import { WalletChip } from "./WalletChip";
 
@@ -22,9 +21,8 @@ const LOGGED_IN: NavItem[] = [
 
 /** App header: role-aware navigation once a wallet is connected. */
 export function AppHeader() {
-  const { publicKey } = useWallet();
-  const mounted = useMounted();
-  const loggedIn = mounted && publicKey !== null;
+  const { ready, address } = useAccount();
+  const loggedIn = ready && address !== null;
   const items = loggedIn ? LOGGED_IN : LOGGED_OUT;
   return (
     <header className="sticky top-0 z-30 border-b border-rule bg-canvas">
@@ -33,7 +31,7 @@ export function AppHeader() {
         <nav aria-label="Main" className="hidden lg:block">
           <NavLinks items={items} />
         </nav>
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           {loggedIn ? <WalletChip /> : <LoginButton size="sm" />}
           <MobileMenu items={items} />
         </div>

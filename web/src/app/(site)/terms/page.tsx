@@ -15,7 +15,7 @@ const LINK = "font-semibold underline underline-offset-2";
 const DONT = [
   "use it for real rental deposits or send real money to any address shown here;",
   "put names, street addresses, phone numbers or other personal details in a room title;",
-  "attack, overload or misuse the site, the test faucet or the program, or use them to deceive other people.",
+  "attack, overload or misuse the site, the test card payments or the program, or use them to deceive other people.",
 ];
 
 export default function TermsPage() {
@@ -41,16 +41,21 @@ export default function TermsPage() {
           <Link href="/how-it-works" className={LINK}>
             How it works
           </Link>
-          ). Keysfirst cannot reverse, stop or redirect a transaction you approve in your wallet.
+          ). Keysfirst cannot reverse, stop or redirect a step you confirm.
         </p>
         <p>
           Rental contracts, deposits and disputes between landlord and tenant are a matter between them under German tenancy law. The
           information on this site about §551 BGB is general and not legal advice.
         </p>
+        <p>
+          Fees: the tenant pays a Keysfirst fee on top of the deposit, 3.5% by card or 2% by bank transfer, at least €12, shown before paying.
+          The fee is not refunded if the deposit goes back to the tenant. In this prototype all payments use Stripe&apos;s test mode and test
+          money; withdrawals to a bank account are simulated.
+        </p>
       </LegalSection>
 
       <LegalSection id="you" title="3. Your part">
-        <p>You are responsible for your own wallet, its keys and its recovery phrase, and for every transaction you approve. Please don&apos;t:</p>
+        <p>You are responsible for access to your login (your email or Google account, or your own wallet) and for every step you confirm. Please don&apos;t:</p>
         <ul className="list-disc space-y-2 pl-5">
           {DONT.map((line) => (
             <li key={line}>{line}</li>

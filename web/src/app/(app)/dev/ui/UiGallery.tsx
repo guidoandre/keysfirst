@@ -109,7 +109,7 @@ export function UiGallery() {
             Small
           </Button>
           <Button size="lg">Pay €600.00 into the lock</Button>
-          <Button loading loadingText="Waiting for your wallet…">
+          <Button loading loadingText="Confirming…">
             Loading
           </Button>
           <Button disabled>Disabled</Button>
@@ -129,7 +129,7 @@ export function UiGallery() {
           <Callout tone="info" title="Info">Use the wallet that paid.</Callout>
           <Callout tone="success" title="Success">Done. View the receipt.</Callout>
           <Callout tone="returned" title="Returned">The deposit went back to the tenant.</Callout>
-          <Callout tone="danger" title="Error" role="alert">You cancelled the request in your wallet.</Callout>
+          <Callout tone="danger" title="Error" role="alert">You cancelled the request.</Callout>
           <Callout tone="neutral">Neutral note.</Callout>
         </div>
       </Block>
@@ -200,8 +200,8 @@ export function UiGallery() {
             Open confirmation
           </Button>
         </div>
-        <Sheet open={sheet} onClose={() => setSheet(false)} title="Log in with your wallet">
-          <p className="text-fg-muted">A wallet is an app like Phantom that holds your money and approves payments.</p>
+        <Sheet open={sheet} onClose={() => setSheet(false)} title="Your account">
+          <p className="text-fg-muted">Log in with your email or Google.</p>
         </Sheet>
         <ConfirmDialog
           open={confirm}

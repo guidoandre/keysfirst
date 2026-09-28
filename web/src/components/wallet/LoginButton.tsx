@@ -1,8 +1,7 @@
 "use client";
 
-import { useWallet } from "@solana/wallet-adapter-react";
 import { Button, type ButtonSize, type ButtonVariant } from "@/components/ui/Button";
-import { useConnect } from "./ConnectProvider";
+import { useAccount } from "./AccountProvider";
 
 export function LoginButton({
   label = "Log in",
@@ -15,10 +14,9 @@ export function LoginButton({
   size?: ButtonSize;
   fullWidth?: boolean;
 }) {
-  const { openConnect } = useConnect();
-  const { connecting } = useWallet();
+  const { ready, login } = useAccount();
   return (
-    <Button variant={variant} size={size} fullWidth={fullWidth} loading={connecting} loadingText="Logging in…" onClick={openConnect}>
+    <Button variant={variant} size={size} fullWidth={fullWidth} disabled={!ready} onClick={login}>
       {label}
     </Button>
   );

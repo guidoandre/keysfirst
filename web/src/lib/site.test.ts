@@ -17,7 +17,7 @@ describe("siteUrl", () => {
 
 describe("isAppRoute", () => {
   it("matches the wallet pages, with or without a query or hash", () => {
-    for (const href of ["/new", "/start", "/start#funds", "/deals", "/deals?login=1", "/deal/8cTvC1gnouTSxswytgt1as8FXgLmp1yJU6bfVopj8xTy/handover"]) {
+    for (const href of ["/new", "/start", "/start#pay", "/deals", "/deals?login=1", "/deal/8cTvC1gnouTSxswytgt1as8FXgLmp1yJU6bfVopj8xTy/handover"]) {
       expect(isAppRoute(href)).toBe(true);
     }
   });

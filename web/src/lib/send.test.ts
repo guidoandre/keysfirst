@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { friendlyError, needsTestFunds } from "./send";
+import { friendlyError, needsTopUp } from "./send";
 
 describe("friendlyError", () => {
   it("surfaces the program's own message", () => {
@@ -9,10 +9,10 @@ describe("friendlyError", () => {
     expect(friendlyError(e)).toBe("The handover opens 24 hours before move-in.");
   });
   it("explains common wallet problems", () => {
-    expect(friendlyError(new Error("User rejected the request."))).toBe("You cancelled the request in your wallet.");
-    expect(friendlyError(new Error("Attempt to debit an account but found no record of a prior credit."))).toMatch(/more devnet SOL/);
-    expect(friendlyError(new Error("Program log: Error: insufficient funds"))).toMatch(/Not enough Test EUR/);
-    expect(friendlyError(new Error("Connect your wallet first."))).toBe("Connect your wallet first.");
+    expect(friendlyError(new Error("User rejected the request."))).toBe("You cancelled the request.");
+    expect(friendlyError(new Error("Attempt to debit an account but found no record of a prior credit."))).toMatch(/being topped up/);
+    expect(friendlyError(new Error("Program log: Error: insufficient funds"))).toMatch(/balance doesn't cover/);
+    expect(friendlyError(new Error("Log in first."))).toBe("Log in first.");
   });
   it("explains a wallet that can't pay for a new deal's accounts (seen when creating a 7th deal on one faucet top-up)", () => {
     const e = new Error(
@@ -26,11 +26,11 @@ describe("friendlyError", () => {
         "].",
       ].join("\n"),
     );
-    expect(friendlyError(e)).toMatch(/more devnet SOL/);
-    expect(needsTestFunds(friendlyError(e))).toBe(true);
-    expect(needsTestFunds(friendlyError(new Error("Program log: Error: insufficient funds")))).toBe(true);
-    expect(needsTestFunds(friendlyError(new Error("User rejected the request.")))).toBe(false);
-    expect(needsTestFunds(null)).toBe(false);
+    expect(friendlyError(e)).toMatch(/being topped up/);
+    expect(needsTopUp(friendlyError(e))).toBe(true);
+    expect(needsTopUp(friendlyError(new Error("Program log: Error: insufficient funds")))).toBe(false);
+    expect(needsTopUp(friendlyError(new Error("User rejected the request.")))).toBe(false);
+    expect(needsTopUp(null)).toBe(false);
   });
   it("explains a settlement that already happened (the vault is closed)", () => {
     const e = new Error(
@@ -43,6 +43,6 @@ describe("friendlyError", () => {
     expect(friendlyError(e)).toMatch(/Solana devnet is busy/);
   });
   it("falls back to a generic hint", () => {
-    expect(friendlyError("boom")).toMatch(/Solana Devnet/);
+    expect(friendlyError("boom")).toBe("Something went wrong. Try again. If you use Phantom, check that it is set to Solana Devnet.");
   });
 });

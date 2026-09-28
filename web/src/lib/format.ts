@@ -16,6 +16,15 @@ export function parseEur(input: string): bigint | null {
   return cents > 0n ? cents * UNITS_PER_CENT : null;
 }
 
+/** 600500000 (base units) -> 60050 (cents). Deals are created from parseEur, so amounts are whole cents. */
+export function toCents(baseUnits: bigint | string): number {
+  return Number(BigInt(baseUnits) / UNITS_PER_CENT);
+}
+
+export function fromCents(cents: number): bigint {
+  return BigInt(cents) * UNITS_PER_CENT;
+}
+
 export function formatDateTime(unixSeconds: number): string {
   return new Date(unixSeconds * 1000).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
 }
@@ -40,11 +49,6 @@ export function toLocalInputValue(date: Date): string {
 
 export const explorerTx = (signature: string) => `https://explorer.solana.com/tx/${signature}?cluster=devnet`;
 export const explorerAddress = (address: string) => `https://explorer.solana.com/address/${address}?cluster=devnet`;
-
-/** Opens `pageUrl` inside Phantom's in-app browser (needed on phones). */
-export function phantomBrowseUrl(pageUrl: string): string {
-  return `https://phantom.app/ul/browse/${encodeURIComponent(pageUrl)}?ref=${encodeURIComponent(new URL(pageUrl).origin)}`;
-}
 
 /** Time left, ticking: 90061 -> "1 day 1 h", 3660 -> "1 h 1 min", 252 -> "4 min 12 s", 45 -> "45 s" */
 export function formatCountdown(seconds: number): string {

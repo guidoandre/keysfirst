@@ -9,13 +9,13 @@ import { useWakeLock } from "@/lib/hooks";
 
 const STEPS = [
   "Let your tenant check the room.",
-  "They scan this code with their phone camera and approve in Phantom.",
+  "They scan this code with their phone camera and confirm on their phone.",
   "Hand over the keys when this screen turns green.",
 ];
 
 /**
  * The landlord's full-screen handover. The QR encodes a plain https page because the iPhone Camera cannot open
- * `solana:` codes (docs/spike.md); that page hands the request to Phantom.
+ * `solana:` codes (docs/spike.md); that page sends the tenant to the deal page (or to Phantom).
  */
 export function HandoverMode({
   open,

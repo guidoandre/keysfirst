@@ -64,7 +64,7 @@ describe("nextStep", () => {
       "Pay €600.00 into the lock. The landlord gets it only when you confirm the key handover at the door. If that doesn't happen by Sun 4 Oct, 14:00, you can take it back.",
     );
     expect(nextStep({ status: "released", role: "landlord", times: t, now: expired, amount, settledAt: moveIn + 420 }).message).toBe(
-      "Your tenant confirmed the handover on Thu 1 Oct, 14:07. The deposit is in your wallet.",
+      "Your tenant confirmed the handover on Thu 1 Oct, 14:07. The deposit is in your Keysfirst balance. Withdraw it to your bank from your account menu.",
     );
     expect(nextStep({ status: "cancelled", role: "visitor", times: t, now: before, amount }).message).toBe(
       "The landlord cancelled this deal before anyone paid.",
@@ -78,6 +78,9 @@ describe("nextStep", () => {
     );
     expect(nextStep({ status: "refunded", role: "visitor", times: t, now: expired, amount, settledAt }).message).toBe(
       "The deposit went back to the tenant on Thu 1 Oct, 14:07.",
+    );
+    expect(nextStep({ status: "refunded", role: "tenant", times: t, now: expired, amount, settledAt }).message).toBe(
+      "Your deposit came back to you on Thu 1 Oct, 14:07. It's in your balance: withdraw it to your bank from your account menu.",
     );
     expect(nextStep({ status: "funded", role: "landlord", times: t, now: expired, amount }).message).toBe(
       "The deadline passed without a handover. The deposit can go back to your tenant now.",
@@ -118,7 +121,7 @@ describe("countdownFor", () => {
 
 describe("labels", () => {
   it("names each action for the viewer", () => {
-    expect(actionLabel("fund", "visitor", amount)).toBe("Pay €600.00 into the lock");
+    expect(actionLabel("fund", "visitor", amount)).toBe("Lock €600.00 from your balance");
     expect(actionLabel("showQr", "landlord", amount)).toBe("Start the handover");
     expect(actionLabel("confirmInApp", "tenant", amount)).toBe("I have the keys: release the deposit");
     expect(actionLabel("refund", "landlord", amount)).toBe("Give the deposit back to your tenant");

@@ -1,6 +1,7 @@
 "use client";
 
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useAccount } from "@/components/wallet/AccountProvider";
+import { useConnection } from "./connection";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { mergeDeals, toSummary, type DealSummary } from "./dashboard";
 import { toDealData } from "./deal-data";
@@ -24,7 +25,7 @@ type Stored = MyDealsState & { wallet: string | null };
 /** The connected wallet's deals as landlord and as tenant, read straight from Solana (no database). */
 export function useMyDeals(): { state: MyDealsState; refresh: () => void; wallet: string | null } {
   const { connection } = useConnection();
-  const { publicKey } = useWallet();
+  const { address: publicKey } = useAccount();
   const program = useMemo(() => getProgram(connection), [connection]);
   const wallet = publicKey?.toBase58() ?? null;
   const [stored, setStored] = useState<Stored>({ status: "idle", wallet: null });

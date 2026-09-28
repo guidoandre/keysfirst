@@ -29,7 +29,7 @@ const RULES = [
 
 // Product spec §10, in plain words. Never soften these.
 const LIMITS = [
-  "Someone pressured into scanning from far away close to move-in can still be tricked. The 24-hour rule and clear wallet messages reduce this risk; they don't remove it.",
+  "Someone pressured into scanning from far away close to move-in can still be tricked. The 24-hour rule and clear messages reduce this risk; they don't remove it.",
   "At the door the tenant scans first, so a landlord could take the money and keep the keys. That would be theft by a known person at a real address, far rarer than the anonymous online scam.",
   "A fake copy of this website isn't covered. A verified domain is on the roadmap.",
   "Keysfirst proves the room exists and the keys work, not that the person may legally rent it out. Landlord verification is on the roadmap.",
@@ -69,7 +69,7 @@ export default function HowItWorksPage() {
           <div className="grid gap-4">
             <div className="enter rounded-lg bg-released-soft p-5 [--enter-delay:300ms]">
               <StatusChip status="released" />
-              <p className="mt-3 text-body">When the tenant scans the landlord&apos;s code at the handover and approves in Phantom.</p>
+              <p className="mt-3 text-body">When the tenant scans the landlord&apos;s code at the handover and taps &ldquo;I have the keys&rdquo;.</p>
             </div>
             <div className="enter rounded-lg bg-returned-soft p-5 [--enter-delay:370ms]">
               <StatusChip status="refunded" />

@@ -19,15 +19,15 @@ export const metadata: Metadata = {
 
 const STEPS: Step[] = [
   { pictogram: "share-link", title: "Ask for a deposit link", text: "Your landlord creates it in a minute and sends it to you." },
-  { pictogram: "pay-into-lock", title: "Pay into the lock", text: "From your phone, inside Phantom. The money waits; the landlord can't take it." },
+  { pictogram: "pay-into-lock", title: "Pay into the lock", text: "By card, from your phone. The money waits; the landlord can't take it." },
   { pictogram: "scan-at-door", title: "At the door: check, then scan", text: "Look at the room, then scan the landlord's code and take the keys. The landlord is paid only then." },
   { pictogram: "back-to-you", title: "No handover? You take it back", text: "If the handover never happens, you can take the deposit back after the deadline." },
 ];
 
 const NEEDS = [
-  { href: "/start#install", title: "Phantom", text: "A wallet app for your phone." },
-  { href: "/start#devnet", title: "Solana Devnet", text: "The test network, switched on in Phantom." },
-  { href: "/start#funds", title: "Test money", text: "Free: 1,000 Test EUR from the guide." },
+  { href: "/start#login", title: "An email address", text: "Or a Google account. No wallet app." },
+  { href: "/start#pay", title: "A card", text: "Here: Stripe's test card, so no real money." },
+  { href: "/start#door", title: "Your phone", text: "To scan the landlord's code at the door." },
 ];
 
 export default function TenantsPage() {

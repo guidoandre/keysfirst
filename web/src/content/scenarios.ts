@@ -53,8 +53,8 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: "wrong-wallet",
-    question: "What if I scan with the wrong wallet?",
-    answer: "Nothing moves. Phantom can't load the request; switch to the wallet that paid and scan again.",
+    question: "What if I scan while logged in with the wrong account?",
+    answer: "Nothing moves. Only the account that paid can confirm; log in with that account and scan again.",
     rule: "Only the tenant who paid can confirm the handover.",
     audience: "tenant",
     pictogram: "keys-change-hands",

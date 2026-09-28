@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { AppHeader } from "@/components/wallet/AppHeader";
 import { Providers } from "./providers";
 
-/** Wallet pages: one provider tree and one connect sheet. */
+/** Account pages: one provider tree; logging in opens the Privy login (email, Google or Phantom). */
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <Providers>
