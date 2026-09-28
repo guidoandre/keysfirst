@@ -2,9 +2,10 @@
 
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import { DealLoading, DealMessage } from "@/components/deal/DealStates";
 import { DealView } from "@/components/deal/DealView";
-import { HandoverQR } from "@/components/HandoverQR";
+import { ReleasedScreen } from "@/components/deal/ReleasedScreen";
 import { Button } from "@/components/ui/Button";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { toDealData } from "@/lib/deal-data";
@@ -17,6 +18,9 @@ import { isExpired, roleOf, STATUS_LABEL, statusOf, type Action, type DealStatus
 import { friendlyError, signAndSend } from "@/lib/send";
 import { useDeal } from "@/lib/use-deal";
 
+// The QR library loads only when the landlord first opens handover mode (spec §10).
+const HandoverMode = dynamic(() => import("@/components/deal/HandoverMode").then((m) => m.HandoverMode), { ssr: false });
+
 type WalletAction = Exclude<Action, "showQr">;
 
 // The status each action needs; checked against the live deal right before the wallet signs.
@@ -26,13 +30,15 @@ export function DealClient({ id, origin, created }: { id: string; origin: string
   const { connection } = useConnection();
   const wallet = useWallet();
   const program = useMemo(() => getProgram(connection), [connection]);
-  const { address, deal, signatures, loadError, statusChanged, refresh } = useDeal(id);
+  const { address, deal, signatures, loadError, statusChanged, justReleased, refresh } = useDeal(id);
   const now = useNow();
   const [busy, setBusy] = useState<Action | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [signature, setSignature] = useState<string | null>(null);
   const [confirming, setConfirming] = useState<WalletAction | null>(null);
   const [handoverOpen, setHandoverOpen] = useState(false);
+  const [handoverUsed, setHandoverUsed] = useState(false);
+  const [releasedClosed, setReleasedClosed] = useState(false);
 
   if (!address) {
     return <DealMessage title="This isn't a valid deal link">Check that you copied the whole link.</DealMessage>;
@@ -92,6 +98,7 @@ export function DealClient({ id, origin, created }: { id: string; origin: string
 
   function onAction(action: Action) {
     if (action === "showQr") {
+      setHandoverUsed(true); // mounts HandoverMode (and loads its chunk) the first time; it stays mounted so closing restores focus
       setHandoverOpen(true);
       return;
     }
@@ -103,6 +110,8 @@ export function DealClient({ id, origin, created }: { id: string; origin: string
   }
 
   const copy = confirming ? confirmCopy(confirming, role, amount, expired) : null;
+  // The landlord sees the Released screen when the tenant approves during handover mode, or while this page is open.
+  const showReleased = role === "landlord" && data.status === "released" && !releasedClosed && (handoverOpen || justReleased);
 
   return (
     <>
@@ -121,11 +130,29 @@ export function DealClient({ id, origin, created }: { id: string; origin: string
         signature={signature}
         onAction={onAction}
       />
-      {handoverOpen && data.status === "funded" && (
-        <div className="mx-auto max-w-app px-4 pb-10">
-          <HandoverQR dealId={id} origin={origin} />
-        </div>
+      {handoverUsed && (
+        <HandoverMode
+          open={handoverOpen && data.status === "funded"}
+          onClose={() => setHandoverOpen(false)}
+          dealId={id}
+          origin={origin}
+          title={data.title}
+          amount={amount}
+          deadline={data.deadline}
+          now={now}
+        />
       )}
+      <ReleasedScreen
+        open={showReleased}
+        onClose={() => {
+          setHandoverOpen(false);
+          setReleasedClosed(true);
+        }}
+        title={data.title}
+        amount={amount}
+        settledAt={data.settledAt}
+        receipt={signatures[2]}
+      />
       <ConfirmDialog
         open={copy !== null}
         title={copy?.title ?? ""}

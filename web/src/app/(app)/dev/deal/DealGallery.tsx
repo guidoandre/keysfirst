@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { DealView } from "@/components/deal/DealView";
+import { HandoverMode } from "@/components/deal/HandoverMode";
+import { ReleasedScreen } from "@/components/deal/ReleasedScreen";
+import { Button } from "@/components/ui/Button";
 import { Segmented } from "@/components/ui/Segmented";
 import type { DealData, Phase } from "@/lib/deal-view";
 import type { Role } from "@/lib/rules";
@@ -41,13 +44,16 @@ export function DealGallery() {
   const [phase, setPhase] = useState<Phase>("funded-window");
   const [role, setRole] = useState<Role>("landlord");
   const [connected, setConnected] = useState<"yes" | "no">("yes");
+  const [screen, setScreen] = useState<"none" | "handover" | "released">("none");
   const { data, now } = SCENARIOS[phase];
-  const effectiveRole: Role = connected === "yes" ? (ME[role] === data.landlord ? "landlord" : ME[role] === data.tenant ? "tenant" : "visitor") : "visitor";
+  const effectiveRole: Role =
+    connected === "yes" ? (ME[role] === data.landlord ? "landlord" : ME[role] === data.tenant ? "tenant" : "visitor") : "visitor";
 
   return (
     <div className="space-y-6 py-6">
       <div className="mx-auto max-w-page space-y-4 px-4 sm:px-6 lg:px-10">
-        <h1 className="font-display text-section font-bold">Deal gallery</h1>
+        {/* DealView's DealHero renders the page's <h1>; a page has exactly one, so this stays a <p>. */}
+        <p className="font-display text-section font-bold">Deal gallery</p>
         <Segmented
           name="phase"
           legend="Phase"
@@ -76,6 +82,14 @@ export function DealGallery() {
             { value: "no", label: "Logged out" },
           ]}
         />
+        <div className="flex flex-wrap gap-2">
+          <Button variant="secondary" onClick={() => setScreen("handover")}>
+            Open handover mode
+          </Button>
+          <Button variant="secondary" onClick={() => setScreen("released")}>
+            Open Released screen
+          </Button>
+        </div>
       </div>
       <DealView
         id="8cTvC1gnouTSxswytgt1as8FXgLmp1yJU6bfVopj8xTy"
@@ -90,7 +104,27 @@ export function DealGallery() {
         busy={null}
         error={null}
         signature={null}
-        onAction={() => undefined}
+        onAction={(action) => {
+          if (action === "showQr") setScreen("handover");
+        }}
+      />
+      <HandoverMode
+        open={screen === "handover"}
+        onClose={() => setScreen("none")}
+        dealId="8cTvC1gnouTSxswytgt1as8FXgLmp1yJU6bfVopj8xTy"
+        origin="https://keysfirst.vercel.app"
+        title="Room in Vallendar"
+        amount="€600.00"
+        deadline={at(10, 4, 14)}
+        now={at(10, 1, 13, 55)}
+      />
+      <ReleasedScreen
+        open={screen === "released"}
+        onClose={() => setScreen("none")}
+        title="Room in Vallendar"
+        amount="€600.00"
+        settledAt={at(10, 1, 14, 7)}
+        receipt="demoSettle"
       />
     </div>
   );
