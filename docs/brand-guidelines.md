@@ -183,6 +183,7 @@ We sound like a calm, exact friend who knows the rules: facts first, then the ti
 | Clear | Specific: amounts, dates, times | Vague | "Returns to you on Sun 4 Oct, 14:00." | "Funds are subject to release conditions." |
 | Calm | Steady, even when something fails | Alarmist | "The deadline passed. The deposit can go back now." | "Act now! Time is running out!" |
 | Fair | Clear about both sides | Anti-landlord | "The landlord is paid in seconds at the door." | "Landlords can't be trusted." |
+| Personal | Talks to the reader as "you" wherever we know who they are | Third person about the reader | Tenant: "€600.00 goes back to you." Landlord: "Your tenant scans your code." | Tenant: "€600.00 goes back to the tenant." |
 | Honest | Upfront about limits | Salesy | "Prototype on Solana devnet, test money only." | "100% scam-proof." |
 
 ### Tone by context
@@ -190,7 +191,7 @@ We sound like a calm, exact friend who knows the rules: facts first, then the ti
 | Context | Tone | Example |
 |---|---|---|
 | Landing and marketing | Confident, calm | "The deposit moves only when the keys do." |
-| Creating and paying | Instructional, exact | "Choose the latest handover. If there's no handover by then, the deposit goes back to the tenant." |
+| Creating and paying | Instructional, exact | "Choose the latest handover. If there's no handover by then, the deposit goes back to your tenant." |
 | Waiting | Reassuring, factual | "Deposit locked · €600.00. It goes to the landlord when you scan at the door, or back to you after Sun 4 Oct, 14:00." |
 | Errors | Calm, specific, next step | "That wallet didn't pay this deposit. Switch Phantom to the wallet that did, then scan again." |
 | Success | Quiet confirmation | "Released: hand over the keys." |
@@ -205,11 +206,11 @@ We sound like a calm, exact friend who knows the rules: facts first, then the ti
 
 ## 7. Motion personality
 
-A departure board, not a party: short (150–250 ms), exact, ease-out. Status changes flip once like a split-flap board; countdowns tick; the highlighter draws in once on the hero. Nothing loops except loading indicators, and reduced-motion settings replace every flip and sweep with an instant change. Full rules are in the design system.
+A departure board, not a party: short (150–250 ms), exact, ease-out. Status changes flip once like a split-flap board; countdowns tick; the highlighter draws in once on the hero. The landing page arrives the same way: its parts rise into place in reading order, the example timetable's rows flip in like a departure board, and each section settles as it scrolls into view (longer, 600–700 ms, but still exact and once). Nothing loops except loading indicators, and reduced-motion settings replace every flip and sweep with an instant change. Full rules are in the design system.
 
 ## 8. Honesty rules (from the project brief)
 
-- Every page says it's a devnet prototype with test money (ribbon plus footer).
+- Every page says it's a devnet prototype with test money (in the footer; the top ribbon was removed on 2026-09-28 so the product looks like the real thing).
 - No invented testimonials, user numbers, partner logos or press quotes.
 - Legal statements stay exactly as accurate as §551(2) BGB allows; no legal advice.
 - The Safety page states the limitations from spec §10 in plain words, including the upgradeable program.

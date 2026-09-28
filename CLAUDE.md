@@ -15,3 +15,5 @@
 - Route groups: web/src/app/(site) = static marketing pages with no wallet code (keep it that way: Lighthouse); web/src/app/(app) = wallet pages under one Providers + connect sheet. Dev galleries at /dev/ui, /dev/deal, /dev/deals (404 in production).
 - Links from marketing pages into (app) routes use prefetch={false} (isAppRoute in web/src/lib/site.ts): Next's prefetch pulled ~200 KiB of wallet code into the landing page. Audit and Lighthouse notes: docs/audits/2026-09-28-accessibility.md.
 - Deal logic for the UI lives in web/src/lib/deal-view.ts (next-step matrix, tested); never offer an action that rules.ts availableActions() doesn't return.
+- Deal copy speaks to the viewer: "you" for yourself, "your tenant" for a landlord's tenant (statusLabel/statusLine/dealRows take the role; a visitor on an unpaid deal is the tenant-to-be). No devnet ribbon: the footer carries the devnet disclaimer.
+- Landing motion (design system §8): .enter/[--enter-delay] for the hero, data-reveal blocks + ScrollReveal (mounted on the landing page only) for sections; all CSS in globals.css behind prefers-reduced-motion: no-preference.

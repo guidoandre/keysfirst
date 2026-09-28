@@ -109,6 +109,7 @@ This block is the top of `web/src/app/globals.css`:
   /* Motion */
   --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
   --ease-in: cubic-bezier(0.5, 0, 0.9, 0.4);
+  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1); /* landing entrances: quick start, long exact stop */
   --animate-rise: rise 200ms var(--ease-out) both;
   --animate-flip: flip 420ms var(--ease-out);
   --animate-marker: marker 600ms var(--ease-out) 150ms both;
@@ -136,7 +137,6 @@ This block is the top of `web/src/app/globals.css`:
   --btn-h-sm: 2.5rem;     /* 40px: header only; hit area padded to 44px */
   --field-h: 3rem;
   --header-h: 4rem;
-  --ribbon-h: 2rem;
   --qr-size: min(78vw, 56vh, 22rem);
   /* focus: white gap, ink ring (≥3:1 on any surface), Highlighter halo */
   --focus-ring: 0 0 0 2px var(--k-paper), 0 0 0 4px var(--k-ink), 0 0 0 7px var(--k-marker);
@@ -151,8 +151,8 @@ This block is the top of `web/src/app/globals.css`:
   :focus-visible { outline: 2px solid transparent; outline-offset: 2px; box-shadow: var(--focus-ring); }
   @media (prefers-reduced-motion: reduce) {
     *, ::before, ::after {
-      animation-duration: 1ms !important; animation-iteration-count: 1 !important;
-      transition-duration: 1ms !important; scroll-behavior: auto !important;
+      animation-duration: 1ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important;
+      transition-duration: 1ms !important; transition-delay: 0ms !important; scroll-behavior: auto !important;
     }
   }
 }
@@ -205,7 +205,7 @@ Notes:
 | Band | `bg-subtle` | Alternate marketing sections, next-step panels |
 | Card | `bg-canvas border border-rule rounded-lg` | Groups of related content |
 | Timetable frame | `border-2 border-fg rounded-lg`, header row `bg-inverse text-fg-inverse` | Rules, deal timelines: the signature component |
-| Inverse band | `bg-inverse text-fg-inverse` | Devnet ribbon (desktop), handover header, footer |
+| Inverse band | `bg-inverse text-fg-inverse` | Handover header, CTA band, footer |
 | Floating | `shadow-pop` / `shadow-sheet` + `rounded-xl` | Menus, sheets, dialogs only |
 
 Borders: 1 px `rule` for decoration, 1.5 px `field` for controls, 2 px `fg` for the timetable and emphasised frames. No gradients, glows or blurred glass.
@@ -258,10 +258,10 @@ All live in `web/src/components/` (primitives in `components/ui/`). Server compo
 | `Button` / `ButtonLink` | `variant: primary (bg-inverse text-fg-inverse) · secondary (bg-canvas border-2 border-fg) · quiet (text link with Highlighter underline) · danger (border-2 border-danger text-danger)`; `size: sm · md (48) · lg (56)`; `loading`, `disabled` + `reason`; `fullWidth` on phones for primary actions; `ButtonLink` wraps `next/link` or an external `<a>` (adds the `external` icon + `rel="noreferrer"` for external) |
 | `Field` | Label above (never placeholder-only), optional hint, error slot; wraps `input`, `select`, `datetime-local`; `h-(--field-h) border-[1.5px] border-field rounded-md`; character counter for the room title |
 | `Segmented` | Radio group styled as buttons (`role="radiogroup"`), used for the handover window and dashboard filter; arrow-key navigation from native radios |
-| `StatusChip` | See §6; `size: sm · md`; label text always present (colour is never the only signal) |
+| `StatusChip` | See §6; `size: sm · md`; label text always present (colour is never the only signal). Pass the viewer's `role` on their own deal: the person the money went to reads "Released to you" / "Returned to you" (`statusLabel` in `lib/deal-view.ts`) |
 | `Callout` | `tone: info (bg-accent-soft) · success (bg-released-soft) · returned (bg-returned-soft) · danger (bg-danger-soft)`, left 4 px bar in the tone colour, icon + text; `role="status"` for live updates, `role="alert"` for errors |
 | `Card` | `tone: default · subtle · strong (2 px fg frame) · inverse` |
-| `Timetable` | Rows of `time | what happens | outcome`, `state: done · now · next · later`; "now" row = `bg-accent-soft` + 6 px Highlighter left edge + bold time; header row `bg-inverse`; used on the landing hero, How it works, create preview and deal page |
+| `Timetable` | Rows of `time | what happens | outcome`, `state: done · now · next · later`; "now" row = `bg-accent-soft` + 6 px Highlighter left edge + bold time; header row `bg-inverse`; used on the landing hero, How it works, create preview and deal page. `rowsEnterAt` (landing hero only) flips the rows in one after another (§8) |
 | `Countdown` | Live value from `useNow()`; formats `2 days 4 h` / `18 h 42 min` / `4 min 12 s`; `aria-live="off"` (announce only on state change); `tabular-nums` |
 | `KeyValue` | `dl` rows for facts (move-in, deadline, amount) |
 | `Stepper` | "Step 2 of 3" + three segments; `aria-current="step"` |
@@ -270,49 +270,49 @@ All live in `web/src/components/` (primitives in `components/ui/`). Server compo
 | `CopyField` | Read-only text + "Copy" button → "Copied" for 2 s (`aria-live="polite"`) |
 | `Skeleton` | `bg-subtle rounded-md`, static (no shimmer) |
 | `EmptyState` | Pictogram + title + one sentence + one action |
-| `FaqItem` | Native `<details>/<summary>` with a chevron that rotates 180° (150 ms) |
+| `FaqItem` | Native `<details>/<summary>` with a chevron that rotates 180° (150 ms); the answer slides open (280 ms) where the browser can animate to `height: auto`, and opens instantly elsewhere |
 
 ### Site chrome
 
 | Component | Spec |
 |---|---|
-| `DevnetRibbon` | Top strip, `bg-subtle text-fg-muted text-sm`: "Prototype on Solana devnet · **test money only**, nothing here has real value · What's devnet?" → `/faq#devnet` |
 | `SiteHeader` | Sticky, `h-(--header-h)`, `bg-canvas/95 border-b border-rule`. Two variants (see the route groups in the redesign spec). **Site** (marketing pages, no wallet code): How it works · For tenants · For landlords · FAQ, then Get started (quiet) + "Log in" (secondary sm, links to `/deals?login=1`). **App**: logged out: How it works · FAQ · Get started + "Log in" (opens `ConnectSheet`); logged in: My deals · Create a deal · How it works · FAQ + `WalletChip`. Under `lg`: logo + Log in or `WalletChip` + menu button opening a `Sheet` with all links. Current page link: `aria-current="page"` + Highlighter underline |
 | `SiteFooter` | `bg-inverse text-fg-inverse`: lockup, one-line promise, links (How it works, For tenants, For landlords, FAQ, About, Get started), "Program on Solana Explorer ↗", devnet disclaimer |
 | `ConnectSheet` | `Sheet` titled "Log in with your wallet", one line on what a wallet is, detected wallets (Phantom first) as large buttons with the wallet's own icon + "Detected"; none detected on a phone → "Open Keysfirst in Phantom" (deep link) + guide link; none on desktop → "Install Phantom ↗" + guide link; footer: "Set Phantom to Solana Devnet. How?" → `/start#devnet`. Uses `useWallet()` (`select`, `connect`) only; the wallet library's modal and CSS are not used |
 | `WalletChip` | `7xKp…3mQe` + green dot; opens a menu: My deals · Get test funds · Copy address · Log out |
-| `OpenInPhantom` | Callout with the "Open in Phantom" button wherever a phone browser has no wallet (keeps today's `phantomBrowseUrl`) |
 
 ### Deal components
 
 | Component | Spec |
 |---|---|
 | `DealHero` | Band in the status colour (§6): room title, amount (`text-amount tabular-nums`), `StatusChip`, "You're the landlord / tenant" line, one-sentence explanation |
-| `NextStep` | The single primary action for this role and moment (from `availableActions`) with its reason line; secondary actions below as quiet buttons; not connected → Connect; phone without wallet → OpenInPhantom |
+| `NextStep` | The single primary action for this role and moment (from `availableActions`) with its reason line; secondary actions below as quiet buttons; not connected → Connect (on a phone without a wallet, the `ConnectSheet` offers "Open in Phantom"; no second callout on the page) |
 | `DealTimetable` | `Timetable` of created → locked → handover window → released/returned, with receipt links ("Receipt ↗" → Solana Explorer) and the "if it doesn't happen" row |
 | `ShareBox` | Landlord while `open`: `CopyField` with the link + "Share on WhatsApp" + native share (`navigator.share`) when available |
-| `HandoverMode` | Landlord, full screen (`fixed inset-0 z-60 bg-canvas`): lockup-on-ink header with Close, the QR (`--qr-size`, white quiet zone) encoding `https://<origin>/deal/<id>/handover`, three numbered instructions, live line "Waiting for the tenant to approve…" (pulsing dot), deadline countdown; asks for a screen wake lock while open (progressive, ignored if unsupported) |
+| `HandoverMode` | Landlord, full screen (`fixed inset-0 z-60 bg-canvas`): lockup-on-ink header with Close, the QR (`--qr-size`, white quiet zone) encoding `https://<origin>/deal/<id>/handover`, three numbered instructions, live line "Waiting for your tenant to approve…" (pulsing dot), deadline countdown; asks for a screen wake lock while open (progressive, ignored if unsupported) |
 | `ReleasedScreen` | Full-screen `bg-released text-white` panel entering with `animate-released`: "Released: hand over the keys.", amount, "is in your wallet now", receipt link, "Back to the deal" (secondary on green: white border). `role="status"` |
 | `DealCard` | My deals row/card: title, amount, `StatusChip`, role, countdown line, next-action text, whole card is one link |
 | `TestFundsButton` | Quiet button → "Sent 1,000 Test EUR (and a little devnet SOL for fees)" callout; unchanged faucet endpoint (0.02 SOL top-up) |
 
 ### Marketing blocks
 
-`SectionHeader` (eyebrow label + H2 + lead), `Hero`, `StepsList` (numbered pictogram steps), `ScenarioGrid` ("What if…" cards: question, one-line answer, "the rule behind it"), `SplitAudience` (renting | letting columns), `WhySolana` (three facts + program link), `CtaBand`, `FaqList`.
+`SectionHeader` (eyebrow label + H2 + lead), `Hero`, `StepsList` (numbered pictogram steps), `ScenarioGrid` ("What if…" cards: question, one-line answer, "the rule behind it"), `SplitAudience` (renting | letting columns), `WhySolana` (three facts + program link), `CtaBand`, `FaqList`. Their blocks carry `data-reveal`; it does nothing unless the page mounts `ScrollReveal` (only the landing page does, §8).
 
 ## 8. Motion rules
 
 | What | Animation | Duration / easing | Reduced motion |
 |---|---|---|---|
 | Page and section content | `animate-rise` on first paint of hero and cards (≤ 3 staggered steps of 60 ms) | 200 ms ease-out | none |
-| Hero keyword | `marker animate-marker` draws the Highlighter once | 600 ms, 150 ms delay | fully drawn |
+| Landing hero | `.enter` rises each part in reading order (`[--enter-delay:…]`: label 0, headline 60, lead 130, buttons 200, facts 300 + 70 ms steps); the example timetable rises at 160 ms and its rows flip in like a departure board (`rowsEnterAt`, 90 ms apart) | 640 ms rise / 560 ms flip, `ease-settle` | none |
+| Hero keyword | `marker enter-marker` draws the Highlighter once the headline has landed | 650 ms, 620 ms delay | fully drawn |
+| Landing sections | `[data-reveal]` blocks rise as they scroll into view (`ScrollReveal`, one IntersectionObserver); blocks arriving together land 80 ms apart (≤ 400 ms); inside a block, pictograms settle (`.reveal-pop`), "The rule:" Highlighters draw and Why-Solana rules draw left to right (`.reveal-rule`). Only blocks still below the fold are ever hidden, and only once the script runs | 720 ms, `ease-settle` | none: nothing is hidden |
 | Status change on the deal page | `StatusChip` flips (`animate-flip`) when the status changes while viewing | 420 ms | instant swap |
 | Released | `ReleasedScreen` swings in (`animate-released`) | 450 ms | instant |
 | Sheets and dialogs | `animate-sheet` (phone) / fade + 8 px rise (desktop); exit 150 ms | 250 ms | instant |
 | Hover and press | colour/underline 150 ms; press `translate-y-px` | 150 ms | colour only |
 | Waiting | pulsing dot (`animate-pulse-dot`), spinner (`animate-spin`) | loops | static dot, static icon |
 
-Only `transform` and `opacity` animate (plus `background-size` for the marker). No scroll-jacking, parallax, confetti or looping decoration. Motion never delays an action: buttons work mid-animation.
+Only `transform` and `opacity` animate (plus `background-size` for the marker, and the FAQ answer's height). No scroll-jacking, parallax, confetti or looping decoration. Motion never delays an action: buttons work mid-animation. Every landing rule sits inside `@media (prefers-reduced-motion: no-preference)`, and reduced motion also zeroes animation and transition delays.
 
 ## 9. Accessibility checklist (WCAG 2.1 AA)
 
