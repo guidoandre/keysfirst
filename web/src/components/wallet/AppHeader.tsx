@@ -31,7 +31,7 @@ export function AppHeader() {
         <nav aria-label="Main" className="hidden lg:block">
           <NavLinks items={items} />
         </nav>
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           {loggedIn ? <WalletChip /> : <LoginButton size="sm" />}
           <MobileMenu items={items} />
         </div>

@@ -33,7 +33,7 @@ export function WalletChip() {
         type="button"
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
-        className="inline-flex h-11 max-w-[14rem] items-center gap-2 rounded-full border-[1.5px] border-field px-3.5 text-sm font-semibold hover:bg-subtle"
+        className="inline-flex h-11 max-w-[8.5rem] min-w-0 sm:max-w-[14rem] items-center gap-2 rounded-full border-[1.5px] border-field px-3.5 text-sm font-semibold hover:bg-subtle"
       >
         <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-released" />
         <span className="sr-only">Your account: </span>
