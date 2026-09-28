@@ -16,6 +16,7 @@ export function NextStep({
   role,
   amount,
   connected,
+  settled,
   busy,
   error,
   signature,
@@ -25,6 +26,8 @@ export function NextStep({
   role: Role;
   amount: string;
   connected: boolean;
+  /** True once the deal is released, returned or cancelled: nobody has anything left to do. */
+  settled: boolean;
   busy: Action | null;
   error: string | null;
   signature: string | null;
@@ -37,6 +40,14 @@ export function NextStep({
         {role === "visitor" ? "What happens next" : "Your next step"}
       </h2>
       <p className="text-body">{view.message}</p>
+
+      {/* Logged out with nothing to tap: the landlord and the tenant only see their buttons once logged in. */}
+      {!connected && !primary && !settled && (
+        <div className="space-y-3">
+          <LoginButton label="Log in to see your options" variant="secondary" fullWidth />
+          <OpenInPhantom />
+        </div>
+      )}
 
       {primary &&
         (connected ? (
