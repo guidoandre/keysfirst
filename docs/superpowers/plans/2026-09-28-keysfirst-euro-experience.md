@@ -835,6 +835,12 @@ and the fallback test:
     expect(friendlyError("boom")).toBe("Something went wrong. Try again. If you use Phantom, check that it is set to Solana Devnet.");
 ```
 
+and, in "explains common wallet problems", replace the `Connect your wallet first.` expectation with (email users have no "wallet"):
+
+```ts
+    expect(friendlyError(new Error("Log in first."))).toBe("Log in first.");
+```
+
 - [ ] **Step 2: Run to verify failure**
 
 Run: `npm test -- send`
@@ -857,6 +863,8 @@ export function needsTopUp(message: string | null): boolean {
 ```ts
   return "Something went wrong. Try again. If you use Phantom, check that it is set to Solana Devnet.";
 ```
+
+Also in `send.ts`: in `signAndSend`, `throw new Error("Connect your wallet first.")` → `throw new Error("Log in first.")`, and in `friendlyError` the line `if (text.includes("Connect your wallet first.")) return "Connect your wallet first.";` → `if (text.includes("Log in first.")) return "Log in first.";`.
 
 Run: `npm test -- send` → PASS.
 
