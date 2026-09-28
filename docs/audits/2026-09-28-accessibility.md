@@ -184,3 +184,84 @@ NVDA and VoiceOver aren't available in this environment, so these are structural
 `rules.ts` was not changed. The `(site)` pages still ship no wallet code: none of the production chunks of the six marketing pages contain wallet-adapter code, and the same check does find it on `/deals`.
 
 <!-- Task 19 appends its Lighthouse section below. -->
+
+## Lighthouse (mobile, landing page)
+
+**Date:** 28 September 2026 · **Page:** `/` on the `redesign` Preview (https://keysfirst-git-redesign-atlas-fee2.vercel.app/) · **Tool:** PageSpeed Insights web UI, Lighthouse 13.5.0, mobile (Moto G Power emulation, simulated slow 4G) · **Fix commit:** `aa1ea8b` `perf(web): marketing links into the wallet pages don't prefetch the wallet code`
+
+**Result: 94–96 / 100 / 100 / 100 after the fix (target: at least 90 in all four).** Before the fix, Performance swung between 85 and 95 on the same build.
+
+### Scores per run
+
+| Run | Commit | Performance | Accessibility | Best practices | SEO | FCP | LCP | TBT | CLS | Speed Index |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Baseline 1 (controller) | `0bf5dc2` | **85** | 100 | 100 | 100 | 1.0 s | 4.1 s | 50 ms | 0 | 3.8 s |
+| Baseline 2 | `0bf5dc2` | 95 | 100 | 100 | 100 | 1.0 s | 2.8 s | 90 ms | 0 | 2.2 s |
+| After 1 | `aa1ea8b` | 96 | 100 | 100 | 91 * | 0.9 s | 2.7 s | 0 ms | 0 | 2.4 s |
+| After 2 | `aa1ea8b` | 96 | 100 | 100 | 100 | 0.9 s | 2.8 s | 50 ms | 0 | 2.4 s |
+| After 3 | `aa1ea8b` | 94 | 100 | 100 | 100 | 1.0 s | 2.9 s | 50 ms | 0 | 3.8 s |
+
+\* In that run only, "robots.txt is not valid" failed with "Fetch of robots.txt failed: Timed out fetching resource". The run started about two minutes after the new deployment went live. `/robots.txt` answers 200 with valid rules, and the next two runs scored 100.
+
+Desktop scored 100 for Performance in every run, before and after the fix. It also scored 100 in the other three categories, except SEO 91 in after-run 1 (the same robots.txt timeout).
+
+| Page weight (mobile runs) | Before | After |
+|---|---|---|
+| Total transfer | 516 KiB | 278 KiB |
+| Requests / scripts | 38 / 20 | 26 / 13 |
+| "Unused JavaScript" | 227 KiB (3 chunks 100 % unused) | 28 KiB (the React chunk) |
+
+### What held Performance back
+
+**1. The landing page downloaded the wallet code in the background.** Next.js `<Link>` prefetches a static page in full as soon as the link appears on screen (production only). On a phone, "Log in" (`/deals?login=1`) and the hero's "Create a deposit link" (`/new`) are on screen at load; on desktop "Get started" (`/start`) is too. The PageSpeed network log shows those prefetches (`/deals?login=1&_rsc=…`, `/new?_rsc=…`) followed by three chunks that the landing page's HTML never references:
+
+| Chunk (Preview build) | Size | Contents |
+|---|---|---|
+| `0xhe2wwk_d2xc.js` | 93.7 KiB | Solana web3.js and the token library (borsh, `@solana/errors`, `TOKEN_PROGRAM_ID`) |
+| `2rw2ukklvylvd.js` | 53.9 KiB | Wallet adapter and the Mobile Wallet Adapter dialog |
+| `2jio0qa_lz_48.js` | 53.5 KiB | Anchor (`AnchorProvider`) and the Keysfirst program IDL |
+
+All three were 100 % unused on `/`: 200 of the 227 KiB of "unused JavaScript". The same check on a local production build: the payloads of `/new`, `/start` and `/deals` reference the matching chunks, `/`'s HTML doesn't, and calling `router.prefetch("/new")` on `/` downloads them (web3.js 341 KB, Anchor and IDL 183 KB, wallet adapter 159 KB before compression). The `(site)` pages themselves were still wallet-free (the check in "Files changed" above holds); it was the prefetch that pulled the wallet code in.
+
+Why this cost 10 points only sometimes: PageSpeed simulates the slow phone from a fast recording, and it counts every request that finished before the page's recorded first paint as part of the LCP. On mobile the recorded first paint always came late, at 1.2–2.4 s (see point 2). When it came after the prefetches (baseline 1: 2.4 s), the 200 KiB of wallet code was counted, and LCP became 4.1 s (Performance 85). When it came before them (baseline 2: 1.2 s), the same build scored 95. After the fix, run 3 had the same late first paint (2.4 s) and still scored 94 with an LCP of 2.9 s.
+
+**2. The "element render delay" of the h1 is the time to the first frame, not something the page waits for.** The LCP breakdown reports the recorded (not simulated) timing: 0–3 ms to first byte, then about 2,400 ms of render delay in baseline 1 and after-run 3. Checks:
+
+- The h1 is plain server-rendered HTML. No client component wraps the hero. Neither the h1 nor its ancestors animate; only the timetable card uses `animate-rise`. The `animate-marker` on "keys" animates `background-size` only. The text is visible from the first frame.
+- First contentful paint and LCP land on the same frame in every mobile run. The filmstrip is blank until then, and then the whole page appears at once, with the web fonts already in.
+- Long before the first paint (1.2–2.4 s), everything had arrived: the CSS at 0.1–0.8 s, the four fonts by 0.1–0.6 s and the load event at 0.5–0.9 s. The main thread was idle during the gap. In after-run 3, four tasks ran between the load event (0.64 s) and the first paint (2.42 s), 50 ms in total.
+- It doesn't happen on desktop: the first paint comes at 0.25–0.6 s, within 0.26 s of DOMContentLoaded. A PageSpeed mobile run of example.com painted 6 ms after its load event. Local headless Chrome with the same phone emulation paints this page 0.2–0.6 s after DOMContentLoaded. There the main thread spends most of that time on layout and paint; it isn't sitting idle.
+
+The delay varies from run to run (1.2–2.4 s). I couldn't find its cause without PageSpeed's raw trace, which it doesn't publish. After the fix it no longer decides the score (see run 3).
+
+**3. Fonts:** exactly four files load, all preloaded, `font-display: swap`, about 16 KiB each: Barlow 400 and 600, Barlow Semi Condensed 600 and 700 (latin). next/font also declares the latin-ext and Vietnamese subsets, but browsers never download them for this page's text. No fifth weight.
+
+### What changed
+
+- `web/src/lib/site.ts`: `isAppRoute(href)` is true for `/new`, `/start`, `/deals` and `/deal/…`, with or without a query or hash. Its comment states the rule. Unit tests are in `site.test.ts`.
+- `ui/Button.tsx`: `ButtonLink` passes an optional `prefetch` prop to `next/link`.
+- Every link from the marketing pages into a wallet page now has `prefetch={false}`:
+  - the header's "Get started" and "Log in", and the menu sheet's "Get started" (`NavItem.prefetch`)
+  - the landing hero, `AudienceSplit` and both links in `CtaBand`
+  - the For landlords hero
+  - For tenants: "Get started" and the three "What you need" cards
+  - FAQ answer links and the footer, both through `isAppRoute`
+- The footer also appears on the wallet pages, so its three wallet-page links stop prefetching there too. They sit at the bottom of the page. The app's own navigation (app header, My deals, `/start` → `/new`) still prefetches as before.
+- Behaviour: the links still navigate inside the app without a full reload. The wallet page's code now loads on click instead of in the background. On a production build, the hero's "Create a deposit link" opened `/new` (step "The room"), and the header's "Log in" opened `/deals` with the log-in sheet. No console errors.
+- Tests (61, 2 of them new), lint and build are green. The marketing pages, `/start` and `/new` are still `○ (Static)`.
+
+### Left as is
+
+- **LCP of about 2.7–2.9 s** under the simulated slow 4G: the HTML, the CSS, the four fonts (64 KiB) and the framework JavaScript (the React chunk 73.7 KiB, the Next.js runtime 47.8 KiB, about 30 KiB of smaller chunks). Going lower would mean less JavaScript on the landing page, which isn't needed for 90.
+- **Unscored hints:**
+  - "Legacy JavaScript", 14 KiB: the polyfills Next.js builds into its framework chunk (`Array.prototype.at`, `flat`, `flatMap`, `Object.fromEntries`, `Object.hasOwn`, `trimStart`, `trimEnd`).
+  - 28 KiB of the React chunk unused at load.
+  - One non-composited animation: the marker's `background-size` draw-in from the design system (CLS stays 0).
+  - The marketing pages still prefetch each other's data once the page runs: 7 requests of 1.5–9.6 KiB, about 32 KiB in all, plus one 2.8 KiB script for those pages. That keeps navigation between them instant. They are counted in the LCP when the first paint comes late, as in after-run 3, which still scored 94.
+- **Preview only:** Vercel builds its toolbar loader (`vercel.live/_next-live/feedback/feedback.js`) into Preview deployments. That is where the "preconnect to vercel.live" hint comes from. On production the loader only runs for someone with the `__vercel_toolbar=1` cookie, so Lighthouse won't load it.
+
+### For the production measurement (Task 20)
+
+- Measure `/` on https://keysfirst.vercel.app after the merge, mobile, at least twice.
+- Expect Performance around 94–96, as on the Preview. The late first frame described in point 2 may still show up as a varying render delay.
+- The SEO audits all passed on the Preview. Lighthouse didn't flag the Preview's `X-Robots-Tag: noindex`, so production should also score 100 for SEO.
