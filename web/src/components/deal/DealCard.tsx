@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
 import { StatusChip } from "@/components/ui/StatusChip";
 import { countdownLine, nextActionText, type DealSummary } from "@/lib/dashboard";
+import { statusLabel } from "@/lib/deal-view";
 import { formatEur } from "@/lib/format";
-import { STATUS_LABEL } from "@/lib/rules";
 
 /** One deal on My deals. The whole card is one link. */
 export function DealCard({ deal, now }: { deal: DealSummary; now: number }) {
@@ -16,7 +16,7 @@ export function DealCard({ deal, now }: { deal: DealSummary; now: number }) {
       href={`/deal/${deal.address}`}
       // A short, steady link name that starts with the room. Read as one name, the whole card would begin with the
       // role and change every second in the last hour (the countdown), so the countdown is the description instead.
-      aria-label={`${deal.title}, ${amount}, ${STATUS_LABEL[deal.status]}. ${roleLine}. ${next}`}
+      aria-label={`${deal.title}, ${amount}, ${statusLabel(deal.status, deal.role)}. ${roleLine}. ${next}`}
       aria-describedby={countdownId}
       className="group block rounded-lg border-[1.5px] border-rule bg-canvas p-4 transition-colors duration-150 hover:border-fg"
     >
@@ -28,7 +28,7 @@ export function DealCard({ deal, now }: { deal: DealSummary; now: number }) {
         <p className="shrink-0 font-display text-card font-bold tabular-nums">{amount}</p>
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-        <StatusChip status={deal.status} size="sm" />
+        <StatusChip status={deal.status} role={deal.role} size="sm" />
         <span id={countdownId} className="text-sm text-fg-muted tabular-nums">
           {countdownLine(deal, now)}
         </span>

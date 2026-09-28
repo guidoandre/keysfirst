@@ -83,6 +83,22 @@ export const ROLE_LINE: Record<Role, string> = {
   visitor: "Deposit link",
 };
 
+/**
+ * The status label for this viewer: the spec §8 labels, except that the person the money went to reads "you"
+ * ("Released to you" for the landlord, "Returned to you" for the tenant).
+ */
+export function statusLabel(status: DealStatus, role: Role): string {
+  if (status === "released" && role === "landlord") return "Released to you";
+  if (status === "refunded" && role === "tenant") return "Returned to you";
+  return STATUS_LABEL[status];
+}
+
+/**
+ * Whether the copy speaks to this viewer as the tenant. Before anyone pays, a visitor is the person the link was
+ * sent to (the tenant-to-be); once the deal is paid, a visitor is someone else and reads the neutral wording.
+ */
+const speaksToTenant = (role: Role, status: DealStatus) => role === "tenant" || (role === "visitor" && status === "open");
+
 export function statusLine(status: DealStatus, role: Role): string {
   switch (status) {
     case "open":
@@ -90,9 +106,9 @@ export function statusLine(status: DealStatus, role: Role): string {
     case "funded":
       return "The money is in the lock.";
     case "released":
-      return "Paid to the landlord at the handover.";
+      return role === "landlord" ? "Paid to you at the handover." : "Paid to the landlord at the handover.";
     case "refunded":
-      return "Back with the tenant.";
+      return role === "tenant" ? "Back with you." : role === "landlord" ? "Back with your tenant." : "Back with the tenant.";
     case "cancelled":
       return "Closed before anyone paid.";
   }
@@ -157,16 +173,19 @@ export function nextStep(o: { status: DealStatus; role: Role; times: DealTimes; 
       }
       return { message: `The deposit is locked until the key handover or ${deadline}.`, ...pick(undefined, []) };
     case "funded-expired":
-      if (role === "landlord") return { message: "The deadline passed without a handover. The deposit can go back to the tenant now.", ...pick("refund", []) };
+      if (role === "landlord") return { message: "The deadline passed without a handover. The deposit can go back to your tenant now.", ...pick("refund", []) };
       if (role === "tenant") return { message: "The deadline passed without a handover. You can take your deposit back now.", ...pick("refund", []) };
       return { message: "The deadline passed without a handover. Anyone can now return the deposit to the tenant.", ...pick("refund", []) };
     case "released":
-      if (role === "landlord") return { message: `The tenant confirmed the handover on ${settled}. The deposit is in your wallet.`, secondary: [] };
+      if (role === "landlord") return { message: `Your tenant confirmed the handover on ${settled}. The deposit is in your wallet.`, secondary: [] };
       if (role === "tenant") return { message: `You confirmed the handover on ${settled}. The deposit went to the landlord.`, secondary: [] };
       return { message: `The tenant confirmed the handover on ${settled}. The deposit went to the landlord.`, secondary: [] };
     case "refunded":
       return {
-        message: role === "tenant" ? `Your deposit came back to you on ${settled}.` : `The deposit went back to the tenant on ${settled}.`,
+        message:
+          role === "tenant"
+            ? `Your deposit came back to you on ${settled}.`
+            : `The deposit went back to ${role === "landlord" ? "your" : "the"} tenant on ${settled}.`,
         secondary: [],
       };
     case "cancelled":
@@ -194,7 +213,7 @@ export function actionLabel(action: Action, role: Role, amount: string): string 
     case "confirmInApp":
       return "I have the keys: release the deposit";
     case "refund":
-      if (role === "landlord") return "Give the deposit back to the tenant";
+      if (role === "landlord") return "Give the deposit back to your tenant";
       return role === "tenant" ? "Take the deposit back" : "Return the deposit to the tenant";
     case "cancel":
       return "Cancel this deal";
@@ -232,7 +251,7 @@ export function confirmCopy(action: Action, role: Role, amount: string, expired 
     return { title: "Cancel this deal?", body: "The link stops working. Nobody has paid, so no money moves.", confirm: "Cancel the deal", danger: true };
   }
   if (action === "refund" && role === "landlord" && !expired) {
-    return { title: "Give the deposit back?", body: `${amount} goes back to the tenant and the deal ends.`, confirm: "Give it back", danger: true };
+    return { title: "Give the deposit back?", body: `${amount} goes back to your tenant and the deal ends.`, confirm: "Give it back", danger: true };
   }
   return null;
 }
@@ -247,15 +266,18 @@ export interface DealRow {
   signature?: string;
 }
 
-/** Timetable rows for the deal page, with receipts from the transaction list (oldest first). */
+/** Timetable rows for the deal page, with receipts from the transaction list (oldest first), worded for this viewer. */
 export function dealRows(o: {
   status: DealStatus;
+  role: Role;
   times: DealTimes & { createdAt: number; fundedAt: number; settledAt: number };
   signatures: string[];
   now: number;
   amount: string;
 }): DealRow[] {
-  const { status, times: t, signatures, now, amount } = o;
+  const { status, role, times: t, signatures, now, amount } = o;
+  const landlord = role === "landlord";
+  const tenant = speaksToTenant(role, status);
   const steps = timelineSteps(status, t, signatures);
   const created: DealRow = { key: "created", time: formatShortDateTime(t.createdAt), title: "Deal created", state: "done", signature: steps[0].signature };
 
@@ -266,7 +288,7 @@ export function dealRows(o: {
         key: "cancelled",
         time: formatShortDateTime(t.settledAt),
         title: STATUS_LABEL.cancelled,
-        detail: "The landlord withdrew the deal before anyone paid.",
+        detail: landlord ? "You withdrew the deal before anyone paid." : "The landlord withdrew the deal before anyone paid.",
         state: "done",
         signature: steps[1]?.signature,
       },
@@ -278,7 +300,7 @@ export function dealRows(o: {
       ? {
           key: "locked",
           time: `By ${formatShortDateTime(t.deadline)}`,
-          title: "The tenant pays the deposit",
+          title: landlord ? "Your tenant pays the deposit" : "You pay the deposit",
           detail: `${amount} goes into the lock.`,
           state: isExpired(t, now) ? "later" : "now",
         }
@@ -292,8 +314,12 @@ export function dealRows(o: {
       {
         key: "settled",
         time: formatShortDateTime(t.settledAt),
-        title: STATUS_LABEL[status],
-        detail: released ? `${amount} went to the landlord.` : `${amount} went back to the tenant.`,
+        title: statusLabel(status, role),
+        detail: released
+          ? `${amount} went to ${landlord ? "you" : "the landlord"}.`
+          : tenant
+            ? `${amount} came back to you.`
+            : `${amount} went back to ${landlord ? "your" : "the"} tenant.`,
         state: "done",
         tone: released ? "released" : "returned",
         signature: steps[2]?.signature,
@@ -311,14 +337,20 @@ export function dealRows(o: {
       key: "handover",
       time: formatShortDateTime(opens),
       title: "Key handover",
-      detail: `Until ${formatShortDateTime(t.deadline)}. The tenant scans the landlord's code and ${amount} goes to the landlord.`,
+      detail: `Until ${formatShortDateTime(t.deadline)}. ${
+        landlord
+          ? `Your tenant scans your code and ${amount} goes to you.`
+          : tenant
+            ? `You scan the landlord's code and ${amount} goes to them.`
+            : `The tenant scans the landlord's code and ${amount} goes to the landlord.`
+      }`,
       state: status === "open" || expired ? "later" : inWindow ? "now" : "next",
     },
     {
       key: "fallback",
       time: formatShortDateTime(t.deadline),
       title: "No handover by then?",
-      detail: `${amount} goes back to the tenant. Anyone can trigger it.`,
+      detail: `${amount} goes back to ${tenant ? "you" : landlord ? "your tenant" : "the tenant"}. Anyone can trigger it.`,
       state: status === "funded" && expired ? "now" : "later",
     },
   ];

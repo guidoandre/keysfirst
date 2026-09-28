@@ -66,7 +66,7 @@ describe("urgency, next action and countdown", () => {
       "Start the handover when you meet",
     );
     expect(nextActionText(renting({ moveIn: now - 5 * DAY, deadline: now - DAY }), now)).toBe("Take the deposit back");
-    expect(nextActionText(summary("O", {}), now)).toBe("Waiting for the tenant to pay");
+    expect(nextActionText(summary("O", {}), now)).toBe("Waiting for your tenant to pay");
   });
 
   it("counts down to the next moment", () => {

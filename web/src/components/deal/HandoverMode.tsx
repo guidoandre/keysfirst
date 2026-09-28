@@ -8,7 +8,7 @@ import { formatCountdown } from "@/lib/format";
 import { useWakeLock } from "@/lib/hooks";
 
 const STEPS = [
-  "Let the tenant check the room.",
+  "Let your tenant check the room.",
   "They scan this code with their phone camera and approve in Phantom.",
   "Hand over the keys when this screen turns green.",
 ];
@@ -65,7 +65,7 @@ export function HandoverMode({
               value={url}
               size={320}
               marginSize={2}
-              title="Handover code for the tenant"
+              title="Handover code for your tenant"
               style={{ width: "var(--qr-size)", height: "var(--qr-size)" }}
             />
           </div>
@@ -79,7 +79,7 @@ export function HandoverMode({
           </ol>
           <p role="status" className="inline-flex items-center gap-2 font-semibold">
             <span aria-hidden="true" className="size-2.5 animate-pulse-dot rounded-full bg-accent ring-2 ring-fg" />
-            Waiting for the tenant to approve…
+            Waiting for your tenant to approve…
           </p>
           <p className="text-sm text-fg-muted tabular-nums">Handover deadline in {formatCountdown(deadline - now)}</p>
         </div>

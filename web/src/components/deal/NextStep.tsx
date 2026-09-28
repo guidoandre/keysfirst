@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
 import { Icon } from "@/components/ui/Icon";
 import { LoginButton } from "@/components/wallet/LoginButton";
-import { OpenInPhantom } from "@/components/wallet/OpenInPhantom";
 import { TestFundsButton } from "@/components/wallet/TestFundsButton";
 import { actionLabel, loginLabel, type NextStepView } from "@/lib/deal-view";
 import { explorerTx } from "@/lib/format";
@@ -42,13 +41,9 @@ export function NextStep({
       </h2>
       <p className="text-body">{view.message}</p>
 
-      {/* Logged out with nothing to tap: the landlord and the tenant only see their buttons once logged in. */}
-      {!connected && !primary && !settled && (
-        <div className="space-y-3">
-          <LoginButton label="Log in to see your options" variant="secondary" fullWidth />
-          <OpenInPhantom />
-        </div>
-      )}
+      {/* Logged out with nothing to tap: the landlord and the tenant only see their buttons once logged in.
+          On a phone, the login sheet itself offers "Open in Phantom". */}
+      {!connected && !primary && !settled && <LoginButton label="Log in to see your options" variant="secondary" fullWidth />}
 
       {primary &&
         (connected ? (
@@ -63,10 +58,7 @@ export function NextStep({
             {actionLabel(primary, role, amount)}
           </Button>
         ) : (
-          <div className="space-y-3">
-            <LoginButton label={loginLabel(primary)} variant="primary" size="lg" fullWidth />
-            <OpenInPhantom />
-          </div>
+          <LoginButton label={loginLabel(primary)} variant="primary" size="lg" fullWidth />
         ))}
 
       {primary === "fund" && connected && <TestFundsButton />}

@@ -10,7 +10,6 @@ import { TextField } from "@/components/ui/Field";
 import { Segmented } from "@/components/ui/Segmented";
 import { Timetable } from "@/components/ui/Timetable";
 import { LoginButton } from "@/components/wallet/LoginButton";
-import { OpenInPhantom } from "@/components/wallet/OpenInPhantom";
 import { TestFundsButton } from "@/components/wallet/TestFundsButton";
 import { cx } from "@/lib/cx";
 import { formatEur, formatShortDateTime, toLocalInputValue } from "@/lib/format";
@@ -207,14 +206,14 @@ export function CreateDealFlow() {
                 <span className="font-semibold">Demo: 5-minute window</span>{" "}
                 <span className="ml-1 rounded-sm bg-accent px-1.5 py-0.5 text-xs font-semibold">For trying it out</span>
                 <span className="mt-1 block text-sm text-fg-muted">
-                  The deposit goes back to the tenant 5 minutes after move-in if there&apos;s no handover. Not for a real room.
+                  The deposit goes back to your tenant 5 minutes after move-in if there&apos;s no handover. Not for a real room.
                 </span>
               </span>
             </label>
             {handover && (
               <Callout tone="info" title="Handover window">
                 From {formatShortDateTime(handover.opens)} (24 hours before move-in) until {formatShortDateTime(handover.deadline)}. If
-                there&apos;s no handover by then, the deposit goes back to the tenant.
+                there&apos;s no handover by then, the deposit goes back to your tenant.
               </Callout>
             )}
           </>
@@ -224,15 +223,15 @@ export function CreateDealFlow() {
           <>
             {values && handover ? (
               <Timetable
-                title="Your tenant will see"
+                title="How your deal runs"
                 aside={values.title}
                 footer="Creating the link costs a tiny network fee in test SOL."
                 rows={[
                   {
                     key: "pay",
                     time: `By ${formatShortDateTime(handover.deadline)}`,
-                    title: `Pay ${formatEur(values.amount)} into the lock`,
-                    detail: "The exact amount, from the tenant's own wallet.",
+                    title: `Your tenant pays ${formatEur(values.amount)} into the lock`,
+                    detail: "The exact amount, from their own wallet.",
                     state: "now",
                   },
                   {
@@ -246,7 +245,7 @@ export function CreateDealFlow() {
                     key: "back",
                     time: formatShortDateTime(handover.deadline),
                     title: "No handover by then?",
-                    detail: "The deposit goes back to the tenant.",
+                    detail: "The deposit goes back to your tenant.",
                     state: "later",
                   },
                 ]}
@@ -280,9 +279,8 @@ export function CreateDealFlow() {
               Create deposit link
             </Button>
           ) : (
-            <div className="space-y-3 sm:w-80">
+            <div className="sm:w-80">
               <LoginButton label="Log in to create" variant="primary" size="lg" fullWidth />
-              <OpenInPhantom />
             </div>
           )}
         </div>

@@ -9,12 +9,12 @@ import { ReleasedScreen } from "@/components/deal/ReleasedScreen";
 import { Button } from "@/components/ui/Button";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { toDealData } from "@/lib/deal-data";
-import { confirmCopy, showReleasedScreen } from "@/lib/deal-view";
+import { confirmCopy, showReleasedScreen, statusLabel } from "@/lib/deal-view";
 import { formatEur } from "@/lib/format";
 import { useNow } from "@/lib/hooks";
 import { cancelDealIx, confirmHandoverIx, fundIx, refundIx } from "@/lib/instructions";
 import { getProgram } from "@/lib/program";
-import { isExpired, roleOf, STATUS_LABEL, statusOf, type Action, type DealStatus, type DealTimes } from "@/lib/rules";
+import { isExpired, roleOf, statusOf, type Action, type DealStatus, type DealTimes } from "@/lib/rules";
 import { friendlyError, signAndSend } from "@/lib/send";
 import { useDeal } from "@/lib/use-deal";
 
@@ -79,7 +79,7 @@ export function DealClient({ id, origin, created }: { id: string; origin: string
       const liveStatus = statusOf(live.status);
       if (liveStatus !== REQUIRED_STATUS[action]) {
         await refresh();
-        setError(`This deal is already “${STATUS_LABEL[liveStatus]}”. The page has been updated.`);
+        setError(`This deal is already “${statusLabel(liveStatus, role)}”. The page has been updated.`);
         return;
       }
       const build = {

@@ -1,5 +1,6 @@
 import { cx } from "@/lib/cx";
-import { STATUS_LABEL, type DealStatus } from "@/lib/rules";
+import { statusLabel } from "@/lib/deal-view";
+import type { DealStatus, Role } from "@/lib/rules";
 import { Icon, type IconName } from "./Icon";
 
 const LOOK: Record<DealStatus, { chip: string; icon: IconName; onBandIcon: string }> = {
@@ -11,18 +12,21 @@ const LOOK: Record<DealStatus, { chip: string; icon: IconName; onBandIcon: strin
 };
 
 /**
- * One of the five fixed status labels (product spec §8), never uppercased.
+ * One of the five fixed status labels (product spec §8), never uppercased. Pass the viewer's `role` on their own deal:
+ * the person the money went to reads "Released to you" / "Returned to you".
  * tone "onBand": a white chip for use on a coloured deal band. `animate`: flips in; pass true only when
  * the status changed while the page was open.
  */
 export function StatusChip({
   status,
+  role = "visitor",
   size = "md",
   tone = "default",
   animate = false,
   className,
 }: {
   status: DealStatus;
+  role?: Role;
   size?: "sm" | "md";
   tone?: "default" | "onBand";
   animate?: boolean;
@@ -45,7 +49,7 @@ export function StatusChip({
           size={size === "md" ? 16 : 14}
           className={cx(tone === "onBand" ? look.onBandIcon : status === "funded" && "text-accent")}
         />
-        {STATUS_LABEL[status]}
+        {statusLabel(status, role)}
       </span>
     </span>
   );

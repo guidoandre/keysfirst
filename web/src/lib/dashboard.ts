@@ -45,9 +45,9 @@ export function nextActionText(d: DealSummary, now: number): string {
   const landlord = d.role === "landlord";
   switch (phaseOf(d, now)) {
     case "open":
-      return "Waiting for the tenant to pay";
+      return "Waiting for your tenant to pay";
     case "open-too-early":
-      return "Waiting until the tenant can pay";
+      return "Waiting until your tenant can pay";
     case "open-expired":
       return "Nobody paid: cancel the deal";
     case "funded-before":
@@ -59,7 +59,7 @@ export function nextActionText(d: DealSummary, now: number): string {
     case "released":
       return landlord ? "Deposit received" : "Deposit paid to the landlord";
     case "refunded":
-      return landlord ? "Deposit returned to the tenant" : "Deposit back with you";
+      return landlord ? "Deposit returned to your tenant" : "Deposit back with you";
     case "cancelled":
       return "Deal cancelled";
   }

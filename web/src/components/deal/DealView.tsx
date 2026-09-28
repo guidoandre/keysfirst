@@ -36,6 +36,7 @@ export function DealView(p: DealViewProps) {
   const view = nextStep({ status: data.status, role, times, now, amount, settledAt: data.settledAt });
   const rows = dealRows({
     status: data.status,
+    role,
     times: { ...times, createdAt: data.createdAt, fundedAt: data.fundedAt, settledAt: data.settledAt },
     signatures: p.signatures,
     now,

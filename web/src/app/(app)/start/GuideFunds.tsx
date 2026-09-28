@@ -2,7 +2,6 @@
 
 import { useWallet } from "@solana/wallet-adapter-react";
 import { LoginButton } from "@/components/wallet/LoginButton";
-import { OpenInPhantom } from "@/components/wallet/OpenInPhantom";
 import { TestFundsButton } from "@/components/wallet/TestFundsButton";
 import { shortAddress } from "@/lib/format";
 import { useMounted } from "@/lib/hooks";
@@ -13,9 +12,8 @@ export function GuideFunds() {
   const { publicKey } = useWallet();
   if (!mounted || !publicKey) {
     return (
-      <div className="max-w-sm space-y-3">
+      <div className="max-w-sm">
         <LoginButton variant="primary" fullWidth />
-        <OpenInPhantom />
       </div>
     );
   }

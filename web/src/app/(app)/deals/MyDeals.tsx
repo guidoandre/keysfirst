@@ -11,7 +11,6 @@ import { Icon } from "@/components/ui/Icon";
 import { Segmented } from "@/components/ui/Segmented";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { LoginButton } from "@/components/wallet/LoginButton";
-import { OpenInPhantom } from "@/components/wallet/OpenInPhantom";
 import { countByFilter, filterDeals, sortDeals, urgencyOf, type DealFilter, type DealSummary, type Urgency } from "@/lib/dashboard";
 import { useMounted, useNow } from "@/lib/hooks";
 import { useMyDeals } from "@/lib/use-my-deals";
@@ -90,12 +89,9 @@ export function MyDeals() {
     content = <Cards />;
   } else if (!wallet) {
     content = (
-      <div className="space-y-4">
-        <EmptyState pictogram="phone-wallet" title="Log in to see your deals" action={<LoginButton variant="primary" size="lg" />}>
-          Your deals are read straight from Solana: the ones you created as a landlord and the ones you paid as a tenant.
-        </EmptyState>
-        <OpenInPhantom />
-      </div>
+      <EmptyState pictogram="phone-wallet" title="Log in to see your deals" action={<LoginButton variant="primary" size="lg" />}>
+        Your deals are read straight from Solana: the ones you created as a landlord and the ones you paid as a tenant.
+      </EmptyState>
     );
   } else if (state.status === "error") {
     content = (

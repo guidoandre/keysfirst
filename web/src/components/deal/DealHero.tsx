@@ -22,7 +22,7 @@ export function DealHero({ title, amount, status, role, animate }: { title: stri
       </h1>
       <p className="mt-1 font-display text-amount font-bold tabular-nums">{amount}</p>
       <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2">
-        <StatusChip status={status} tone="onBand" animate={animate} />
+        <StatusChip status={status} role={role} tone="onBand" animate={animate} />
         <p role="status" className={cx("text-sm", look.sub)}>
           {statusLine(status, role)}
         </p>

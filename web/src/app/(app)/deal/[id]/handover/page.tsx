@@ -48,14 +48,14 @@ function blocker(d: DealData, now: number): string | null {
   switch (d.status) {
     case "funded":
       if (now < handoverOpensAt(d)) return `The handover opens ${at(handoverOpensAt(d))}. Come back then, standing in the room.`;
-      if (now > d.deadline) return "The handover deadline has passed, so the deposit goes back to the tenant.";
+      if (now > d.deadline) return "The handover deadline has passed, so the deposit goes back to you.";
       return null;
     case "open":
       return "Nobody has paid this deposit yet, so there is nothing to release.";
     case "released":
       return `This deposit was already released to the landlord on ${at(d.settledAt)}.`;
     case "refunded":
-      return `This deposit already went back to the tenant on ${at(d.settledAt)}.`;
+      return `This deposit already came back to you on ${at(d.settledAt)}.`;
     case "cancelled":
       return "The landlord cancelled this deal.";
   }
