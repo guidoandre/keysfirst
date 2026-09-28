@@ -73,7 +73,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
   // Logged in but the signing wallet isn't connected here (e.g. Phantom locked or not installed on this device):
   // Privy's login() does nothing on a live session, so log out first and start a fresh login.
   const startLogin = useCallback(() => {
-    if (authenticated) void logout().then(() => login());
+    if (authenticated) void logout().catch(() => undefined).then(() => login());
     else login();
   }, [authenticated, login, logout]);
 
