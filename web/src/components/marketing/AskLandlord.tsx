@@ -16,7 +16,7 @@ export function AskLandlord({ tone = "light" }: { tone?: "light" | "dark" }) {
   const mounted = useMounted();
   const [copied, setCopied] = useState(false);
   const origin = mounted ? window.location.origin : PRODUCTION_URL;
-  const message = `Hi, Could we use Keysfirst for the deposit? You create a deposit link, I pay into it, and you get the money the moment I scan your code at the key handover: ${origin}${LANDLORD_PAGE}`;
+  const message = `Hi, could we use Keysfirst for the deposit? You create a deposit link, I pay into it, and you get the money the moment I scan your code at the key handover: ${origin}${LANDLORD_PAGE}`;
 
   async function copy() {
     try {

@@ -68,7 +68,8 @@ export default function GetStartedPage() {
           </p>
           <p>
             <strong className="text-fg">As the tenant</strong> (phone): open the link inside Phantom&apos;s browser, pay into the lock, then at the
-            &ldquo;door&rdquo; scan the landlord&apos;s code with the phone camera and approve in Phantom.
+            &ldquo;door&rdquo; scan the landlord&apos;s code with the phone camera and approve in Phantom. Or, once the handover window is open, tap
+            &ldquo;I have the keys: release the deposit&rdquo; on the deal page.
           </p>
           <Callout tone="neutral">Use a second wallet for the tenant: the landlord can&apos;t pay their own deal.</Callout>
           <ButtonLink href="/new">Create a deposit link</ButtonLink>
