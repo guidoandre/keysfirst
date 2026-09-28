@@ -7888,11 +7888,11 @@ Report M6: works / doesn't / next (and anything cut).
 **Interfaces:**
 - Consumes: every page from Tasks 4–17; the `design:accessibility-review` skill (supporting skill chosen on 2026-09-27).
 
-- [ ] **Step 1: Run the skill's checklist**
+- [x] **Step 1: Run the skill's checklist**
 
 Invoke the `design:accessibility-review` skill for these URLs (dev server): `/`, `/how-it-works`, `/faq`, `/tenants`, `/landlords`, `/about`, `/start`, `/new`, `/deals`, `/dev/deal` (all phases), `/dev/deals`, `/deal/8cTvC1gnouTSxswytgt1as8FXgLmp1yJU6bfVopj8xTy`, `/deal/8cTvC1gnouTSxswytgt1as8FXgLmp1yJU6bfVopj8xTy/handover`, `/this-does-not-exist`. Follow its WCAG 2.1 AA quick reference (1.1.1, 1.3.1, 1.4.3, 1.4.11, 2.1.1, 2.4.3, 2.4.7, 2.5.5, 3.2.1, 3.3.1, 3.3.2, 4.1.2).
 
-- [ ] **Step 2: Automated structure check on every URL above**
+- [x] **Step 2: Automated structure check on every URL above**
 
 Run this in the page (browser tool `javascript_exec`) and write every non-empty result into the audit file:
 
@@ -7922,7 +7922,7 @@ Run this in the page (browser tool `javascript_exec`) and write every non-empty 
 
 Expected: `[]` on every page. (The UI and deal galleries may repeat ids across their demo sections; ignore duplicates inside `/dev/*` only.)
 
-- [ ] **Step 3: Manual checks**
+- [x] **Step 3: Manual checks**
 
 1. **Keyboard only** on `/`, `/new`, `/deals`, `/dev/deal`, `/faq`: Tab reaches every control in reading order; the focus ring (white gap, ink ring, yellow halo) is always visible; Enter/Space activate; Esc closes every sheet and focus returns to its opener; "Skip to content" is the first Tab stop.
 2. **Contrast**: only the token pairs from the brand guidelines appear; spot-check with dev tools on the devnet ribbon, the status chips on every band, the muted text on `bg-subtle`, the footer's muted text, and the Released screen.
@@ -7931,11 +7931,11 @@ Expected: `[]` on every page. (The UI and deal galleries may repeat ids across t
 5. **Screen reader spot check** (VoiceOver on the user's iPhone or NVDA if available): the deal status announces once when it changes; the countdown doesn't chatter.
 6. **Touch targets**: every interactive element is at least 44 × 44 px at 375 px wide (check the header buttons, chips, the FAQ summaries, the copy buttons).
 
-- [ ] **Step 4: Fix, re-check, record**
+- [x] **Step 4: Fix, re-check, record**
 
 Fix every finding in the component that causes it, re-run Steps 2–3 for the affected pages, and write `docs/audits/2026-10-01-accessibility.md`: date, pages, method, findings (page, criterion, problem, fix, commit), and anything left open with the reason.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A web/src docs/audits
@@ -7950,7 +7950,7 @@ git commit -m "fix(web): accessibility audit fixes (WCAG 2.1 AA) and audit notes
 - Modify: whichever files the reports flag
 - Modify: `docs/audits/2026-10-01-accessibility.md` → add a "Lighthouse" section (or create `docs/audits/2026-10-01-lighthouse.md`)
 
-- [ ] **Step 1: Measure the Preview with PageSpeed Insights (no install)**
+- [x] **Step 1: Measure the Preview with PageSpeed Insights (no install)**
 
 Push the branch, then run (replace `<preview>` with the Preview URL; the Preview is public after Task 4's check):
 
@@ -7961,7 +7961,7 @@ node -e "const r=require('./psi.json').lighthouseResult; for (const [k,v] of Obj
 
 Delete `psi.json` afterwards (don't commit it). Vercel marks Preview deployments `noindex`, so the SEO score there loses the "page is blocked from indexing" audit; every other SEO audit must pass. The final SEO number is measured on production in Task 20.
 
-- [ ] **Step 2: Fix what keeps a score under 90**
+- [x] **Step 2: Fix what keeps a score under 90**
 
 Typical causes and fixes, in this order:
 - JavaScript on `/`: dev tools → Network (disable cache) on the production build (`npm run build` then `npx next start -p 3100`): no chunk may contain `@solana` or `@anchor-lang`; if one does, find the import that pulls the wallet code into the `(site)` group and move it behind the `(app)` layout.
@@ -7972,7 +7972,7 @@ Typical causes and fixes, in this order:
 
 Re-measure after each fix batch (at most two rounds), then record the four scores, LCP, TBT and CLS in the audit notes.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add -A web/src docs/audits
