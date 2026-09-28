@@ -10,7 +10,7 @@ export function checkoutProblem(o: { status: DealStatus; landlord: string; accou
 
 /** Checkout's success/cancel URLs come back from the Host header, so only trust known hosts (devnet + Vercel); anything else falls back to production. */
 export function returnOrigin(requestUrl: string): string {
-  const requestOrigin = new URL(requestUrl).origin;
-  const host = new URL(requestOrigin).hostname;
-  return host === "localhost" || host === "127.0.0.1" || host.endsWith(".vercel.app") ? requestOrigin : "https://keysfirst.vercel.app";
+  const url = new URL(requestUrl);
+  const host = url.hostname;
+  return host === "localhost" || host === "127.0.0.1" || host.endsWith(".vercel.app") ? url.origin : "https://keysfirst.vercel.app";
 }

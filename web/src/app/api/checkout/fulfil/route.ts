@@ -56,7 +56,9 @@ export async function POST(req: Request) {
     tx.recentBlockhash = blockhash;
     tx.sign(faucet);
     signature = await connection.sendRawTransaction(tx.serialize());
-    await connection.confirmTransaction({ signature, blockhash, lastValidBlockHeight }, "confirmed");
+    const result = await connection.confirmTransaction({ signature, blockhash, lastValidBlockHeight }, "confirmed");
+    // confirmTransaction resolves normally even when the transaction landed but failed on-chain; that's not success.
+    if (result.value.err) return Response.json({ error: MINT_FAILED }, { status: 503 });
   } catch {
     if (!signature) return Response.json({ error: MINT_FAILED }, { status: 503 });
     const { value } = await connection.getSignatureStatuses([signature]);
