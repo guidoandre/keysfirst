@@ -25,7 +25,11 @@ const CHECKLIST = ["You are inside the room.", "You have the keys, or they are i
 async function loadDeal(id: string): Promise<{ data: DealData | null | undefined; now: number }> {
   const now = Math.floor(Date.now() / 1000);
   try {
-    const deal = await getProgram(new Connection(RPC_URL, "confirmed")).account.deal.fetchNullable(new PublicKey(id));
+    // A hanging RPC would otherwise leave the tenant waiting at the door instead of reaching the checklist fallback below.
+    const deal = await Promise.race([
+      getProgram(new Connection(RPC_URL, "confirmed")).account.deal.fetchNullable(new PublicKey(id)),
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error("timeout")), 3_000)),
+    ]);
     return { data: deal ? toDealData(deal) : null, now };
   } catch {
     return { data: undefined, now };
