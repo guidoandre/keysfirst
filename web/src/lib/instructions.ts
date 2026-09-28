@@ -1,8 +1,9 @@
 import { BN, type Program } from "@anchor-lang/core";
-import { ASSOCIATED_TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { ASSOCIATED_TOKEN_PROGRAM_ID, createBurnCheckedInstruction } from "@solana/spl-token";
 import { SystemProgram, type PublicKey, type TransactionInstruction } from "@solana/web3.js";
 import type { Keysfirst } from "@/idl/keysfirst";
 import { MINT, TOKEN_PROGRAM_ID } from "./config";
+import { DECIMALS } from "./format";
 import { dealAddress, tokenAccount, type DealAccount } from "./program";
 
 type KeysfirstProgram = Program<Keysfirst>;
@@ -103,4 +104,9 @@ export function cancelDealIx(program: KeysfirstProgram, deal: PublicKey, data: D
       ...PROGRAMS,
     })
     .instruction();
+}
+
+/** Withdraw to bank (spec D7): the Test EUR leave circulation; the bank payout itself is simulated. */
+export function withdrawIx(owner: PublicKey, amount: bigint): TransactionInstruction {
+  return createBurnCheckedInstruction(tokenAccount(owner), MINT, owner, amount, DECIMALS, [], TOKEN_PROGRAM_ID);
 }

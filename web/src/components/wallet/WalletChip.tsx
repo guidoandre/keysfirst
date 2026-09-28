@@ -4,13 +4,16 @@ import { useState } from "react";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Sheet } from "@/components/ui/Sheet";
+import { formatEur } from "@/lib/format";
 import { useAccount } from "./AccountProvider";
+import { WithdrawSheet } from "./WithdrawSheet";
 
 /** The logged-in state: email (or short account number) + a menu. */
 export function WalletChip() {
-  const { address, label, logout } = useAccount();
+  const { address, label, balance, logout } = useAccount();
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [withdrawing, setWithdrawing] = useState(false);
   if (!address || !label) return null;
   const accountNumber = address.toBase58();
 
@@ -38,7 +41,21 @@ export function WalletChip() {
       </button>
       <Sheet open={open} onClose={() => setOpen(false)} title="Your account">
         <p className="text-fg-muted">{label}</p>
+        <p className="mt-1 text-sm text-fg-muted">
+          Balance: <span className="font-semibold text-fg tabular-nums">{balance === null ? "…" : formatEur(balance)}</span>
+        </p>
         <div className="mt-4 grid gap-2">
+          {balance ? (
+            <Button
+              fullWidth
+              onClick={() => {
+                setOpen(false);
+                setWithdrawing(true);
+              }}
+            >
+              Withdraw to bank
+            </Button>
+          ) : null}
           <ButtonLink href="/deals" variant="secondary" fullWidth onClick={() => setOpen(false)}>
             My deals
           </ButtonLink>
@@ -62,6 +79,7 @@ export function WalletChip() {
           </Button>
         </div>
       </Sheet>
+      <WithdrawSheet open={withdrawing} onClose={() => setWithdrawing(false)} />
     </>
   );
 }

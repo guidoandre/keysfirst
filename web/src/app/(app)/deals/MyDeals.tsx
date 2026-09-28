@@ -10,6 +10,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Segmented } from "@/components/ui/Segmented";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useAccount } from "@/components/wallet/AccountProvider";
+import { BalanceCard } from "@/components/wallet/BalanceCard";
 import { LoginButton } from "@/components/wallet/LoginButton";
 import { countByFilter, filterDeals, sortDeals, urgencyOf, type DealFilter, type DealSummary, type Urgency } from "@/lib/dashboard";
 import { useMounted, useNow } from "@/lib/hooks";
@@ -140,6 +141,11 @@ export function MyDeals() {
           </div>
         )}
       </div>
+      {wallet && (
+        <div className="mb-6">
+          <BalanceCard />
+        </div>
+      )}
       <div className="mt-8">{content}</div>
     </div>
   );
