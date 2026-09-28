@@ -71,9 +71,14 @@ export default function PrivacyPage() {
       <LegalSection id="account" title="Logging in">
         <p>
           You log in with your email address or Google, or with your own Solana wallet such as Phantom. Login is provided by Privy (Privy, Inc.,
-          USA), which receives your email address or the account you log in with, creates your Solana wallet and keeps its keys protected so that
-          neither Privy nor Keysfirst can move your money without you. Keysfirst receives your email address from Privy only to show it in the
-          header, and your public account number. See <ExternalLink href="https://www.privy.io/privacy-policy">Privy&apos;s privacy policy</ExternalLink>.
+          USA), which receives your email address or the account you log in with, creates your Solana wallet and keeps its keys protected.
+          Keysfirst never sees your keys, and the site only signs the steps you confirm with a button. Keysfirst receives your email address from
+          Privy only to show it in the header, and your public account number.
+        </p>
+        <p>
+          Legal basis: Art. 6(1)(b) GDPR (providing the service you asked for). Privy processes the data on our behalf under a data processing
+          agreement (Art. 28 GDPR) and is certified under the EU-U.S. Data Privacy Framework, which the EU Commission recognises as adequate
+          protection (Art. 45 GDPR). More: <ExternalLink href="https://www.privy.io/privacy-policy">Privy&apos;s privacy policy</ExternalLink>.
         </p>
       </LegalSection>
 
@@ -81,7 +86,11 @@ export default function PrivacyPage() {
         <p>
           Card payments are processed by Stripe (Stripe Payments Europe, Ltd., Ireland) in test mode. You enter your card details on
           Stripe&apos;s own page; Keysfirst never sees them. Stripe tells us whether the payment succeeded, the amount, and the deal and account
-          number the payment belongs to. See <ExternalLink href="https://stripe.com/privacy">Stripe&apos;s privacy policy</ExternalLink>.
+          number the payment belongs to.
+        </p>
+        <p>
+          Legal basis: Art. 6(1)(b) GDPR (providing the service you asked for). More:{" "}
+          <ExternalLink href="https://stripe.com/privacy">Stripe&apos;s privacy policy</ExternalLink>.
         </p>
       </LegalSection>
 

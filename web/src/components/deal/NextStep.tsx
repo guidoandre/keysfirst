@@ -52,7 +52,7 @@ export function NextStep({
       <p className="text-body">{view.message}</p>
 
       {/* Logged out with nothing to tap: the landlord and the tenant only see their buttons once logged in.
-          On a phone, the login sheet itself offers "Open in Phantom". */}
+          The button opens the Privy login (email or Google; Phantom stays optional). */}
       {!connected && !primary && !settled && <LoginButton label="Log in to see your options" variant="secondary" fullWidth />}
 
       {primary &&

@@ -276,23 +276,24 @@ All live in `web/src/components/` (primitives in `components/ui/`). Server compo
 
 | Component | Spec |
 |---|---|
-| `SiteHeader` | Sticky, `h-(--header-h)`, `bg-canvas/95 border-b border-rule`. Two variants (see the route groups in the redesign spec). **Site** (marketing pages, no wallet code): How it works · For tenants · For landlords · FAQ, then Get started (quiet) + "Log in" (secondary sm, links to `/deals?login=1`). **App**: logged out: How it works · FAQ · Get started + "Log in" (opens `ConnectSheet`); logged in: My deals · Create a deal · How it works · FAQ + `WalletChip`. Under `lg`: logo + Log in or `WalletChip` + menu button opening a `Sheet` with all links. Current page link: `aria-current="page"` + Highlighter underline |
+| `SiteHeader` | Sticky, `h-(--header-h)`, `bg-canvas/95 border-b border-rule`. Two variants (see the route groups in the redesign spec). **Site** (marketing pages, no wallet code): How it works · For tenants · For landlords · FAQ, then Get started (quiet) + "Log in" (secondary sm, links to `/deals?login=1`). **App**: logged out: How it works · FAQ · Get started + "Log in" (`LoginButton`); logged in: My deals · Create a deal · How it works · FAQ + `WalletChip`. Under `lg`: logo + Log in or `WalletChip` + menu button opening a `Sheet` with all links. Current page link: `aria-current="page"` + Highlighter underline |
 | `SiteFooter` | `bg-inverse text-fg-inverse`: lockup, one-line promise, links (How it works, For tenants, For landlords, FAQ, About, Get started), "Program on Solana Explorer ↗", devnet disclaimer |
-| `ConnectSheet` | `Sheet` titled "Log in with your wallet", one line on what a wallet is, detected wallets (Phantom first) as large buttons with the wallet's own icon + "Detected"; none detected on a phone → "Open Keysfirst in Phantom" (deep link) + guide link; none on desktop → "Install Phantom ↗" + guide link; footer: "Set Phantom to Solana Devnet. How?" → `/start#devnet`. Uses `useWallet()` (`select`, `connect`) only; the wallet library's modal and CSS are not used |
-| `WalletChip` | `7xKp…3mQe` + green dot; opens a menu: My deals · Get test funds · Copy address · Log out |
+| `LoginButton` | Calls `useAccount().login`, which opens Privy's login modal: email, Google, or an existing Solana wallet such as Phantom (optional). No custom connect sheet and no wallet-library modal |
+| `WalletChip` | Email (or short account number `7xKp…3mQe`) + green dot; opens a `Sheet` titled "Your account": email, balance (re-read on open), Withdraw to bank (only above €0.00), My deals, Copy account number, Log out |
 
 ### Deal components
 
 | Component | Spec |
 |---|---|
 | `DealHero` | Band in the status colour (§6): room title, amount (`text-amount tabular-nums`), `StatusChip`, "You're the landlord / tenant" line, one-sentence explanation |
-| `NextStep` | The single primary action for this role and moment (from `availableActions`) with its reason line; secondary actions below as quiet buttons; not connected → Connect (on a phone without a wallet, the `ConnectSheet` offers "Open in Phantom"; no second callout on the page) |
+| `NextStep` | The single primary action for this role and moment (from `availableActions`) with its reason line; secondary actions below as quiet buttons; logged out → `LoginButton` (Privy login; no second callout on the page) |
 | `DealTimetable` | `Timetable` of created → locked → handover window → released/returned, with receipt links ("Receipt ↗" → Solana Explorer) and the "if it doesn't happen" row |
 | `ShareBox` | Landlord while `open`: `CopyField` with the link + "Share on WhatsApp" + native share (`navigator.share`) when available |
 | `HandoverMode` | Landlord, full screen (`fixed inset-0 z-60 bg-canvas`): lockup-on-ink header with Close, the QR (`--qr-size`, white quiet zone) encoding `https://<origin>/deal/<id>/handover`, three numbered instructions, live line "Waiting for your tenant to approve…" (pulsing dot), deadline countdown; asks for a screen wake lock while open (progressive, ignored if unsupported) |
-| `ReleasedScreen` | Full-screen `bg-released text-white` panel entering with `animate-released`: "Released: hand over the keys.", amount, "is in your wallet now", receipt link, "Back to the deal" (secondary on green: white border). `role="status"` |
+| `ReleasedScreen` | Full-screen `bg-released text-white` panel entering with `animate-released`: "Released: hand over the keys.", amount, "is in your Keysfirst balance now" + where to withdraw it, receipt link, "Back to the deal" (secondary on green: white border). `role="status"` |
 | `DealCard` | My deals row/card: title, amount, `StatusChip`, role, countdown line, next-action text, whole card is one link |
-| `TestFundsButton` | Quiet button → "Sent 1,000 Test EUR (and a little devnet SOL for fees)" callout; unchanged faucet endpoint (0.02 SOL top-up) |
+| `BalanceCard` | My deals, logged in: "Your balance" + amount (`€0.00` included, with "Money you receive shows up here." at zero) + "Withdraw to bank" (disabled at zero). Hidden only while the balance is unknown |
+| `WithdrawSheet` | `Sheet` "Withdraw to bank": amount (empty = everything), account holder, IBAN; signing removes the money from the balance, then "€… is on its way" (demo: no real transfer). Mounted outside any balance condition so the confirmation survives the balance reaching €0.00. No "Get test funds" anywhere |
 
 ### Marketing blocks
 
@@ -330,7 +331,7 @@ Only `transform` and `opacity` animate (plus `background-size` for the marker, a
 
 ## 10. Implementation notes
 
-- No new runtime dependencies. Keep `qrcode.react`, the wallet adapter packages and web3. The wallet library's modal UI and its stylesheet are dropped in favour of `ConnectSheet`.
+- No new runtime dependencies. Keep `qrcode.react` and web3. Login is Privy (`@privy-io/react-auth`) through `AccountProvider`; its modal replaces any connect sheet.
 - Link-preview and icon images are drawn with `ImageResponse` in the same brand language: Highlighter plate, ink type.
 - The wallet request icon stays a PNG at `/icon.png` (Phantom renders SVG icons as a black square).
 - Class merging: a 5-line `cx(...classes)` helper in `lib/cx.ts`; no `clsx` or `tailwind-merge`.
