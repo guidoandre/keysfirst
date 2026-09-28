@@ -32,7 +32,12 @@ export function AccountProvider({ children }: { children: ReactNode }) {
   const signer = pickSigningWallet(wallets, primary);
   const connected = signer !== null;
   const address = useMemo(() => (primary && connected ? new PublicKey(primary) : null), [primary, connected]);
-  const ready = privyReady && (!authenticated || walletsReady);
+  // Right after an email/Google sign-up Privy is still creating (or connecting) the account's own wallet:
+  // stay "not ready" (skeletons) instead of showing "Log in". Embedded wallets are 'privy' or 'privy-v2'.
+  const clientType = user?.wallet?.walletClientType;
+  const embedded = clientType === "privy" || clientType === "privy-v2";
+  const embeddedPending = authenticated && (!primary || (embedded && !connected));
+  const ready = privyReady && (!authenticated || walletsReady) && !embeddedPending;
 
   const wallet = useMemo<SigningWallet>(
     () => ({
@@ -42,6 +47,8 @@ export function AccountProvider({ children }: { children: ReactNode }) {
             const { signedTransaction } = await signTransaction({
               transaction: new Uint8Array(tx.serialize({ requireAllSignatures: false, verifySignatures: false })),
               wallet: signer,
+              // Privy defaults to "solana:mainnet"; this app runs on devnet.
+              chain: "solana:devnet",
               options: { uiOptions: { showWalletUIs: false } },
             });
             return Transaction.from(signedTransaction);
@@ -63,6 +70,13 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timer);
   }, [privyReady, authenticated, login]);
 
+  // Logged in but the signing wallet isn't connected here (e.g. Phantom locked or not installed on this device):
+  // Privy's login() does nothing on a live session, so log out first and start a fresh login.
+  const startLogin = useCallback(() => {
+    if (authenticated) void logout().then(() => login());
+    else login();
+  }, [authenticated, login, logout]);
+
   const noop = useCallback(async () => {}, []);
   const value = useMemo<Account>(
     () => ({
@@ -70,13 +84,13 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       address,
       label: address ? accountLabel(user, address.toBase58()) : null,
       wallet,
-      login: () => login(),
+      login: startLogin,
       logout,
       balance: null,
       refreshBalance: noop,
       topUp: noop,
     }),
-    [ready, address, user, wallet, login, logout, noop],
+    [ready, address, user, wallet, startLogin, logout, noop],
   );
 
   return <AccountContext.Provider value={value}>{children}</AccountContext.Provider>;

@@ -55,7 +55,7 @@ export function WalletChip() {
             variant="quiet"
             className="mt-2 justify-center"
             onClick={() => {
-              void logout();
+              logout().catch(() => undefined);
               setOpen(false);
             }}
           >
