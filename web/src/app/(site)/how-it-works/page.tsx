@@ -13,7 +13,7 @@ export const dynamic = "error";
 
 export const metadata: Metadata = {
   title: "How it works and safety",
-  description: "Two rules and a clock: only the tenant's scan at the handover pays the landlord, and only the deadline sends the deposit back. Plus the honest limits.",
+  description: "Two rules and a clock: only the tenant's approval at the handover pays the landlord; otherwise the deposit goes back to the tenant, at the deadline or earlier if the landlord returns it. Plus the honest limits.",
 };
 
 // Product spec §6, in plain words. Keep in step with the program.
@@ -48,8 +48,9 @@ export default function HowItWorksPage() {
           Two rules and a <span className="marker">clock</span>.
         </h1>
         <p className="mt-5 max-w-2xl text-lead text-fg-muted">
-          Keysfirst doesn&apos;t decide anything. A public program on Solana applies the same rules to every deal: only the tenant&apos;s approval at
-          the handover pays the landlord, and only the clock sends the deposit back.
+          Keysfirst doesn&apos;t decide any deal. A public program on Solana applies the same rules to every deal: only the tenant&apos;s approval at
+          the handover pays the landlord. Otherwise the deposit goes back to the tenant, when the deadline passes or earlier if the landlord gives it
+          back.
         </p>
 
         <div className="mt-10 grid gap-6 lg:grid-cols-[3fr_2fr] lg:items-start">
@@ -104,8 +105,9 @@ export default function HowItWorksPage() {
               witness is the tenant standing in the room.
             </p>
             <p>
-              So the tenant&apos;s approval is the only way to pay the landlord, and the clock is the only way back to the tenant. The worst case for
-              an honest landlord: a tenant who never comes gets their deposit back, and the landlord loses time, not money.
+              So only the tenant&apos;s approval pays the landlord, and without it the deposit goes back to the tenant when the clock runs out, or
+              earlier if the landlord gives it back. The worst case for an honest landlord: a tenant who never comes gets their deposit back, and the
+              landlord loses time, not money.
             </p>
           </div>
         </div>
