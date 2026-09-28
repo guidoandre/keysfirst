@@ -141,7 +141,7 @@ export function CreateDealFlow() {
               <TextField
                 id="title"
                 label="Room"
-                hint="Your tenant sees this, for example “Room in Vallendar, 14 m²”."
+                hint="Public and permanent: no names, street addresses or phone numbers. For example “Room in Vallendar, 14 m²”."
                 counter={`${Math.max(remaining, 0)} left`}
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}

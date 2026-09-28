@@ -11,7 +11,7 @@ export interface FaqGroup {
   entries: FaqEntry[];
 }
 
-// Legal statements: only §551 BGB exactly as written here. Honest caveats stay in (brand guidelines §8).
+// Legal statements: only what §551 BGB and the privacy policy support, worded as written here. Honest caveats stay in (brand guidelines §8).
 export const FAQ: FaqGroup[] = [
   {
     id: "basics",
@@ -101,6 +101,12 @@ export const FAQ: FaqGroup[] = [
           "No. Keysfirst only protects the moment the deposit changes hands. Your contract, and disputes after you move in (damage, for example), follow normal German tenancy law.",
         ],
       },
+    ],
+  },
+  {
+    id: "law",
+    title: "German law",
+    entries: [
       {
         id: "law",
         question: "What does German law say about deposits?",
@@ -108,6 +114,36 @@ export const FAQ: FaqGroup[] = [
           "Under §551 BGB a deposit may be at most three months' rent without utilities, and the tenant may pay it in three monthly instalments, the first due when the tenancy starts. So you don't have to pay the full deposit before you move in.",
           "This is general information, not legal advice.",
         ],
+      },
+      {
+        id: "choice",
+        question: "Can a landlord make me use Keysfirst?",
+        answer: [
+          "No. Under §551 BGB a landlord can't demand the full deposit before the tenancy starts; an agreement that says otherwise doesn't count (§551(4)). Keysfirst is for tenants who choose to pay early without the risk, never a condition for getting the room.",
+        ],
+      },
+      {
+        id: "after-handover",
+        question: "What happens to the deposit after the handover?",
+        answer: [
+          "It is the landlord's to hold as security, under the usual rules: the landlord must keep it apart from their own money, normally in a deposit account at a bank, and any interest belongs to the tenant (§551(3) BGB). A live version would point landlords to that step when the deposit is released.",
+        ],
+      },
+      {
+        id: "regulated",
+        question: "Is Keysfirst a bank or a payment service?",
+        answer: [
+          "No. Keysfirst never holds the money: the program on Solana does, and pays it out only by its published rules. This prototype also moves only test money with no value.",
+          "Before a live version with real euros, the program's update key would be removed, so nobody, Keysfirst included, could ever change the rules or reach a deposit. We would also ask BaFin, Germany's financial regulator, to confirm whether the model needs a licence under German payment services law (ZAG) or the EU's crypto rules (MiCA), and work with a licensed partner if it does.",
+        ],
+      },
+      {
+        id: "data",
+        question: "What happens to my data?",
+        answer: [
+          "Keysfirst has no accounts, cookies or tracking, and never sees your wallet's keys. Deals are public on the blockchain and can't be deleted by anyone, so the room title must never contain names, street addresses or phone numbers.",
+        ],
+        link: { href: "/privacy", label: "Privacy policy" },
       },
     ],
   },

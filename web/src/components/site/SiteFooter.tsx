@@ -27,13 +27,21 @@ const COLUMNS = [
       { href: "/about", label: "About" },
     ],
   },
+  {
+    title: "Legal",
+    links: [
+      { href: "/impressum", label: "Legal notice" },
+      { href: "/privacy", label: "Privacy" },
+      { href: "/terms", label: "Terms of use" },
+    ],
+  },
 ];
 
 export function SiteFooter() {
   return (
     <footer className="bg-inverse text-fg-inverse">
-      <div className="mx-auto grid max-w-page gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.4fr_1fr_1fr] lg:px-10">
-        <div className="space-y-3">
+      <div className="mx-auto grid max-w-page gap-10 px-4 py-12 sm:px-6 sm:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1fr_1fr] lg:px-10">
+        <div className="space-y-3 sm:col-span-3 lg:col-span-1">
           <Logo inverse />
           <p className="max-w-xs text-fg-inverse-muted">The deposit moves only when the keys do.</p>
           <a
@@ -68,7 +76,7 @@ export function SiteFooter() {
         ))}
       </div>
       <p className="border-t border-white/15 px-4 py-5 text-center text-sm text-fg-inverse-muted">
-        Keysfirst is a prototype on Solana devnet. Test money only; nothing here has real value. Not legal advice.
+        Keysfirst is a student prototype on Solana devnet, not a bank, payment or escrow service. Test money only; nothing here has real value. Not legal advice.
       </p>
     </footer>
   );

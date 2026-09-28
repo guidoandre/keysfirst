@@ -123,7 +123,7 @@ Won't (roadmap only): card/fiat on-ramps, email login/embedded wallets/gasless, 
 - Disputes after move-in (damage etc.) are ordinary tenancy law.
 - A no-show tenant gets the deposit back; the landlord loses only the reservation time.
 - The program is upgradeable by the deploy key on devnet; disclose, roadmap: freeze or multisig.
-- Regulatory treatment of the service is not yet assessed.
+- Regulatory treatment: the devnet prototype moves only valueless test tokens and never controls funds, so it is not a payment service. A mainnet version with EURC needs a BaFin check (ZAG money remittance, MiCA/PSD2 for e-money tokens since 2 March 2026); plan: remove the upgrade authority, keep fees outside the vault, use a licensed partner if required. Landlords must hold released deposits per §551(3) BGB. Summary for users: FAQ "German law"; legal pages /impressum, /privacy, /terms.
 
 ## 11. Demo script (~90 s)
 
