@@ -101,7 +101,7 @@ Cut rule (agreed 2026-09-27): if Thursday gets tight, skip Task 17's parts in th
 **Interfaces:**
 - Produces: `cx(...parts: Array<string | false | null | undefined>): string` from `@/lib/cx`; `PRODUCTION_URL: string`, `siteUrl(env?: Record<string, string | undefined>): string` from `@/lib/site`; `barlow`, `barlowCondensed` from `@/app/fonts` (CSS variables `--font-barlow`, `--font-barlow-condensed`); every token utility listed in Global Constraints.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `web/src/lib/cx.test.ts`:
 
@@ -138,12 +138,12 @@ describe("siteUrl", () => {
 });
 ```
 
-- [ ] **Step 2: Run the tests to see them fail**
+- [x] **Step 2: Run the tests to see them fail**
 
 Run (in `web/`): `npm test`
 Expected: FAIL, `Failed to resolve import "./cx"` and `"./site"`.
 
-- [ ] **Step 3: Write `web/src/lib/cx.ts`**
+- [x] **Step 3: Write `web/src/lib/cx.ts`**
 
 ```ts
 /** Joins class names, skipping falsy parts: cx("a", open && "b") */
@@ -152,7 +152,7 @@ export function cx(...parts: Array<string | false | null | undefined>): string {
 }
 ```
 
-- [ ] **Step 4: Write `web/src/lib/site.ts`**
+- [x] **Step 4: Write `web/src/lib/site.ts`**
 
 ```ts
 export const PRODUCTION_URL = "https://keysfirst.vercel.app";
@@ -168,12 +168,12 @@ export function siteUrl(env: Record<string, string | undefined> = process.env): 
 }
 ```
 
-- [ ] **Step 5: Run the tests to see them pass**
+- [x] **Step 5: Run the tests to see them pass**
 
 Run: `npm test`
 Expected: all test files pass (the existing 19 tests plus the new ones).
 
-- [ ] **Step 6: Replace `web/src/app/globals.css`**
+- [x] **Step 6: Replace `web/src/app/globals.css`**
 
 Copy the complete CSS block from `docs/design-system.md` §2 (from `@import "tailwindcss";` to the end of the `@utility label` block) into `web/src/app/globals.css`, unchanged. It is reproduced here so this task is self-contained:
 
@@ -337,7 +337,7 @@ Copy the complete CSS block from `docs/design-system.md` §2 (from `@import "tai
 }
 ```
 
-- [ ] **Step 7: Write `web/src/app/fonts.ts`**
+- [x] **Step 7: Write `web/src/app/fonts.ts`**
 
 ```ts
 import { Barlow, Barlow_Semi_Condensed } from "next/font/google";
@@ -361,7 +361,7 @@ export const barlowCondensed = Barlow_Semi_Condensed({
 });
 ```
 
-- [ ] **Step 8: Update `web/src/app/layout.tsx`** (fonts, metadata and viewport only; the header, providers and wallet stylesheet stay until Task 4)
+- [x] **Step 8: Update `web/src/app/layout.tsx`** (fonts, metadata and viewport only; the header, providers and wallet stylesheet stay until Task 4)
 
 Replace the file with:
 
@@ -409,12 +409,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 }
 ```
 
-- [ ] **Step 9: Verify**
+- [x] **Step 9: Verify**
 
 Run: `npm test` → all pass. `npm run lint` → no errors. `npm run build` → succeeds; the route table still lists `/` and `/new` as `○ (Static)`.
 Start the dev server and open `http://localhost:3000/`: text renders in Barlow (check in dev tools: computed `font-family` of `body` starts with `__Barlow`), the old page is unstyled where it used removed palette classes (expected until Tasks 4–11), and there are no console errors.
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ```bash
 git add web/src/app/globals.css web/src/app/fonts.ts web/src/app/layout.tsx web/src/lib/cx.ts web/src/lib/cx.test.ts web/src/lib/site.ts web/src/lib/site.test.ts
@@ -435,7 +435,7 @@ git commit -m "feat(web): Clear Rules design tokens, Barlow fonts, site URL and 
 - Consumes: `cx` (Task 1); existing `formatDuration` in `format.ts`.
 - Produces: `formatCountdown(seconds: number): string`, `formatShortDateTime(unixSeconds: number, timeZone?: string): string`, `shortAddress(address: string): string`, `whatsappUrl(text: string): string` from `@/lib/format`; `Icon`, `type IconName` from `@/components/ui/Icon`; `Logo`, `LogoMark` from `@/components/brand/Logo`; `Pictogram`, `type PictogramName` from `@/components/brand/Pictogram`.
 
-- [ ] **Step 1: Pin the test time zone**
+- [x] **Step 1: Pin the test time zone**
 
 Replace `web/vitest.config.ts` with:
 
@@ -450,7 +450,7 @@ export default defineConfig({
 });
 ```
 
-- [ ] **Step 2: Write the failing tests** (append to `web/src/lib/format.test.ts`, and add the new names to its import line so it reads `import { explorerTx, formatCountdown, formatDuration, formatEur, formatShortDateTime, parseEur, phantomBrowseUrl, shortAddress, whatsappUrl } from "./format";`)
+- [x] **Step 2: Write the failing tests** (append to `web/src/lib/format.test.ts`, and add the new names to its import line so it reads `import { explorerTx, formatCountdown, formatDuration, formatEur, formatShortDateTime, parseEur, phantomBrowseUrl, shortAddress, whatsappUrl } from "./format";`)
 
 ```ts
 describe("formatCountdown", () => {
@@ -489,12 +489,12 @@ describe("shortAddress / whatsappUrl", () => {
 });
 ```
 
-- [ ] **Step 3: Run the tests to see them fail**
+- [x] **Step 3: Run the tests to see them fail**
 
 Run: `npm test`
 Expected: FAIL with `formatCountdown is not a function` (and the other new names).
 
-- [ ] **Step 4: Append the helpers to `web/src/lib/format.ts`**
+- [x] **Step 4: Append the helpers to `web/src/lib/format.ts`**
 
 ```ts
 /** Time left, ticking: 90061 -> "1 day 1 h", 3660 -> "1 h 1 min", 252 -> "4 min 12 s", 45 -> "45 s" */
@@ -532,12 +532,12 @@ export function shortAddress(address: string): string {
 export const whatsappUrl = (text: string) => `https://wa.me/?text=${encodeURIComponent(text)}`;
 ```
 
-- [ ] **Step 5: Run the tests to see them pass**
+- [x] **Step 5: Run the tests to see them pass**
 
 Run: `npm test`
 Expected: PASS. If `formatShortDateTime(…)` without a time zone fails, the worker ignored `env.TZ`: add `web/vitest.setup.ts` containing `process.env.TZ = "UTC";`, add `setupFiles: ["./vitest.setup.ts"]` to the `test` block, and run again.
 
-- [ ] **Step 6: Write `web/src/components/ui/Icon.tsx`**
+- [x] **Step 6: Write `web/src/components/ui/Icon.tsx`**
 
 ```tsx
 import type { SVGProps } from "react";
@@ -658,7 +658,7 @@ export function Icon({
 }
 ```
 
-- [ ] **Step 7: Write `web/src/components/brand/Logo.tsx`**
+- [x] **Step 7: Write `web/src/components/brand/Logo.tsx`**
 
 ```tsx
 import Link from "next/link";
@@ -706,7 +706,7 @@ export function Logo({ inverse = false, size = 32, href = "/" }: { inverse?: boo
 }
 ```
 
-- [ ] **Step 8: Write `web/src/components/brand/Pictogram.tsx`**
+- [x] **Step 8: Write `web/src/components/brand/Pictogram.tsx`**
 
 ```tsx
 import type { ReactNode } from "react";
@@ -814,11 +814,11 @@ export function Pictogram({ name, size = 56, className }: { name: PictogramName;
 }
 ```
 
-- [ ] **Step 9: Verify**
+- [x] **Step 9: Verify**
 
 Run: `npm test` → PASS. `npm run lint` → no errors. `npm run build` → succeeds (the new components are not used yet; Task 3's gallery shows them).
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ```bash
 git add web/vitest.config.ts web/src/lib/format.ts web/src/lib/format.test.ts web/src/components/ui/Icon.tsx web/src/components/brand
@@ -846,7 +846,7 @@ git commit -m "feat(web): countdown and date formats, icon set, logo and pictogr
   - `ConfirmDialog({ open; title; body; confirmLabel; danger?: boolean; onConfirm: () => void; onCancel: () => void })`
   - `CopyField({ value: string; label: string })`, `Skeleton({ className? })`, `EmptyState({ pictogram: PictogramName; title: string; children?; action?: ReactNode })`
 
-- [ ] **Step 1: Write `web/src/components/ui/Button.tsx`**
+- [x] **Step 1: Write `web/src/components/ui/Button.tsx`**
 
 ```tsx
 import Link from "next/link";
@@ -944,7 +944,7 @@ export function ButtonLink({
 }
 ```
 
-- [ ] **Step 2: Write `web/src/components/ui/Callout.tsx`**
+- [x] **Step 2: Write `web/src/components/ui/Callout.tsx`**
 
 ```tsx
 import type { ReactNode } from "react";
@@ -994,7 +994,7 @@ export function Callout({
 }
 ```
 
-- [ ] **Step 3: Write `web/src/components/ui/StatusChip.tsx`**
+- [x] **Step 3: Write `web/src/components/ui/StatusChip.tsx`**
 
 ```tsx
 import { cx } from "@/lib/cx";
@@ -1051,7 +1051,7 @@ export function StatusChip({
 }
 ```
 
-- [ ] **Step 4: Write `web/src/components/ui/Timetable.tsx`**
+- [x] **Step 4: Write `web/src/components/ui/Timetable.tsx`**
 
 ```tsx
 import type { ReactNode } from "react";
@@ -1137,7 +1137,7 @@ export function Timetable({
 }
 ```
 
-- [ ] **Step 5: Write `web/src/components/ui/Segmented.tsx`**
+- [x] **Step 5: Write `web/src/components/ui/Segmented.tsx`**
 
 ```tsx
 import { cx } from "@/lib/cx";
@@ -1206,7 +1206,7 @@ export function Segmented<T extends string>({
 }
 ```
 
-- [ ] **Step 6: Write `web/src/components/ui/Field.tsx`**
+- [x] **Step 6: Write `web/src/components/ui/Field.tsx`**
 
 ```tsx
 import type { InputHTMLAttributes, ReactNode } from "react";
@@ -1271,7 +1271,7 @@ export function TextField({
 }
 ```
 
-- [ ] **Step 7: Write `web/src/components/ui/Sheet.tsx`**
+- [x] **Step 7: Write `web/src/components/ui/Sheet.tsx`**
 
 ```tsx
 "use client";
@@ -1360,7 +1360,7 @@ export function Sheet({
 }
 ```
 
-- [ ] **Step 8: Write `web/src/components/ui/ConfirmDialog.tsx`**
+- [x] **Step 8: Write `web/src/components/ui/ConfirmDialog.tsx`**
 
 ```tsx
 "use client";
@@ -1402,7 +1402,7 @@ export function ConfirmDialog({
 }
 ```
 
-- [ ] **Step 9: Write `web/src/components/ui/CopyField.tsx`**
+- [x] **Step 9: Write `web/src/components/ui/CopyField.tsx`**
 
 ```tsx
 "use client";
@@ -1454,7 +1454,7 @@ export function CopyField({ value, label }: { value: string; label: string }) {
 }
 ```
 
-- [ ] **Step 10: Write `web/src/components/ui/Skeleton.tsx` and `web/src/components/ui/EmptyState.tsx`**
+- [x] **Step 10: Write `web/src/components/ui/Skeleton.tsx` and `web/src/components/ui/EmptyState.tsx`**
 
 `Skeleton.tsx`:
 
@@ -1495,7 +1495,7 @@ export function EmptyState({
 }
 ```
 
-- [ ] **Step 11: Write the development gallery**
+- [x] **Step 11: Write the development gallery**
 
 `web/src/app/dev/ui/page.tsx`:
 
@@ -1745,7 +1745,7 @@ export function UiGallery() {
 }
 ```
 
-- [ ] **Step 12: Verify in the browser**
+- [x] **Step 12: Verify in the browser**
 
 Run: `npm run lint` → no errors. `npm test` → PASS. `npm run build` → succeeds (`/dev/ui` builds as a 404 page in production).
 Start the dev server and open `http://localhost:3000/dev/ui` at 1280 px and 375 px:
@@ -1756,7 +1756,7 @@ Start the dev server and open `http://localhost:3000/dev/ui` at 1280 px and 375 
 - Sheet: opens as a bottom sheet at 375 px and centred at 1280 px; Esc, the close button and a click on the backdrop close it; focus returns to the button.
 - No console errors; `document.documentElement.scrollWidth <= innerWidth` at 375 px.
 
-- [ ] **Step 13: Commit**
+- [x] **Step 13: Commit**
 
 ```bash
 git add web/src/components/ui web/src/app/dev
@@ -1784,7 +1784,7 @@ git commit -m "feat(web): UI primitives (buttons, callouts, status chips, timeta
   - `SiteHeader()` (static), `SiteFooter()`, `DevnetRibbon()`, `NavLinks({ items: NavItem[]; orientation?: "row" | "column"; onNavigate? })`, `MobileMenu({ items: NavItem[]; footer?: ReactNode })`, `type NavItem = { href: string; label: string }`, `SITE_NAV: NavItem[]`.
   - Every page in `(site)` and `(app)` renders inside `<main id="main">` (skip-link target).
 
-- [ ] **Step 1: Move the routes into the two groups**
+- [x] **Step 1: Move the routes into the two groups**
 
 Run (repo root, PowerShell or Bash):
 
@@ -1798,7 +1798,7 @@ git mv web/src/app/providers.tsx "web/src/app/(app)/providers.tsx"
 
 Expected: `git status` shows five renames. (`git mv` creates the `(site)` and `(app)` folders; in PowerShell keep the quotes because of the parentheses.)
 
-- [ ] **Step 2: Rewrite `web/src/app/(app)/providers.tsx`** (the wallet library's modal and its stylesheet are no longer used)
+- [x] **Step 2: Rewrite `web/src/app/(app)/providers.tsx`** (the wallet library's modal and its stylesheet are no longer used)
 
 ```tsx
 "use client";
@@ -1827,7 +1827,7 @@ export function Providers({ children }: { children: ReactNode }) {
 }
 ```
 
-- [ ] **Step 3: Write `web/src/components/wallet/ConnectProvider.tsx`**
+- [x] **Step 3: Write `web/src/components/wallet/ConnectProvider.tsx`**
 
 ```tsx
 "use client";
@@ -1871,7 +1871,7 @@ export function useConnect() {
 }
 ```
 
-- [ ] **Step 4: Write `web/src/components/wallet/ConnectSheet.tsx`**
+- [x] **Step 4: Write `web/src/components/wallet/ConnectSheet.tsx`**
 
 ```tsx
 "use client";
@@ -1975,7 +1975,7 @@ export function ConnectSheet({ open, onClose }: { open: boolean; onClose: () => 
 }
 ```
 
-- [ ] **Step 5: Write `web/src/components/wallet/LoginButton.tsx`**
+- [x] **Step 5: Write `web/src/components/wallet/LoginButton.tsx`**
 
 ```tsx
 "use client";
@@ -2005,7 +2005,7 @@ export function LoginButton({
 }
 ```
 
-- [ ] **Step 6: Write `web/src/components/wallet/OpenInPhantom.tsx`** (same rule as before: shown only when no wallet is installed)
+- [x] **Step 6: Write `web/src/components/wallet/OpenInPhantom.tsx`** (same rule as before: shown only when no wallet is installed)
 
 ```tsx
 "use client";
@@ -2039,7 +2039,7 @@ export function OpenInPhantom() {
 }
 ```
 
-- [ ] **Step 7: Write `web/src/components/wallet/TestFundsButton.tsx`** (same endpoint and messages; the faucet itself is unchanged)
+- [x] **Step 7: Write `web/src/components/wallet/TestFundsButton.tsx`** (same endpoint and messages; the faucet itself is unchanged)
 
 ```tsx
 "use client";
@@ -2089,7 +2089,7 @@ export function TestFundsButton({ variant = "secondary" }: { variant?: ButtonVar
 }
 ```
 
-- [ ] **Step 8: Write `web/src/components/wallet/WalletChip.tsx`**
+- [x] **Step 8: Write `web/src/components/wallet/WalletChip.tsx`**
 
 ```tsx
 "use client";
@@ -2161,7 +2161,7 @@ export function WalletChip() {
 }
 ```
 
-- [ ] **Step 9: Write the navigation pieces**
+- [x] **Step 9: Write the navigation pieces**
 
 `web/src/components/site/NavLinks.tsx`:
 
@@ -2246,7 +2246,7 @@ export function MobileMenu({ items, footer }: { items: NavItem[]; footer?: React
 }
 ```
 
-- [ ] **Step 10: Write the site chrome**
+- [x] **Step 10: Write the site chrome**
 
 `web/src/components/site/DevnetRibbon.tsx`:
 
@@ -2378,7 +2378,7 @@ export function SiteFooter() {
 }
 ```
 
-- [ ] **Step 11: Write `web/src/components/wallet/AppHeader.tsx`**
+- [x] **Step 11: Write `web/src/components/wallet/AppHeader.tsx`**
 
 ```tsx
 "use client";
@@ -2426,7 +2426,7 @@ export function AppHeader() {
 }
 ```
 
-- [ ] **Step 12: Write the layouts**
+- [x] **Step 12: Write the layouts**
 
 `web/src/app/layout.tsx` (root; no request data, no wallet code):
 
@@ -2508,7 +2508,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 }
 ```
 
-- [ ] **Step 13: Point the old pages at the new wallet components** (they are replaced in Tasks 6, 9 and 11)
+- [x] **Step 13: Point the old pages at the new wallet components** (they are replaced in Tasks 6, 9 and 11)
 
 1. Delete the old components: `git rm web/src/components/WalletButton.tsx web/src/components/OpenInPhantom.tsx web/src/components/TestFundsButton.tsx`
 2. In `web/src/app/(app)/new/page.tsx`: replace `import { OpenInPhantom } from "@/components/OpenInPhantom";` with `import { OpenInPhantom } from "@/components/wallet/OpenInPhantom";`, replace `import { WalletButton } from "@/components/WalletButton";` with `import { LoginButton } from "@/components/wallet/LoginButton";`, and replace `<div className="flex justify-center"><WalletButton /></div>` with `<div className="flex justify-center"><LoginButton /></div>`.
@@ -2524,7 +2524,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       </section>
 ```
 
-- [ ] **Step 14: Verify**
+- [x] **Step 14: Verify**
 
 Run: `npm test` → PASS. `npm run lint` → no errors. `npm run build` → succeeds; `/` is still `○ (Static)` (no wallet code reaches the site group).
 In the browser (dev server) at 375 and 1280 px:
@@ -2535,14 +2535,14 @@ In the browser (dev server) at 375 and 1280 px:
 - No console errors, no horizontal scroll at 375 px.
 - Network: on `/`, no request for chunks containing `@solana` (Dev tools → Network, filter "solana"); check the production build too with `npm run build && npx next start` if in doubt.
 
-- [ ] **Step 15: Commit**
+- [x] **Step 15: Commit**
 
 ```bash
 git add -A web/src
 git commit -m "feat(web): route groups, devnet ribbon, headers, footer and one connect sheet for log-in" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
-- [ ] **Step 16: Milestone M1: push and check the Vercel Preview**
+- [x] **Step 16: Milestone M1: push and check the Vercel Preview**
 
 1. `git push -u origin redesign`
 2. Find the Preview URL. With the GitHub CLI: `gh api "repos/Guidoandre/keysfirst/deployments?ref=redesign&per_page=1" --jq ".[0].id"`, then `gh api repos/Guidoandre/keysfirst/deployments/<id>/statuses --jq ".[0].environment_url"`. Without it, ask the user to copy the Preview link from the Vercel dashboard or the commit's check on GitHub.
