@@ -10,7 +10,9 @@ const MARKER = "#FFE14D";
 const GRAPHITE = "#545B66";
 
 // ImageResponse can't read next/font's woff2 files; it gets the approved TTF, read once per server instance.
-const displayFont = readFile(join(process.cwd(), "assets/fonts/BarlowSemiCondensed-Bold.ttf"));
+// Controller-directed deviation (Task 17): a failed read must not break every preview, so fall back to null and
+// let ImageResponse use its default font instead of rejecting.
+const displayFont = readFile(join(process.cwd(), "assets/fonts/BarlowSemiCondensed-Bold.ttf")).catch(() => null);
 
 function Mark({ size }: { size: number }) {
   return (
@@ -24,6 +26,7 @@ function Mark({ size }: { size: number }) {
 
 /** A 1200 × 630 link-preview card in the brand: plate logo, big ink title, devnet line. Flexbox only (Satori). */
 export async function ogCard({ kicker, title, subtitle }: { kicker?: string; title: string; subtitle?: string }) {
+  const font = await displayFont;
   return new ImageResponse(
     (
       <div
@@ -59,6 +62,6 @@ export async function ogCard({ kicker, title, subtitle }: { kicker?: string; tit
         </div>
       </div>
     ),
-    { ...OG_SIZE, fonts: [{ name: "Barlow Semi Condensed", data: await displayFont, weight: 700, style: "normal" }] },
+    { ...OG_SIZE, ...(font ? { fonts: [{ name: "Barlow Semi Condensed", data: font, weight: 700, style: "normal" as const }] } : {}) },
   );
 }
