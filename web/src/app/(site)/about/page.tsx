@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ButtonLink } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
 
 export const dynamic = "error";
 
@@ -26,10 +27,10 @@ const ROADMAP = [
 export default function AboutPage() {
   return (
     <div className="mx-auto max-w-read px-4 pt-10 pb-16 sm:px-6 lg:pt-16">
-      <p className="label text-fg-muted">About</p>
-      <h1 className="mt-3 font-display text-title font-bold">About Keysfirst</h1>
+      <p className="label enter text-fg-muted">About</p>
+      <h1 className="enter mt-3 font-display text-title font-bold [--enter-delay:60ms]">About Keysfirst</h1>
 
-      <section aria-labelledby="why" className="mt-10 space-y-4 text-body">
+      <section aria-labelledby="why" className="enter mt-10 space-y-4 text-body [--enter-delay:130ms]">
         <h2 id="why" className="font-display text-section font-bold">
           Why it exists
         </h2>
@@ -40,7 +41,7 @@ export default function AboutPage() {
         <p>Keysfirst turns the key handover into the moment the deposit moves: no keys, no money.</p>
       </section>
 
-      <section aria-labelledby="what" className="mt-12 space-y-4 text-body">
+      <section aria-labelledby="what" data-reveal="" className="mt-12 space-y-4 text-body">
         <h2 id="what" className="font-display text-section font-bold">
           What it is
         </h2>
@@ -55,7 +56,7 @@ export default function AboutPage() {
         </ul>
       </section>
 
-      <section aria-labelledby="next" className="mt-12 space-y-4 text-body">
+      <section aria-labelledby="next" data-reveal="" className="mt-12 space-y-4 text-body">
         <h2 id="next" className="font-display text-section font-bold">
           What comes next
         </h2>
@@ -66,11 +67,24 @@ export default function AboutPage() {
         </ul>
       </section>
 
-      <section aria-labelledby="who" className="mt-12 space-y-4 text-body">
+      <section aria-labelledby="who" data-reveal="" className="mt-12 space-y-4 text-body">
         <h2 id="who" className="font-display text-section font-bold">
           Who built it
         </h2>
-        <p>Built by a business student at WHU with AI coding tools (Claude Code and solana.new).</p>
+        <p>
+          Built by{" "}
+          <a
+            href="https://www.linkedin.com/in/guido-andreini/"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 font-semibold underline underline-offset-2"
+          >
+            Guido Andreini
+            <Icon name="external" size={14} />
+            <span className="sr-only"> on LinkedIn (opens in a new tab)</span>
+          </a>
+          , a business student at WHU.
+        </p>
       </section>
 
       <div className="mt-12 flex flex-wrap gap-3">
