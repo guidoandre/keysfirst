@@ -39,7 +39,7 @@ export async function ogCard({ kicker, title, subtitle }: { kicker?: string; tit
           padding: 72,
           background: "#FFFFFF",
           color: INK,
-          fontFamily: "Barlow Semi Condensed",
+          fontFamily: font ? "Barlow Semi Condensed" : undefined,
         }}
       >
         <div style={{ display: "flex", alignItems: "center" }}>
