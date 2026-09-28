@@ -8,6 +8,7 @@ import { StepList, type Step } from "@/components/marketing/StepList";
 import { ButtonLink } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
 import { scenariosFor } from "@/content/scenarios";
+import { isAppRoute } from "@/lib/site";
 
 export const dynamic = "error";
 
@@ -60,7 +61,7 @@ export default function TenantsPage() {
             <ul className="grid gap-3">
               {NEEDS.map((need) => (
                 <li key={need.href}>
-                  <Link href={need.href} prefetch={false} className="block rounded-md border-[1.5px] border-rule bg-canvas p-4 hover:border-fg">
+                  <Link href={need.href} prefetch={isAppRoute(need.href) ? false : undefined} className="block rounded-md border-[1.5px] border-rule bg-canvas p-4 hover:border-fg">
                     <span className="font-display text-card font-bold">{need.title}</span>
                     <span className="mt-1 block text-body text-fg-muted">{need.text}</span>
                   </Link>

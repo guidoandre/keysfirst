@@ -240,12 +240,13 @@ The delay varies from run to run (1.2–2.4 s). I couldn't find its cause withou
 
 - `web/src/lib/site.ts`: `isAppRoute(href)` is true for `/new`, `/start`, `/deals` and `/deal/…`, with or without a query or hash. Its comment states the rule. Unit tests are in `site.test.ts`.
 - `ui/Button.tsx`: `ButtonLink` passes an optional `prefetch` prop to `next/link`.
-- Every link from the marketing pages into a wallet page now has `prefetch={false}`:
+- Every link from the marketing pages and the 404 page into a wallet page now has `prefetch={false}`:
   - the header's "Get started" and "Log in", and the menu sheet's "Get started" (`NavItem.prefetch`)
   - the landing hero, `AudienceSplit` and both links in `CtaBand`
   - the For landlords hero
-  - For tenants: "Get started" and the three "What you need" cards
+  - For tenants: "Get started", and the three "What you need" cards through `isAppRoute`
   - FAQ answer links and the footer, both through `isAppRoute`
+  - the 404 page's "My deals" and "Get started" (added in the final fix wave: the 404 page shows the marketing header, and its two wallet-page links still prefetched)
 - The footer also appears on the wallet pages, so its three wallet-page links stop prefetching there too. They sit at the bottom of the page. The app's own navigation (app header, My deals, `/start` → `/new`) still prefetches as before.
 - Behaviour: the links still navigate inside the app without a full reload. The wallet page's code now loads on click instead of in the background. On a production build, the hero's "Create a deposit link" opened `/new` (step "The room"), and the header's "Log in" opened `/deals` with the log-in sheet. No console errors.
 - Tests (61, 2 of them new), lint and build are green. The marketing pages, `/start` and `/new` are still `○ (Static)`.

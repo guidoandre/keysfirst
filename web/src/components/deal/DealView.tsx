@@ -62,7 +62,8 @@ export function DealView(p: DealViewProps) {
         signature={p.signature}
         onAction={p.onAction}
       />
-      {role === "landlord" && phase === "open" && (
+      {/* Spec §6.4: while the deal is open and before the deadline (also before payment opens, 180 days ahead). */}
+      {role === "landlord" && (phase === "open" || phase === "open-too-early") && (
         <ShareBox url={`${p.origin}/deal/${p.id}`} text={`Pay the ${amount} deposit for "${data.title}" safely with Keysfirst:`} />
       )}
       <DealTimetable rows={rows} title={data.title} />

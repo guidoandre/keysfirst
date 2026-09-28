@@ -6,7 +6,8 @@ import { ImageResponse } from "next/og";
  */
 export function GET(req: Request) {
   const params = new URL(req.url).searchParams;
-  const size = Math.min(512, Math.max(16, Number(params.get("size")) || 256));
+  // Whole pixels only: ImageResponse fails on a fractional width (e.g. ?size=100.5).
+  const size = Math.min(512, Math.max(16, Math.round(Number(params.get("size")) || 256)));
   const simple = params.get("simple") === "1";
   return new ImageResponse(
     (

@@ -12,6 +12,7 @@ import { formatEur, formatShortDateTime } from "@/lib/format";
 import { getOrigin } from "@/lib/origin";
 import { getProgram } from "@/lib/program";
 import { handoverOpensAt } from "@/lib/rules";
+import { withTimeout } from "@/lib/timeout";
 
 export const metadata: Metadata = { title: "Confirm the key handover", robots: { index: false } };
 
@@ -21,15 +22,21 @@ const at = (unixSeconds: number) => `${formatShortDateTime(unixSeconds, GERMAN_T
 
 const CHECKLIST = ["You are inside the room.", "You have the keys, or they are in front of you.", "Phantom is on the wallet that paid the deposit."];
 
+/** The deal's address, or null when the link's id isn't an address at all (checked before any devnet read). */
+function parseDealId(id: string): PublicKey | null {
+  try {
+    return new PublicKey(id);
+  } catch {
+    return null;
+  }
+}
+
 /** `data` is undefined when devnet couldn't be reached: the page then works exactly as before (checklist + button). */
-async function loadDeal(id: string): Promise<{ data: DealData | null | undefined; now: number }> {
+async function loadDeal(address: PublicKey): Promise<{ data: DealData | null | undefined; now: number }> {
   const now = Math.floor(Date.now() / 1000);
   try {
     // A hanging RPC would otherwise leave the tenant waiting at the door instead of reaching the checklist fallback below.
-    const deal = await Promise.race([
-      getProgram(new Connection(RPC_URL, "confirmed")).account.deal.fetchNullable(new PublicKey(id)),
-      new Promise<never>((_, reject) => setTimeout(() => reject(new Error("timeout")), 3_000)),
-    ]);
+    const deal = await withTimeout(getProgram(new Connection(RPC_URL, "confirmed")).account.deal.fetchNullable(address), 3_000);
     return { data: deal ? toDealData(deal) : null, now };
   } catch {
     return { data: undefined, now };
@@ -57,8 +64,15 @@ function blocker(d: DealData, now: number): string | null {
 export default async function HandoverPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const solanaPayUrl = `solana:${await getOrigin()}/api/handover/${id}`;
-  const { data, now } = await loadDeal(id);
-  const blocked = data === null ? "We can't find this deal. Ask the landlord for the deal link." : data ? blocker(data, now) : null;
+  const address = parseDealId(id);
+  const { data, now } = address ? await loadDeal(address) : { data: undefined, now: 0 };
+  const blocked = !address
+    ? "This isn't a valid deal link. Check that you copied the whole link."
+    : data === null
+      ? "We can't find this deal. Ask the landlord for the deal link."
+      : data
+        ? blocker(data, now)
+        : null;
 
   return (
     <div className="mx-auto max-w-app px-4 py-8 sm:py-12">
@@ -75,9 +89,12 @@ export default async function HandoverPage({ params }: { params: Promise<{ id: s
           <Callout tone="neutral" role="status">
             {blocked}
           </Callout>
-          <Link href={`/deal/${id}`} className={buttonClass({ variant: "secondary", fullWidth: true })}>
-            Open the deal page
-          </Link>
+          {/* An invalid id has no deal page to open (it would only repeat this message). */}
+          {address && (
+            <Link href={`/deal/${id}`} className={buttonClass({ variant: "secondary", fullWidth: true })}>
+              Open the deal page
+            </Link>
+          )}
         </div>
       ) : (
         <>

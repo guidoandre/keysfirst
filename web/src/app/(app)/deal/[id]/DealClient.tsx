@@ -133,7 +133,8 @@ export function DealClient({ id, origin, created }: { id: string; origin: string
       />
       {handoverUsed && (
         <HandoverMode
-          open={handoverOpen && data.status === "funded"}
+          // Only while the code can still release the deposit: locked and before the deadline (live clock).
+          open={handoverOpen && data.status === "funded" && !expired}
           onClose={() => setHandoverOpen(false)}
           dealId={id}
           origin={origin}

@@ -19,10 +19,11 @@ export default function NotFound() {
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-3">
           <ButtonLink href="/">Go to the homepage</ButtonLink>
-          <ButtonLink href="/deals" variant="secondary">
+          {/* prefetch={false} on links into the wallet pages: see isAppRoute in lib/site.ts */}
+          <ButtonLink href="/deals" prefetch={false} variant="secondary">
             My deals
           </ButtonLink>
-          <ButtonLink href="/start" variant="quiet" className="sm:ml-2">
+          <ButtonLink href="/start" prefetch={false} variant="quiet" className="sm:ml-2">
             Get started
           </ButtonLink>
         </div>

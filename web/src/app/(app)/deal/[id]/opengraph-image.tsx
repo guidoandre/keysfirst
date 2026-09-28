@@ -4,6 +4,7 @@ import { formatEur } from "@/lib/format";
 import { OG_CONTENT_TYPE, OG_SIZE, ogCard } from "@/lib/og";
 import { getProgram } from "@/lib/program";
 import { STATUS_LABEL, statusOf } from "@/lib/rules";
+import { withTimeout } from "@/lib/timeout";
 
 export const alt = "A Keysfirst deposit link";
 export const size = OG_SIZE;
@@ -15,12 +16,8 @@ const SUBTITLE = "Protected by Keysfirst: the landlord is paid only when the ten
 export default async function DealImage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
-    // A hanging RPC would otherwise hang the link preview instead of falling back to the generic card below
-    // (same Promise.race pattern as the handover page's loadDeal).
-    const deal = await Promise.race([
-      getProgram(new Connection(RPC_URL, "confirmed")).account.deal.fetchNullable(new PublicKey(id)),
-      new Promise<never>((_, reject) => setTimeout(() => reject(new Error("timeout")), 3_000)),
-    ]);
+    // A hanging RPC would otherwise hang the link preview instead of falling back to the generic card below.
+    const deal = await withTimeout(getProgram(new Connection(RPC_URL, "confirmed")).account.deal.fetchNullable(new PublicKey(id)), 3_000);
     if (deal) {
       return ogCard({
         kicker: STATUS_LABEL[statusOf(deal.status)],
