@@ -57,7 +57,7 @@ export function NextStep({
 
       {primary &&
         (connected ? (
-          primary === "fund" && card && onPayByCard ? (
+          primary === "fund" && card && onPayByCard && busy !== "fund" ? (
             <div className="space-y-2">
               <Button size="lg" fullWidth loading={cardBusy} loadingText="Opening the card payment…" disabled={busy !== null || cardBusy} onClick={onPayByCard}>
                 Pay {card.total} by card

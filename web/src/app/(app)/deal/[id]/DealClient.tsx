@@ -9,6 +9,7 @@ import { DealView } from "@/components/deal/DealView";
 import type { CardOffer } from "@/components/deal/NextStep";
 import { ReleasedScreen } from "@/components/deal/ReleasedScreen";
 import { Button } from "@/components/ui/Button";
+import { Callout } from "@/components/ui/Callout";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { CardResume, pendingKey } from "@/components/wallet/CardResume";
 import { toDealData } from "@/lib/deal-data";
@@ -47,23 +48,39 @@ export function DealClient({ id, origin, created, paid }: { id: string; origin: 
   const [cardBusy, setCardBusy] = useState(false);
   // The Stripe session to finish: from ?paid=, or remembered from before a closed tab (read after mount).
   const [pending, setPending] = useState<string | null>(paid);
-  const dealStatus = deal ? statusOf(deal.status) : null;
+  // A resume that failed keeps its session (the card button stays hidden); "Try again" remounts CardResume.
+  const [resumeError, setResumeError] = useState<string | null>(null);
+  const [resumeKey, setResumeKey] = useState(0);
+  const [cardDone, setCardDone] = useState<string | null>(null);
 
   useEffect(() => {
+    if (paid) return;
     const timer = setTimeout(() => {
       try {
-        if (dealStatus && dealStatus !== "open") {
-          localStorage.removeItem(pendingKey(id)); // paid and locked (or no longer payable): nothing to resume
-          setPending(null);
-        } else if (!paid) {
-          setPending(localStorage.getItem(pendingKey(id)));
-        }
+        setPending(localStorage.getItem(pendingKey(id)));
       } catch {
         // Storage blocked: only ?paid= can resume.
       }
     }, 0);
     return () => clearTimeout(timer);
-  }, [id, paid, dealStatus]);
+  }, [id, paid]);
+
+  // Back from Stripe through the back/forward cache: the page comes back as it was left (card button spinning,
+  // no pending session). Stop the spinner and pick up the session saved before leaving.
+  useEffect(() => {
+    const onShow = (event: PageTransitionEvent) => {
+      if (!event.persisted) return;
+      setCardBusy(false);
+      try {
+        const saved = localStorage.getItem(pendingKey(id));
+        if (saved) setPending(saved);
+      } catch {
+        // Storage blocked: nothing to pick up.
+      }
+    };
+    window.addEventListener("pageshow", onShow);
+    return () => window.removeEventListener("pageshow", onShow);
+  }, [id]);
 
   if (!address) {
     return <DealMessage title="This isn't a valid deal link">Check that you copied the whole link.</DealMessage>;
@@ -94,7 +111,7 @@ export function DealClient({ id, origin, created, paid }: { id: string; origin: 
   const price = priceBreakdown(toCents(data.amount), "card");
   // The tenant-to-be pays by card unless their balance already covers the deposit (spec §4.3).
   const card: CardOffer | null =
-    data.status === "open" && role !== "landlord" && (balance === null || balance < depositUnits)
+    data.status === "open" && role !== "landlord" && !pending && !resumeError && (balance === null || balance < depositUnits)
       ? {
           total: formatEur(fromCents(price.totalCents)),
           breakdown: `Deposit ${amount} + Keysfirst fee ${formatEur(fromCents(price.feeCents))} (${feePercent("card")}). The fee isn't refunded.`,
@@ -111,10 +128,11 @@ export function DealClient({ id, origin, created, paid }: { id: string; origin: 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ deal: id, account: me.toBase58() }),
       });
-      const body = await res.json();
+      const body = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(body.error);
       try {
-        localStorage.setItem(pendingKey(id), body.session);
+        // Never replace a session that is still waiting to be resolved.
+        if (!localStorage.getItem(pendingKey(id))) localStorage.setItem(pendingKey(id), body.session);
       } catch {
         // Storage blocked: ?paid= on the way back still resumes.
       }
@@ -177,22 +195,50 @@ export function DealClient({ id, origin, created, paid }: { id: string; origin: 
 
   return (
     <>
-      {pending && me && data.status === "open" && (
+      {pending && me && (
+        <div className="mx-auto max-w-app space-y-3 px-4 pt-6">
+          {resumeError ? (
+            <>
+              <Callout tone="danger" role="alert">
+                {resumeError}
+              </Callout>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setResumeError(null);
+                  setResumeKey((k) => k + 1);
+                }}
+              >
+                Try again
+              </Button>
+            </>
+          ) : (
+            <CardResume
+              key={resumeKey}
+              session={pending}
+              dealId={id}
+              account={me}
+              amount={depositUnits}
+              lock={data.status === "open"}
+              onReady={() => {
+                setPending(null);
+                void execute("fund");
+              }}
+              onDone={(message) => {
+                setPending(null);
+                setCardDone(message);
+              }}
+              onCancelled={() => setPending(null)}
+              onError={setResumeError}
+            />
+          )}
+        </div>
+      )}
+      {cardDone && (
         <div className="mx-auto max-w-app px-4 pt-6">
-          <CardResume
-            session={pending}
-            dealId={id}
-            account={me}
-            amount={depositUnits}
-            onReady={() => {
-              setPending(null);
-              void execute("fund");
-            }}
-            onError={(message) => {
-              setPending(null);
-              setError(message);
-            }}
-          />
+          <Callout tone="success" role="status">
+            {cardDone}
+          </Callout>
         </div>
       )}
       <DealView

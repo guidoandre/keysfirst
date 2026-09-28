@@ -37,7 +37,7 @@ export async function POST(req: Request) {
   if (session.payment_status !== "paid" || !intent || !meta.deal || !meta.account || !meta.amount) {
     return Response.json({ error: NOT_PAID }, { status: 402 });
   }
-  if (intent.metadata.minted) return Response.json({ signature: intent.metadata.minted, deal: meta.deal });
+  if (intent.metadata.minted) return Response.json({ signature: intent.metadata.minted, deal: meta.deal, account: meta.account });
 
   const connection = new Connection(RPC_URL, "confirmed");
   const owner = new PublicKey(meta.account);
@@ -75,5 +75,5 @@ export async function POST(req: Request) {
   } catch {
     await stripe.paymentIntents.update(intent.id, { metadata: { minted: signature } }).catch(() => undefined);
   }
-  return Response.json({ signature, deal: meta.deal });
+  return Response.json({ signature, deal: meta.deal, account: meta.account });
 }
