@@ -50,7 +50,7 @@ export function DealClient({ id, origin, created }: { id: string; origin: string
       <DealMessage
         title="We can't find this deal"
         action={
-          <Button variant="secondary" onClick={() => void refresh()}>
+          <Button variant="secondary" onClick={() => refresh().catch(() => undefined)}>
             Try again
           </Button>
         }

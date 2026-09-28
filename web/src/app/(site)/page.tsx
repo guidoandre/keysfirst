@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   // The root template doesn't reach the home page, so the title is written out in full.
   title: { absolute: "Keysfirst · The deposit moves only when the keys do" },
   description:
-    "Renting a room in Germany from abroad? Keysfirst holds the deposit in a lock until the key handover: the landlord is paid when you scan their code at the door, otherwise you can take it back after the deadline.",
+    "Renting a room in Germany from abroad? Keysfirst holds the deposit in a lock until the key handover: the landlord is paid when you confirm the handover at the door, otherwise you can take it back after the deadline.",
 };
 
 const FACTS = ["Works with any listing: WG-Gesucht, Facebook, a friend's sublet", "Money only goes to the tenant or the landlord", "After the deadline it can only go back to the tenant"];

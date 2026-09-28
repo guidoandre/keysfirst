@@ -37,8 +37,8 @@ export default function TenantsPage() {
         <p className="label text-fg-muted">For tenants</p>
         <h1 className="mt-3 max-w-3xl font-display text-title font-bold">Pay the deposit before you arrive, without trusting a stranger.</h1>
         <p className="mt-5 max-w-2xl text-lead text-fg-muted">
-          Your deposit waits in a lock until you&apos;re standing in the room with the keys. Your landlord is paid when you scan their code at the
-          door. If that never happens, you can take it back after the deadline.
+          Your deposit waits in a lock until you&apos;re standing in the room with the keys. Your landlord is paid when you confirm the handover at
+          the door. If that never happens, you can take it back after the deadline.
         </p>
         <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
           <AskLandlord />
