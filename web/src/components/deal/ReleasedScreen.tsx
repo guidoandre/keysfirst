@@ -3,6 +3,7 @@
 import { Icon } from "@/components/ui/Icon";
 import { Sheet } from "@/components/ui/Sheet";
 import { explorerTx, formatShortDateTime } from "@/lib/format";
+import { useWakeLock } from "@/lib/hooks";
 
 /** "Released: hand over the keys." Enters once (animate-released), then stays still. */
 export function ReleasedScreen({
@@ -20,13 +21,11 @@ export function ReleasedScreen({
   settledAt: number;
   receipt?: string;
 }) {
+  useWakeLock(open);
   return (
     <Sheet open={open} onClose={onClose} title="Released: hand over the keys" variant="full" className="bg-released">
-      <div
-        role="status"
-        className="flex min-h-dvh animate-released flex-col justify-between bg-released px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] text-white"
-      >
-        <div className="mx-auto w-full max-w-app">
+      <div className="flex min-h-dvh animate-released flex-col justify-between bg-released px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] text-white">
+        <div role="status" className="mx-auto w-full max-w-app">
           <p className="label">
             {title}
             {settledAt ? ` · ${formatShortDateTime(settledAt)}` : ""}
