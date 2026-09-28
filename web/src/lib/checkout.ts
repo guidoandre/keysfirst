@@ -7,3 +7,10 @@ export function checkoutProblem(o: { status: DealStatus; landlord: string; accou
   if (!canFund(o.times, o.now)) return "This deal can't be paid right now: its handover deadline has passed or is more than 180 days away.";
   return null;
 }
+
+/** Checkout's success/cancel URLs come back from the Host header, so only trust known hosts (devnet + Vercel); anything else falls back to production. */
+export function returnOrigin(requestUrl: string): string {
+  const requestOrigin = new URL(requestUrl).origin;
+  const host = new URL(requestOrigin).hostname;
+  return host === "localhost" || host === "127.0.0.1" || host.endsWith(".vercel.app") ? requestOrigin : "https://keysfirst.vercel.app";
+}

@@ -1,4 +1,4 @@
-import { Connection, PublicKey, Transaction, sendAndConfirmTransaction } from "@solana/web3.js";
+import { Connection, PublicKey, Transaction } from "@solana/web3.js";
 import type Stripe from "stripe";
 import { RPC_URL } from "@/lib/config";
 import { faucetKeypair, mintIxs, topUpIx } from "@/lib/server/faucet";
@@ -41,16 +41,37 @@ export async function POST(req: Request) {
 
   const connection = new Connection(RPC_URL, "confirmed");
   const owner = new PublicKey(meta.account);
-  let signature: string;
+
+  const tx = new Transaction().add(...mintIxs(faucet.publicKey, owner, BigInt(meta.amount)));
+  const gas = await topUpIx(connection, faucet.publicKey, owner);
+  if (gas) tx.add(gas);
+  tx.feePayer = faucet.publicKey;
+
+  // Retry-safe send: if sendRawTransaction/confirmTransaction throws after the transaction was actually
+  // broadcast (timeout, dropped response, etc.), check the network directly before declaring failure — a blind
+  // retry here would submit a second mint for the same payment.
+  let signature: string | undefined;
   try {
-    const tx = new Transaction().add(...mintIxs(faucet.publicKey, owner, BigInt(meta.amount)));
-    const gas = await topUpIx(connection, faucet.publicKey, owner);
-    if (gas) tx.add(gas);
-    signature = await sendAndConfirmTransaction(connection, tx, [faucet], { commitment: "confirmed" });
+    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("confirmed");
+    tx.recentBlockhash = blockhash;
+    tx.sign(faucet);
+    signature = await connection.sendRawTransaction(tx.serialize());
+    await connection.confirmTransaction({ signature, blockhash, lastValidBlockHeight }, "confirmed");
   } catch {
-    return Response.json({ error: MINT_FAILED }, { status: 503 });
+    if (!signature) return Response.json({ error: MINT_FAILED }, { status: 503 });
+    const { value } = await connection.getSignatureStatuses([signature]);
+    const status = value[0];
+    const landed = status && !status.err && (status.confirmationStatus === "confirmed" || status.confirmationStatus === "finalized");
+    if (!landed) return Response.json({ error: MINT_FAILED }, { status: 503 });
   }
-  // Known limit (spec §6): two simultaneous calls could both mint; a webhook fixes this in production.
-  await stripe.paymentIntents.update(intent.id, { metadata: { minted: signature } }).catch(() => undefined);
+  if (!signature) return Response.json({ error: MINT_FAILED }, { status: 503 });
+
+  // Known limit (spec §6): two simultaneous FIRST calls (before either recorded `minted`) could both mint;
+  // a webhook fixes this in production.
+  try {
+    await stripe.paymentIntents.update(intent.id, { metadata: { minted: signature } });
+  } catch {
+    await stripe.paymentIntents.update(intent.id, { metadata: { minted: signature } }).catch(() => undefined);
+  }
   return Response.json({ signature, deal: meta.deal });
 }

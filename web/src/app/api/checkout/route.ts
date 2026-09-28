@@ -1,10 +1,10 @@
 import { Connection, PublicKey } from "@solana/web3.js";
-import { checkoutProblem } from "@/lib/checkout";
+import { checkoutProblem, returnOrigin } from "@/lib/checkout";
 import { RPC_URL } from "@/lib/config";
 import { toDealData } from "@/lib/deal-data";
-import { toCents } from "@/lib/format";
+import { fromCents, toCents } from "@/lib/format";
 import { feePercent, priceBreakdown } from "@/lib/pricing";
-import { getProgram } from "@/lib/program";
+import { getProgram, type DealAccount } from "@/lib/program";
 import { CARD_UNAVAILABLE, stripeClient } from "@/lib/server/stripe";
 
 export const dynamic = "force-dynamic";
@@ -25,7 +25,15 @@ export async function POST(req: Request) {
     return Response.json({ error: "Invalid request." }, { status: 400 });
   }
 
-  const raw = await getProgram(new Connection(RPC_URL, "confirmed")).account.deal.fetchNullable(deal);
+  let raw: DealAccount | null;
+  try {
+    raw = await getProgram(new Connection(RPC_URL, "confirmed")).account.deal.fetchNullable(deal);
+  } catch (err) {
+    // A syntactically valid pubkey that isn't a Keysfirst deal account fails Anchor's decode, not the RPC.
+    const message = err instanceof Error ? err.message : String(err);
+    if (/discriminator|owner/i.test(message)) return Response.json({ error: "We can't find this deal." }, { status: 404 });
+    return Response.json({ error: CARD_UNAVAILABLE }, { status: 503 });
+  }
   if (!raw) return Response.json({ error: "We can't find this deal." }, { status: 404 });
   const d = toDealData(raw);
   const problem = checkoutProblem({
@@ -38,9 +46,10 @@ export async function POST(req: Request) {
   if (problem) return Response.json({ error: problem }, { status: 409 });
 
   const price = priceBreakdown(toCents(d.amount), "card");
-  const origin = new URL(req.url).origin;
-  // Everything fulfil needs is decided here, on the server, from the on-chain deal.
-  const metadata = { deal: deal.toBase58(), account: account.toBase58(), amount: d.amount };
+  const origin = returnOrigin(req.url);
+  // Everything fulfil needs is decided here, on the server, from the on-chain deal. Mint exactly what was
+  // charged (derived from the cents actually billed), not the deal's raw base-unit amount.
+  const metadata = { deal: deal.toBase58(), account: account.toBase58(), amount: fromCents(price.depositCents).toString() };
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
