@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { HIT_AREA } from "@/components/ui/Button";
 import { cx } from "@/lib/cx";
 
 export interface NavItem {
@@ -31,7 +32,7 @@ export function NavLinks({
               aria-current={current ? "page" : undefined}
               className={cx(
                 "font-semibold decoration-accent decoration-[3px] underline-offset-[6px] hover:underline",
-                orientation === "column" && "flex min-h-11 items-center rounded-md px-2 text-lg hover:bg-subtle",
+                orientation === "column" ? "flex min-h-11 items-center rounded-md px-2 text-lg hover:bg-subtle" : HIT_AREA,
                 current && "underline",
               )}
             >

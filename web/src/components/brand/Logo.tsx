@@ -36,7 +36,7 @@ export function Logo({ inverse = false, size = 32, href = "/" }: { inverse?: boo
   );
   if (href === null) return lockup;
   return (
-    <Link href={href} aria-label="Keysfirst home" className="rounded-md">
+    <Link href={href} aria-label="Keysfirst home" className="inline-flex min-h-11 items-center rounded-md">
       {lockup}
     </Link>
   );

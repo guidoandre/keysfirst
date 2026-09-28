@@ -13,9 +13,10 @@ export function MobileMenu({ items, footer }: { items: NavItem[]; footer?: React
         type="button"
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
-        className="grid size-11 place-items-center rounded-md border-[1.5px] border-rule hover:bg-subtle lg:hidden"
+        aria-label="Menu"
+        className="grid size-11 place-items-center rounded-md border-[1.5px] border-field hover:bg-subtle lg:hidden"
       >
-        <Icon name="menu" label="Menu" />
+        <Icon name="menu" />
       </button>
       <Sheet open={open} onClose={() => setOpen(false)} title="Menu">
         <nav aria-label="Main">

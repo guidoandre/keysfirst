@@ -20,6 +20,9 @@ const MARK: Record<RowState, string> = {
   later: "border-2 border-dashed border-field bg-canvas",
 };
 
+// The row's state in words for screen readers; sighted users read it from the marker and the Highlighter row.
+const STATE_WORD: Record<RowState, string> = { done: "Done:", now: "Now:", next: "Next:", later: "Later:" };
+
 /** The signature component: rules and deals as timetable rows (time | what happens | outcome). */
 export function Timetable({
   title,
@@ -69,13 +72,16 @@ export function Timetable({
               </span>
             )}
             <div className="col-start-2 min-w-0 sm:col-start-auto">
-              <p className="leading-snug font-semibold">{row.title}</p>
+              <p className="leading-snug font-semibold">
+                <span className="sr-only">{STATE_WORD[row.state]} </span>
+                {row.title}
+              </p>
               {row.detail && <div className="mt-0.5 text-sm text-fg-muted">{row.detail}</div>}
             </div>
           </li>
         ))}
       </ol>
-      {footer && <div className="border-t border-rule px-4 py-2.5 text-xs text-fg-subtle">{footer}</div>}
+      {footer && <div className="border-t border-rule px-4 py-2.5 text-xs text-fg-muted">{footer}</div>}
     </section>
   );
 }

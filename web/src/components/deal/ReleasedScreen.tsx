@@ -1,7 +1,9 @@
 "use client";
 
+import { HIT_AREA } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Sheet } from "@/components/ui/Sheet";
+import { cx } from "@/lib/cx";
 import { explorerTx, formatShortDateTime } from "@/lib/format";
 import { useWakeLock } from "@/lib/hooks";
 
@@ -40,7 +42,12 @@ export function ReleasedScreen({
         </div>
         <div className="mx-auto w-full max-w-app space-y-4">
           {receipt && (
-            <a href={explorerTx(receipt)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 font-semibold underline underline-offset-2">
+            <a
+              href={explorerTx(receipt)}
+              target="_blank"
+              rel="noreferrer"
+              className={cx("inline-flex items-center gap-1.5 font-semibold underline underline-offset-2", HIT_AREA)}
+            >
               View the receipt on Solana Explorer
               <Icon name="external" size={16} />
               <span className="sr-only"> (opens in a new tab)</span>

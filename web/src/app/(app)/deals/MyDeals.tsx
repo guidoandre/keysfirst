@@ -61,7 +61,8 @@ export function DealList({ deals, now }: { deals: DealSummary[]; now: number }) 
             <h2 id={`group-${urgency}`} className="label text-fg-muted">
               {title} · {items.length}
             </h2>
-            <ul className="mt-3 grid gap-3 md:grid-cols-2">
+            {/* grid-cols-1, not the implicit auto column: a long title must truncate inside the card, not widen the page */}
+            <ul className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
               {items.map((deal) => (
                 <li key={deal.address}>
                   <DealCard deal={deal} now={now} />

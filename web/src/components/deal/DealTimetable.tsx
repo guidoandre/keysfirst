@@ -1,5 +1,7 @@
+import { HIT_AREA } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Timetable } from "@/components/ui/Timetable";
+import { cx } from "@/lib/cx";
 import type { DealRow } from "@/lib/deal-view";
 import { explorerTx } from "@/lib/format";
 
@@ -25,7 +27,7 @@ export function DealTimetable({ rows, title }: { rows: DealRow[]; title: string 
                     href={explorerTx(row.signature)}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 font-semibold text-fg underline underline-offset-2"
+                    className={cx("inline-flex items-center gap-1 font-semibold text-fg underline underline-offset-2", HIT_AREA)}
                   >
                     Receipt
                     <Icon name="external" size={13} />

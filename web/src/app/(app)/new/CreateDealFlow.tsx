@@ -3,7 +3,7 @@
 import { BN } from "@anchor-lang/core";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
 import { TextField } from "@/components/ui/Field";
@@ -34,6 +34,7 @@ import { friendlyError, signAndSend } from "@/lib/send";
 type Step = 1 | 2 | 3;
 const STEP_TITLES: Record<Step, string> = { 1: "The room", 2: "The handover", 3: "Check and create" };
 const ALL_FIELDS: NewDealField[] = ["title", "amount", "moveIn"];
+const FIELD_ID: Record<NewDealField, string> = { title: "title", amount: "amount", moveIn: "move-in" };
 
 export function CreateDealFlow() {
   const { connection } = useConnection();
@@ -50,6 +51,16 @@ export function CreateDealFlow() {
   const [demo, setDemo] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const heading = useRef<HTMLHeadingElement>(null);
+  const shownStep = useRef(step);
+
+  // After Next, Back or "Use demo values", start keyboard and screen-reader users at the new step's heading
+  // (the button they pressed is gone or far below). Not on the first render.
+  useEffect(() => {
+    if (shownStep.current === step) return;
+    shownStep.current = step;
+    heading.current?.focus();
+  }, [step]);
 
   // datetime-local values have no zone, so Date.parse reads them in the viewer's time zone.
   const moveIn = moveInText ? Math.floor(Date.parse(moveInText) / 1000) : Number.NaN;
@@ -63,7 +74,12 @@ export function CreateDealFlow() {
     if (step === 3) return;
     const fields = STEP_FIELDS[step];
     setChecked((previous) => [...new Set([...previous, ...fields])]);
-    if (fields.some((field) => errors[field])) return;
+    const invalid = fields.find((field) => errors[field]);
+    if (invalid) {
+      // Focus the first field in error once its message is on screen, so a screen reader reads the message too.
+      setTimeout(() => document.getElementById(FIELD_ID[invalid])?.focus(), 0);
+      return;
+    }
     setStep(step === 1 ? 2 : 3);
   }
 
@@ -110,7 +126,9 @@ export function CreateDealFlow() {
           <span key={n} className={cx("h-1.5 rounded-full", n <= step ? "bg-inverse" : "bg-rule")} />
         ))}
       </div>
-      <h1 className="mt-6 font-display text-title font-bold">{STEP_TITLES[step]}</h1>
+      <h1 ref={heading} tabIndex={-1} className="mt-6 font-display text-title font-bold">
+        {STEP_TITLES[step]}
+      </h1>
 
       <form onSubmit={submit} noValidate className="mt-6 space-y-6">
         {step === 1 && (
@@ -144,7 +162,7 @@ export function CreateDealFlow() {
               <button type="button" onClick={fillDemoValues} className="font-semibold underline underline-offset-2">
                 Use demo values
               </button>{" "}
-              (Room in Vallendar, €600, move-in now, 5-minute window).
+              (Room in Vallendar, €600.00, move-in now, 5-minute window).
             </Callout>
           </>
         )}
@@ -182,7 +200,7 @@ export function CreateDealFlow() {
                 type="checkbox"
                 checked={demo}
                 onChange={(event) => setDemo(event.target.checked)}
-                className="mt-1 size-5 shrink-0 accent-[var(--k-ink)]"
+                className="mt-1 size-5 shrink-0 accent-fg"
               />
               <span>
                 <span className="font-semibold">Demo: 5-minute window</span>{" "}

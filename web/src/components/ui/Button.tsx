@@ -11,10 +11,18 @@ export interface ButtonLook {
   fullWidth?: boolean;
 }
 
+/**
+ * An invisible hit area of at least 44 × 44 px, centred on a small link or button (design system §5: touch targets).
+ * Nothing moves or changes colour; it only widens where a tap lands. Leave at least 8 px to the next target.
+ */
+export const HIT_AREA =
+  "relative after:absolute after:top-1/2 after:left-1/2 after:h-[max(100%,2.75rem)] after:w-[max(100%,2.75rem)] after:-translate-x-1/2 after:-translate-y-1/2";
+
 const BASE =
   "inline-flex items-center justify-center gap-2 rounded-md text-center font-semibold leading-tight transition-[background-color,color,border-color] duration-150 ease-out active:translate-y-px disabled:cursor-not-allowed disabled:active:translate-y-0";
 const SIZES: Record<ButtonSize, string> = {
-  sm: "min-h-(--btn-h-sm) px-4 py-1.5 text-[0.9375rem]",
+  // 40 px tall (header only); HIT_AREA pads the tap area to 44 px.
+  sm: `min-h-(--btn-h-sm) px-4 py-1.5 text-[0.9375rem] ${HIT_AREA}`,
   md: "min-h-(--btn-h) px-5 py-2.5 text-base",
   lg: "min-h-(--btn-h-lg) px-6 py-3 text-lg",
 };
@@ -25,8 +33,7 @@ const VARIANTS: Record<Exclude<ButtonVariant, "quiet">, string> = {
   secondary: "border-2 border-fg bg-canvas text-fg hover:bg-subtle disabled:border-rule disabled:bg-canvas disabled:text-fg-subtle",
   danger: "border-2 border-danger bg-canvas text-danger hover:bg-danger-soft disabled:border-rule disabled:text-fg-subtle",
 };
-const QUIET =
-  "inline-flex items-center gap-1.5 rounded-sm font-semibold text-fg underline decoration-accent decoration-2 underline-offset-4 hover:decoration-[3px]";
+const QUIET = `inline-flex items-center gap-1.5 rounded-sm font-semibold text-fg underline decoration-accent decoration-2 underline-offset-4 hover:decoration-[3px] ${HIT_AREA}`;
 
 export function buttonClass({ variant = "primary", size = "md", fullWidth = false }: ButtonLook = {}): string {
   if (variant === "quiet") return QUIET;

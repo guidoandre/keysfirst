@@ -48,6 +48,9 @@ export function WalletChip() {
             <Icon name={copied ? "check" : "copy"} size={18} />
             {copied ? "Copied" : "Copy address"}
           </Button>
+          <p aria-live="polite" className="sr-only">
+            {copied ? "Copied to the clipboard" : ""}
+          </p>
           <TestFundsButton />
           <Button
             variant="quiet"

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ButtonLink } from "@/components/ui/Button";
+import { ButtonLink, buttonClass } from "@/components/ui/Button";
+import { cx } from "@/lib/cx";
 import { AskLandlord } from "./AskLandlord";
 
 export function CtaBand() {
@@ -23,7 +24,7 @@ export function CtaBand() {
           </ButtonLink>
         </div>
         <p className="lg:col-span-2">
-          <Link href="/start" className="font-semibold underline decoration-accent decoration-2 underline-offset-4">
+          <Link href="/start" className={cx(buttonClass({ variant: "quiet" }), "text-fg-inverse")}>
             New to wallets? Get started in 5 minutes
           </Link>
         </p>

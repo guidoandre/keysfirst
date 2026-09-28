@@ -37,6 +37,9 @@ export function AskLandlord({ tone = "light" }: { tone?: "light" | "dark" }) {
         <Icon name={copied ? "check" : "copy"} size={18} />
         {copied ? "Copied" : "Copy the message"}
       </Button>
+      <p aria-live="polite" className="sr-only">
+        {copied ? "Copied to the clipboard" : ""}
+      </p>
     </div>
   );
 }

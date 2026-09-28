@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
+import { HIT_AREA } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import idl from "@/idl/keysfirst.json";
+import { cx } from "@/lib/cx";
 import { explorerAddress } from "@/lib/format";
 
 // Cut rule: remove links to pages that were cut (About, For tenants, For landlords).
@@ -37,7 +39,7 @@ export function SiteFooter() {
             href={explorerAddress(idl.address)}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1.5 text-sm underline underline-offset-2"
+            className={cx("inline-flex items-center gap-1.5 text-sm underline underline-offset-2", HIT_AREA)}
           >
             The Keysfirst program on Solana Explorer
             <Icon name="external" size={14} />
@@ -47,10 +49,11 @@ export function SiteFooter() {
         {COLUMNS.map((column) => (
           <nav key={column.title} aria-label={column.title}>
             <p className="label text-fg-inverse-muted">{column.title}</p>
-            <ul className="mt-4 space-y-2.5">
+            {/* 44 px rows (touch targets); mt-1.5 keeps the first link where it was under the column label */}
+            <ul className="mt-1.5">
               {column.links.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="underline-offset-4 hover:underline">
+                  <Link href={link.href} className="inline-flex min-h-11 min-w-11 items-center underline-offset-4 hover:underline">
                     {link.label}
                   </Link>
                 </li>

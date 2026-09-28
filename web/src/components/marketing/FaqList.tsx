@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { buttonClass } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import type { FaqEntry } from "@/content/faq";
 
@@ -18,7 +19,7 @@ export function FaqList({ entries }: { entries: FaqEntry[] }) {
             ))}
             {entry.link && (
               <p>
-                <Link href={entry.link.href} className="font-semibold text-fg underline decoration-accent decoration-2 underline-offset-4">
+                <Link href={entry.link.href} className={buttonClass({ variant: "quiet" })}>
                   {entry.link.label}
                 </Link>
               </p>

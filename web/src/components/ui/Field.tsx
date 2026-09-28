@@ -28,7 +28,7 @@ export function TextField({
         <label htmlFor={id} className="text-sm font-semibold">
           {label}
         </label>
-        {counter && <span className="text-xs text-fg-subtle tabular-nums">{counter}</span>}
+        {counter && <span className="text-xs text-fg-muted tabular-nums">{counter}</span>}
       </div>
       <div className="flex gap-2">
         <input
