@@ -12,7 +12,17 @@ import { useMounted } from "@/lib/hooks";
 
 const PHANTOM_DOWNLOAD = "https://phantom.com/download";
 
-export function ConnectSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function ConnectSheet({
+  open,
+  onClose,
+  error,
+  onClearError,
+}: {
+  open: boolean;
+  onClose: () => void;
+  error: string | null;
+  onClearError: () => void;
+}) {
   const { wallets, wallet, select, connect, connecting, connected } = useWallet();
   const mounted = useMounted();
 
@@ -27,6 +37,7 @@ export function ConnectSheet({ open, onClose }: { open: boolean; onClose: () => 
   const isPhone = mounted && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   async function choose(name: WalletName) {
+    onClearError();
     if (wallet?.adapter.name === name) {
       // Already selected (e.g. after a cancelled attempt): connect directly.
       await connect().catch(() => undefined);
@@ -41,6 +52,12 @@ export function ConnectSheet({ open, onClose }: { open: boolean; onClose: () => 
       <p className="text-fg-muted">
         A wallet is an app like Phantom that holds your money and approves payments. Keysfirst never sees your keys.
       </p>
+
+      {open && error && (
+        <Callout tone="danger" role="alert" className="mt-5">
+          {error}
+        </Callout>
+      )}
 
       {detected.length > 0 ? (
         <ul className="mt-5 space-y-2">
