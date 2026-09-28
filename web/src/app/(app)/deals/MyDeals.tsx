@@ -3,6 +3,7 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useState, type ReactNode } from "react";
 import { DealCard } from "@/components/deal/DealCard";
+import { AskLandlord } from "@/components/marketing/AskLandlord";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -108,13 +109,18 @@ export function MyDeals() {
     content = <Cards />;
   } else if (state.deals.length === 0) {
     content = (
-      <EmptyState
-        pictogram="laptop-wallet"
-        title="No deals yet"
-        action={<ButtonLink href="/new">Create a deposit link</ButtonLink>}
-      >
-        Letting a room? Create a deposit link. Renting? Your deal appears here as soon as you pay the landlord&apos;s link.
-      </EmptyState>
+      <div className="space-y-4">
+        <EmptyState pictogram="laptop-wallet" title="No deals yet" action={<ButtonLink href="/new">Create a deposit link</ButtonLink>}>
+          Letting a room? Create a deposit link.
+        </EmptyState>
+        <div className="rounded-lg bg-subtle p-5">
+          <p className="font-semibold">Waiting for a link?</p>
+          <p className="mt-1 text-fg-muted">It appears here once you pay. No link yet? Ask your landlord to use Keysfirst.</p>
+          <div className="mt-4">
+            <AskLandlord />
+          </div>
+        </div>
+      </div>
     );
   } else {
     content = <DealList deals={state.deals} now={now} />;
