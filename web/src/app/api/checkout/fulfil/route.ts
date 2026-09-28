@@ -40,11 +40,16 @@ export async function POST(req: Request) {
   if (intent.metadata.minted) return Response.json({ signature: intent.metadata.minted, deal: meta.deal, account: meta.account });
 
   const connection = new Connection(RPC_URL, "confirmed");
-  const owner = new PublicKey(meta.account);
-
-  const tx = new Transaction().add(...mintIxs(faucet.publicKey, owner, BigInt(meta.amount)));
-  const gas = await topUpIx(connection, faucet.publicKey, owner);
-  if (gas) tx.add(gas);
+  const tx = new Transaction();
+  try {
+    const owner = new PublicKey(meta.account);
+    tx.add(...mintIxs(faucet.publicKey, owner, BigInt(meta.amount)));
+    // topUpIx reads the account's balance: a busy RPC must end as MINT_FAILED (nothing sent, nothing recorded).
+    const gas = await topUpIx(connection, faucet.publicKey, owner);
+    if (gas) tx.add(gas);
+  } catch {
+    return Response.json({ error: MINT_FAILED }, { status: 503 });
+  }
   tx.feePayer = faucet.publicKey;
 
   // Retry-safe send: if sendRawTransaction/confirmTransaction throws after the transaction was actually
@@ -61,10 +66,15 @@ export async function POST(req: Request) {
     if (result.value.err) return Response.json({ error: MINT_FAILED }, { status: 503 });
   } catch {
     if (!signature) return Response.json({ error: MINT_FAILED }, { status: 503 });
-    const { value } = await connection.getSignatureStatuses([signature]);
-    const status = value[0];
-    const landed = status && !status.err && (status.confirmationStatus === "confirmed" || status.confirmationStatus === "finalized");
-    if (!landed) return Response.json({ error: MINT_FAILED }, { status: 503 });
+    try {
+      const { value } = await connection.getSignatureStatuses([signature]);
+      const status = value[0];
+      const landed = status && !status.err && (status.confirmationStatus === "confirmed" || status.confirmationStatus === "finalized");
+      if (!landed) return Response.json({ error: MINT_FAILED }, { status: 503 });
+    } catch {
+      // Can't tell whether it landed: record nothing; a retry checks again (spec §6 known limit).
+      return Response.json({ error: MINT_FAILED }, { status: 503 });
+    }
   }
   if (!signature) return Response.json({ error: MINT_FAILED }, { status: 503 });
 

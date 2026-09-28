@@ -177,14 +177,14 @@ export function nextStep(o: { status: DealStatus; role: Role; times: DealTimes; 
       if (role === "tenant") return { message: "The deadline passed without a handover. You can take your deposit back now.", ...pick("refund", []) };
       return { message: "The deadline passed without a handover. Anyone can now return the deposit to the tenant.", ...pick("refund", []) };
     case "released":
-      if (role === "landlord") return { message: `Your tenant confirmed the handover on ${settled}. The deposit is in your wallet.`, secondary: [] };
+      if (role === "landlord") return { message: `Your tenant confirmed the handover on ${settled}. The deposit is in your Keysfirst balance. Withdraw it to your bank from your account menu.`, secondary: [] };
       if (role === "tenant") return { message: `You confirmed the handover on ${settled}. The deposit went to the landlord.`, secondary: [] };
       return { message: `The tenant confirmed the handover on ${settled}. The deposit went to the landlord.`, secondary: [] };
     case "refunded":
       return {
         message:
           role === "tenant"
-            ? `Your deposit came back to you on ${settled}.`
+            ? `Your deposit came back to you on ${settled}. It's in your balance: withdraw it to your bank from your account menu.`
             : `The deposit went back to ${role === "landlord" ? "your" : "the"} tenant on ${settled}.`,
         secondary: [],
       };

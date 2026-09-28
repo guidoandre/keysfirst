@@ -38,7 +38,7 @@ export function ReleasedScreen({
             hand over the keys.
           </p>
           <p className="mt-8 font-display text-amount font-bold tabular-nums">{amount}</p>
-          <p className="text-lg">is in your wallet now.</p>
+          <p className="text-lg">is in your Keysfirst balance now. Withdraw it to your bank from your account menu.</p>
         </div>
         <div className="mx-auto w-full max-w-app space-y-4">
           {receipt && (

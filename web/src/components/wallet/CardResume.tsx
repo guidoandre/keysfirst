@@ -32,6 +32,13 @@ function fulfil(session: string): Promise<FulfilResult> {
   return request;
 }
 
+/** Removes ?paid= from the address bar, so a reload doesn't resume the payment again. */
+function stripPaid() {
+  const url = new URL(window.location.href);
+  url.searchParams.delete("paid");
+  window.history.replaceState(window.history.state, "", url);
+}
+
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** Drops the deal's saved session, but only if it is this one (a stale ?paid= must not discard a newer session). */
@@ -55,6 +62,7 @@ export function CardResume({
   account,
   amount,
   lock,
+  alreadyYours,
   onReady,
   onDone,
   onCancelled,
@@ -66,6 +74,8 @@ export function CardResume({
   amount: bigint;
   /** True while the deal is open: after the payment, the deal page locks the deposit. */
   lock: boolean;
+  /** True when this account already locked the deal (status past open): a leftover session needs no action. */
+  alreadyYours: boolean;
   onReady: () => void;
   onDone: (message: string) => void;
   onCancelled: () => void;
@@ -103,6 +113,13 @@ export function CardResume({
         fail("You paid while logged in with another account. Log in with that account to lock your deposit.");
         return;
       }
+      if (!lock && alreadyYours) {
+        // A stale saved session on a deal this account already locked: nothing left to do, clear it quietly.
+        forget(dealId, session);
+        stripPaid();
+        cancelledPayment();
+        return;
+      }
       setReceived(true);
       // The mint is confirmed; RPC nodes can lag a moment behind.
       let arrived = false;
@@ -122,9 +139,7 @@ export function CardResume({
       await refreshBalance();
       if (cancelled) return;
       forget(dealId, session);
-      const url = new URL(window.location.href);
-      url.searchParams.delete("paid");
-      window.history.replaceState(window.history.state, "", url);
+      stripPaid();
       if (lock) ready();
       else done(`Your ${formatEur(amount)} is in your balance. You can withdraw it to your bank from My deals.`);
     }
@@ -132,7 +147,7 @@ export function CardResume({
     return () => {
       cancelled = true;
     };
-  }, [session, dealId, account, amount, lock, connection, refreshBalance]);
+  }, [session, dealId, account, amount, lock, alreadyYours, connection, refreshBalance]);
 
   return (
     <Callout tone="info" role="status">

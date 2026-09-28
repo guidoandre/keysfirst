@@ -10,7 +10,7 @@ import { WithdrawSheet } from "./WithdrawSheet";
 
 /** The logged-in state: email (or short account number) + a menu. */
 export function WalletChip() {
-  const { address, label, balance, logout } = useAccount();
+  const { address, label, balance, logout, refreshBalance } = useAccount();
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [withdrawing, setWithdrawing] = useState(false);
@@ -31,7 +31,10 @@ export function WalletChip() {
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          setOpen(true);
+          void refreshBalance();
+        }}
         aria-haspopup="dialog"
         className="inline-flex h-11 max-w-[8.5rem] min-w-0 sm:max-w-[14rem] items-center gap-2 rounded-full border-[1.5px] border-field px-3.5 text-sm font-semibold hover:bg-subtle"
       >

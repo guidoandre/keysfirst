@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useId, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
 import { TextField } from "@/components/ui/Field";
@@ -23,6 +23,8 @@ export function WithdrawSheet({ open, onClose }: { open: boolean; onClose: () =>
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<{ amount: string; iban: string } | null>(null);
+  // Two instances live on a page (account menu + balance card): field ids must be unique.
+  const idBase = useId();
 
   const available = balance ?? 0n;
   // Empty amount means "everything".
@@ -78,7 +80,7 @@ export function WithdrawSheet({ open, onClose }: { open: boolean; onClose: () =>
             Your balance: <span className="font-semibold text-fg tabular-nums">{formatEur(available)}</span>
           </p>
           <TextField
-            id="withdraw-amount"
+            id={`${idBase}-amount`}
             label="Amount in €"
             inputMode="decimal"
             placeholder={formatEur(available).replace("€", "")}
@@ -88,7 +90,7 @@ export function WithdrawSheet({ open, onClose }: { open: boolean; onClose: () =>
             error={checked ? errors.amount : undefined}
           />
           <TextField
-            id="withdraw-name"
+            id={`${idBase}-name`}
             label="Account holder"
             autoComplete="name"
             value={name}
@@ -96,7 +98,7 @@ export function WithdrawSheet({ open, onClose }: { open: boolean; onClose: () =>
             error={checked ? errors.name : undefined}
           />
           <TextField
-            id="withdraw-iban"
+            id={`${idBase}-iban`}
             label="IBAN"
             autoComplete="off"
             spellCheck={false}

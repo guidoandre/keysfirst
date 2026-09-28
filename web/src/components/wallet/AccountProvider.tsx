@@ -20,7 +20,8 @@ export interface Account {
   logout: () => Promise<void>;
   balance: bigint | null;
   refreshBalance: () => Promise<void>;
-  topUp: () => Promise<void>;
+  /** Asks the server to cover network costs; true when it answered OK. */
+  topUp: () => Promise<boolean>;
 }
 
 const AccountContext = createContext<Account | null>(null);
@@ -74,25 +75,31 @@ export function AccountProvider({ children }: { children: ReactNode }) {
   }, [address, connection]);
 
   const topUp = useCallback(async () => {
-    if (!owner) return;
-    await fetch("/api/gas", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ account: owner }) }).catch(
-      () => undefined,
+    if (!owner) return false;
+    const res = await fetch("/api/gas", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ account: owner }) }).catch(
+      () => null,
     );
+    return res?.ok ?? false;
   }, [owner]);
 
   // Once per browser session and account: cover network costs before the first action (spec D4), read the balance.
   useEffect(() => {
     if (!owner) return;
-    const timer = setTimeout(() => {
+    const timer = setTimeout(async () => {
       void refreshBalance();
       const key = `keysfirst:gas:${owner}`;
       try {
         if (sessionStorage.getItem(key)) return;
-        sessionStorage.setItem(key, "1");
       } catch {
         // Storage blocked: top up anyway (the server skips accounts that have enough).
       }
-      void topUp();
+      // Remember the top-up only once the server confirmed it: a failed one is retried on the next visit.
+      if (!(await topUp())) return;
+      try {
+        sessionStorage.setItem(key, "1");
+      } catch {
+        // Storage blocked: nothing to remember.
+      }
     }, 0);
     const onVisible = () => {
       if (!document.hidden) void refreshBalance();

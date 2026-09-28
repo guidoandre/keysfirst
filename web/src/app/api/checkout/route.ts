@@ -44,6 +44,10 @@ export async function POST(req: Request) {
     now: Math.floor(Date.now() / 1000),
   });
   if (problem) return Response.json({ error: problem }, { status: 409 });
+  // Stripe charges whole cents: a deposit with a fraction of a cent could never be locked in full.
+  if (BigInt(d.amount) !== fromCents(toCents(d.amount))) {
+    return Response.json({ error: "This deposit amount can't be paid by card." }, { status: 409 });
+  }
 
   const price = priceBreakdown(toCents(d.amount), "card");
   const origin = returnOrigin(req.url);

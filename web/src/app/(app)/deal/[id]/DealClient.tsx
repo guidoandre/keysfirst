@@ -82,6 +82,14 @@ export function DealClient({ id, origin, created, paid }: { id: string; origin: 
     return () => window.removeEventListener("pageshow", onShow);
   }, [id]);
 
+  // The deal moved on (released, refunded, locked…), possibly by the other side: the balance may have changed too.
+  const dealStatus = deal ? statusOf(deal.status) : null;
+  useEffect(() => {
+    if (!dealStatus) return;
+    const timer = setTimeout(() => void refreshBalance(), 0);
+    return () => clearTimeout(timer);
+  }, [dealStatus, refreshBalance]);
+
   if (!address) {
     return <DealMessage title="This isn't a valid deal link">Check that you copied the whole link.</DealMessage>;
   }
@@ -220,6 +228,7 @@ export function DealClient({ id, origin, created, paid }: { id: string; origin: 
               account={me}
               amount={depositUnits}
               lock={data.status === "open"}
+              alreadyYours={data.status !== "open" && data.tenant === me.toBase58()}
               onReady={() => {
                 setPending(null);
                 void execute("fund");
@@ -251,7 +260,8 @@ export function DealClient({ id, origin, created, paid }: { id: string; origin: 
         created={created}
         signatures={signatures}
         statusChanged={statusChanged}
-        busy={busy}
+        // While a card payment is being resumed, show "Locking your deposit…" instead of a live lock button.
+        busy={pending && me && !resumeError ? "fund" : busy}
         error={error}
         signature={signature}
         onAction={onAction}
