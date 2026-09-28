@@ -101,6 +101,11 @@ describe("labels", () => {
     expect(confirmCopy("fund", "visitor", amount)).toBeNull();
   });
 
+  it("skips the landlord's refund confirmation once the deadline has passed", () => {
+    expect(confirmCopy("refund", "landlord", amount, true)).toBeNull();
+    expect(confirmCopy("refund", "landlord", amount, false)?.title).toBe("Give the deposit back?");
+  });
+
   it("describes the status in one line", () => {
     expect(statusLine("open", "landlord")).toBe("Waiting for your tenant to pay.");
     expect(statusLine("funded", "tenant")).toBe("The money is in the lock.");

@@ -206,8 +206,12 @@ export interface ConfirmCopy {
   danger: boolean;
 }
 
-/** In-page confirmation before irreversible steps; null means "just ask the wallet". */
-export function confirmCopy(action: Action, role: Role, amount: string): ConfirmCopy | null {
+/**
+ * In-page confirmation before irreversible steps; null means "just ask the wallet".
+ * `expired` (spec §6.4): once the deadline has passed, the landlord's refund needs no confirmation dialog,
+ * same as everyone else's refund.
+ */
+export function confirmCopy(action: Action, role: Role, amount: string, expired = false): ConfirmCopy | null {
   if (action === "confirmInApp") {
     return {
       title: "Release the deposit?",
@@ -219,7 +223,7 @@ export function confirmCopy(action: Action, role: Role, amount: string): Confirm
   if (action === "cancel") {
     return { title: "Cancel this deal?", body: "The link stops working. Nobody has paid, so no money moves.", confirm: "Cancel the deal", danger: true };
   }
-  if (action === "refund" && role === "landlord") {
+  if (action === "refund" && role === "landlord" && !expired) {
     return { title: "Give the deposit back?", body: `${amount} goes back to the tenant and the deal ends.`, confirm: "Give it back", danger: true };
   }
   return null;

@@ -1,174 +1,144 @@
 "use client";
 
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey } from "@solana/web3.js";
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { DealActions } from "@/components/DealActions";
+import { useMemo, useState } from "react";
+import { DealLoading, DealMessage } from "@/components/deal/DealStates";
+import { DealView } from "@/components/deal/DealView";
 import { HandoverQR } from "@/components/HandoverQR";
-import { ShareLink } from "@/components/ShareLink";
-import { Timeline } from "@/components/Timeline";
-import { explorerAddress, formatDateTime, formatEur } from "@/lib/format";
+import { Button } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { toDealData } from "@/lib/deal-data";
+import { confirmCopy } from "@/lib/deal-view";
+import { formatEur } from "@/lib/format";
 import { useNow } from "@/lib/hooks";
-import { dealSignatures, getProgram, type DealAccount } from "@/lib/program";
-import {
-  availableActions,
-  handoverOpensAt,
-  roleOf,
-  STATUS_LABEL,
-  statusOf,
-  timelineTransactionCount,
-  type DealStatus,
-  type DealTimes,
-  type Role,
-} from "@/lib/rules";
+import { cancelDealIx, confirmHandoverIx, fundIx, refundIx } from "@/lib/instructions";
+import { getProgram } from "@/lib/program";
+import { isExpired, roleOf, STATUS_LABEL, statusOf, type Action, type DealStatus, type DealTimes } from "@/lib/rules";
+import { friendlyError, signAndSend } from "@/lib/send";
+import { useDeal } from "@/lib/use-deal";
 
-const PILL: Record<DealStatus, string> = {
-  open: "bg-stone-100 text-stone-700",
-  funded: "bg-amber-100 text-amber-900",
-  released: "bg-emerald-100 text-emerald-900",
-  refunded: "bg-sky-100 text-sky-900",
-  cancelled: "bg-stone-200 text-stone-600",
-};
+type WalletAction = Exclude<Action, "showQr">;
 
-export function DealClient({ id, origin }: { id: string; origin: string }) {
+// The status each action needs; checked against the live deal right before the wallet signs.
+const REQUIRED_STATUS: Record<WalletAction, DealStatus> = { fund: "open", confirmInApp: "funded", refund: "funded", cancel: "open" };
+
+export function DealClient({ id, origin, created }: { id: string; origin: string; created: boolean }) {
   const { connection } = useConnection();
-  const { publicKey } = useWallet();
+  const wallet = useWallet();
   const program = useMemo(() => getProgram(connection), [connection]);
-  const address = useMemo(() => {
-    try {
-      return new PublicKey(id);
-    } catch {
-      return null;
-    }
-  }, [id]);
-  const [deal, setDeal] = useState<DealAccount | null | undefined>(undefined);
-  const [signatures, setSignatures] = useState<string[]>([]);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const { address, deal, signatures, loadError, statusChanged, refresh } = useDeal(id);
   const now = useNow();
+  const [busy, setBusy] = useState<Action | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [signature, setSignature] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState<WalletAction | null>(null);
+  const [handoverOpen, setHandoverOpen] = useState(false);
 
-  const signatureCount = useRef(0);
-
-  // The public devnet RPC rate-limits per network (a laptop and a phone on the same Wi-Fi share it),
-  // so each poll reads only the deal and fetches the transaction list only while a timeline link is missing.
-  const refresh = useCallback(async () => {
-    if (!address) return;
-    const data = await program.account.deal.fetchNullable(address);
-    setDeal(data);
-    if (data && signatureCount.current < timelineTransactionCount(statusOf(data.status))) {
-      const sigs = await dealSignatures(connection, address);
-      signatureCount.current = sigs.length;
-      setSignatures(sigs);
-    }
-  }, [address, connection, program]);
-
-  // Poll so the landlord's screen flips to "Released" seconds after the tenant signs.
-  // Hidden tabs don't poll; they reload as soon as they are shown again.
-  useEffect(() => {
-    const load = () => {
-      if (document.hidden) return;
-      refresh().then(
-        () => setLoadError(null),
-        (e: unknown) => setLoadError(e instanceof Error ? e.message : String(e)),
-      );
-    };
-    const first = setTimeout(load, 0);
-    const timer = setInterval(load, 2_000);
-    document.addEventListener("visibilitychange", load);
-    return () => {
-      clearTimeout(first);
-      clearInterval(timer);
-      document.removeEventListener("visibilitychange", load);
-    };
-  }, [refresh]);
-
-  if (!address) return <Notice>This is not a valid deal link.</Notice>;
-  if (deal === undefined || now === 0) {
+  if (!address) {
+    return <DealMessage title="This isn't a valid deal link">Check that you copied the whole link.</DealMessage>;
+  }
+  if (deal === undefined || now === 0) return <DealLoading loadError={loadError} />;
+  if (deal === null) {
     return (
-      <Notice>
-        Loading the deal…
-        {loadError && (
-          <span className="mt-3 block break-words text-xs text-red-700">
-            Can&apos;t reach Solana devnet yet, retrying. Details: {loadError}
-          </span>
-        )}
-      </Notice>
+      <DealMessage
+        title="We can't find this deal"
+        action={
+          <Button variant="secondary" onClick={() => void refresh()}>
+            Try again
+          </Button>
+        }
+      >
+        If it was just created, wait a few seconds and try again.
+      </DealMessage>
     );
   }
-  if (deal === null) return <Notice>Deal not found. If it was just created, wait a few seconds.</Notice>;
 
-  const status = statusOf(deal.status);
-  const times: DealTimes = { moveIn: deal.moveIn.toNumber(), deadline: deal.deadline.toNumber() };
-  const role = roleOf(deal.landlord.toBase58(), deal.tenant.toBase58(), publicKey?.toBase58());
-  const amount = formatEur(deal.amount.toString());
-  const actions = availableActions(status, role, times, now);
+  const data = toDealData(deal);
+  const me = wallet.publicKey;
+  const role = roleOf(data.landlord, data.tenant, me?.toBase58());
+  const amount = formatEur(data.amount);
+  const times: DealTimes = { moveIn: data.moveIn, deadline: data.deadline };
+  const expired = isExpired(times, now);
+
+  async function execute(action: WalletAction) {
+    if (!me || !address) return;
+    setBusy(action);
+    setError(null);
+    setSignature(null);
+    try {
+      // A page that sat in the background (e.g. while the tenant scanned the QR) can show a button
+      // the deal no longer allows; check the live status before asking the wallet to sign.
+      const live = await program.account.deal.fetch(address);
+      const liveStatus = statusOf(live.status);
+      if (liveStatus !== REQUIRED_STATUS[action]) {
+        await refresh();
+        setError(`This deal is already “${STATUS_LABEL[liveStatus]}”. The page has been updated.`);
+        return;
+      }
+      const build = {
+        fund: () => fundIx(program, address, me, live),
+        confirmInApp: () => confirmHandoverIx(program, address, live),
+        refund: () => refundIx(program, address, live, me),
+        cancel: () => cancelDealIx(program, address, live),
+      };
+      setSignature(await signAndSend(connection, wallet, [await build[action]()]));
+      await refresh();
+    } catch (e) {
+      setError(friendlyError(e));
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  function onAction(action: Action) {
+    if (action === "showQr") {
+      setHandoverOpen(true);
+      return;
+    }
+    if (confirmCopy(action, role, amount, expired)) {
+      setConfirming(action);
+      return;
+    }
+    void execute(action);
+  }
+
+  const copy = confirming ? confirmCopy(confirming, role, amount, expired) : null;
 
   return (
-    <div className="space-y-5">
-      {status === "released" && role === "landlord" && (
-        <div className="rounded-2xl bg-emerald-600 p-6 text-center text-white">
-          <p className="text-3xl font-bold">Released ✓</p>
-          <p className="mt-1">{amount} is in your wallet. Hand over the keys.</p>
+    <>
+      <DealView
+        id={id}
+        origin={origin}
+        data={data}
+        role={role}
+        now={now}
+        connected={me !== null}
+        created={created}
+        signatures={signatures}
+        statusChanged={statusChanged}
+        busy={busy}
+        error={error}
+        signature={signature}
+        onAction={onAction}
+      />
+      {handoverOpen && data.status === "funded" && (
+        <div className="mx-auto max-w-app px-4 pb-10">
+          <HandoverQR dealId={id} origin={origin} />
         </div>
       )}
-      <section className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
-        <p className="text-sm text-stone-500">{deal.title}</p>
-        <p className="mt-1 text-4xl font-semibold">{amount}</p>
-        <span className={`mt-3 inline-block rounded-full px-3 py-1 text-sm font-medium ${PILL[status]}`}>
-          {STATUS_LABEL[status]}
-        </span>
-        <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
-          <div>
-            <dt className="text-stone-500">Move-in</dt>
-            <dd>{formatDateTime(times.moveIn)}</dd>
-          </div>
-          <div>
-            <dt className="text-stone-500">Handover deadline</dt>
-            <dd>{formatDateTime(times.deadline)}</dd>
-          </div>
-        </dl>
-        <p className="mt-4 text-sm leading-relaxed text-stone-700">{explain(status, role, times, now, amount)}</p>
-      </section>
-      {actions.includes("showQr") && <HandoverQR dealId={id} origin={origin} />}
-      <DealActions address={address} deal={deal} status={status} role={role} actions={actions} onDone={refresh} />
-      {status === "open" && role === "landlord" && (
-        <ShareLink url={`${origin}/deal/${id}`} text={`Pay the ${amount} deposit for "${deal.title}" safely with Keysfirst:`} />
-      )}
-      <Timeline status={status} deal={deal} signatures={signatures} />
-      <a className="block text-center text-sm text-stone-500 underline" href={explorerAddress(id)} target="_blank" rel="noreferrer">
-        View this deal on Solana Explorer
-      </a>
-    </div>
+      <ConfirmDialog
+        open={copy !== null}
+        title={copy?.title ?? ""}
+        body={copy?.body ?? ""}
+        confirmLabel={copy?.confirm ?? ""}
+        danger={copy?.danger}
+        onCancel={() => setConfirming(null)}
+        onConfirm={() => {
+          const action = confirming;
+          setConfirming(null);
+          if (action) void execute(action);
+        }}
+      />
+    </>
   );
-}
-
-function Notice({ children }: { children: ReactNode }) {
-  return <p className="rounded-2xl border border-stone-200 bg-white p-6 text-center text-stone-600">{children}</p>;
-}
-
-function explain(status: DealStatus, role: Role, d: DealTimes, now: number, amount: string): string {
-  const deadline = formatDateTime(d.deadline);
-  const opens = formatDateTime(handoverOpensAt(d));
-  switch (status) {
-    case "open":
-      return role === "landlord"
-        ? "Send the link below to your tenant. Once they pay, the deposit stays locked until the key handover."
-        : `Pay ${amount} into a lock that nobody controls, not even Keysfirst. The landlord gets it only when you scan their QR code at the key handover. If you don't scan by ${deadline}, it comes back to you.`;
-    case "funded":
-      if (now > d.deadline) return "The deadline passed without a handover. Anyone can now return the deposit to the tenant.";
-      if (role === "landlord") {
-        return now < handoverOpensAt(d)
-          ? `The deposit is locked. Your handover QR code appears here from ${opens}.`
-          : "The deposit is locked. At the handover, show the QR code below. Hand over the keys only when this page says “Released”.";
-      }
-      if (role === "tenant") {
-        return `Your deposit is locked. At the handover (from ${opens}) check the room, then scan the landlord's QR code with Phantom, only once you are holding the keys. No scan by ${deadline}? You get it back.`;
-      }
-      return `The deposit is locked until the key handover or ${deadline}.`;
-    case "released":
-      return "The tenant confirmed the key handover and the deposit went to the landlord.";
-    case "refunded":
-      return "The deposit went back to the tenant.";
-    case "cancelled":
-      return "The landlord cancelled this deal before any money was paid.";
-  }
 }
