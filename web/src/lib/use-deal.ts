@@ -3,8 +3,9 @@
 import { useConnection } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { acceptPoll, type PollAnswer } from "./deal-poll";
 import { dealSignatures, getProgram, type DealAccount } from "./program";
-import { statusOf, timelineTransactionCount, type DealStatus } from "./rules";
+import { statusOf, timelineTransactionCount } from "./rules";
 
 export interface DealState {
   address: PublicKey | null;
@@ -35,24 +36,32 @@ export function useDeal(id: string): DealState {
   const [statusChanged, setStatusChanged] = useState(false);
   const [justReleased, setJustReleased] = useState(false);
   const signatureCount = useRef(0);
-  const lastStatus = useRef<DealStatus | null>(null);
+  /** Numbers each request in the order it was sent. */
+  const requested = useRef(0);
+  /** The answer on screen (seq 0, status null: none yet). */
+  const shown = useRef<PollAnswer>({ seq: 0, status: null });
 
   // The public devnet RPC rate-limits per network (a laptop and a phone on the same Wi-Fi share it),
   // so each poll reads only the deal and fetches the transaction list only while a timeline link is missing.
   const refresh = useCallback(async () => {
     if (!address) return;
+    const seq = ++requested.current;
     const data = await program.account.deal.fetchNullable(address);
+    const status = data ? statusOf(data.status) : null;
+    // Polls overlap and a lagging RPC node can answer with an older state: never show the deal going backwards.
+    if (!acceptPoll({ seq, status }, shown.current)) return;
+    const previous = shown.current.status;
+    shown.current = { seq, status };
     setDeal(data);
-    if (!data) return;
-    const status = statusOf(data.status);
-    const previous = lastStatus.current;
-    lastStatus.current = status;
+    if (!status) return;
     if (previous !== null && previous !== status) {
       setStatusChanged(true);
       if (previous === "funded" && status === "released") setJustReleased(true);
     }
     if (signatureCount.current < timelineTransactionCount(status)) {
       const sigs = await dealSignatures(connection, address);
+      // The list only grows; a shorter one is an older request's answer.
+      if (sigs.length < signatureCount.current) return;
       signatureCount.current = sigs.length;
       setSignatures(sigs);
     }

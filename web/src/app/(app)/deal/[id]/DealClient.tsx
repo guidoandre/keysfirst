@@ -9,7 +9,7 @@ import { ReleasedScreen } from "@/components/deal/ReleasedScreen";
 import { Button } from "@/components/ui/Button";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { toDealData } from "@/lib/deal-data";
-import { confirmCopy } from "@/lib/deal-view";
+import { confirmCopy, showReleasedScreen } from "@/lib/deal-view";
 import { formatEur } from "@/lib/format";
 import { useNow } from "@/lib/hooks";
 import { cancelDealIx, confirmHandoverIx, fundIx, refundIx } from "@/lib/instructions";
@@ -38,6 +38,7 @@ export function DealClient({ id, origin, created }: { id: string; origin: string
   const [confirming, setConfirming] = useState<WalletAction | null>(null);
   const [handoverOpen, setHandoverOpen] = useState(false);
   const [handoverUsed, setHandoverUsed] = useState(false);
+  // Set only by the landlord dismissing the Released screen ("Back to the deal" or Esc): Sheet calls onClose for those alone.
   const [releasedClosed, setReleasedClosed] = useState(false);
 
   if (!address) {
@@ -111,7 +112,7 @@ export function DealClient({ id, origin, created }: { id: string; origin: string
 
   const copy = confirming ? confirmCopy(confirming, role, amount, expired) : null;
   // The landlord sees the Released screen when the tenant approves during handover mode, or while this page is open.
-  const showReleased = role === "landlord" && data.status === "released" && !releasedClosed && (handoverOpen || justReleased);
+  const showReleased = showReleasedScreen({ role, status: data.status, handoverOpen, justReleased, dismissed: releasedClosed });
 
   return (
     <>

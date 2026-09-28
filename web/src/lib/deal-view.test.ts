@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { actionLabel, confirmCopy, countdownFor, dealPhase, dealRows, loginLabel, nextStep, statusLine } from "./deal-view";
+import { actionLabel, confirmCopy, countdownFor, dealPhase, dealRows, loginLabel, nextStep, showReleasedScreen, statusLine } from "./deal-view";
 import { availableActions, type Action, type DealStatus, type DealTimes, type Role } from "./rules";
 
 const DAY = 86_400;
@@ -67,6 +67,27 @@ describe("nextStep", () => {
     expect(nextStep({ status: "cancelled", role: "visitor", times: t, now: before, amount }).message).toBe(
       "The landlord cancelled this deal before anyone paid.",
     );
+  });
+});
+
+describe("showReleasedScreen", () => {
+  const watched = { role: "landlord" as Role, status: "released" as DealStatus, handoverOpen: false, justReleased: true, dismissed: false };
+
+  it("opens for the landlord when the release happens while they watch", () => {
+    expect(showReleasedScreen(watched)).toBe(true);
+    expect(showReleasedScreen({ ...watched, handoverOpen: true, justReleased: false })).toBe(true);
+  });
+
+  it("stays up until the landlord dismisses it", () => {
+    expect(showReleasedScreen({ ...watched, handoverOpen: true, dismissed: true })).toBe(false);
+  });
+
+  it("doesn't open for an old release, another viewer or another status", () => {
+    expect(showReleasedScreen({ ...watched, justReleased: false })).toBe(false);
+    expect(showReleasedScreen({ ...watched, role: "tenant" })).toBe(false);
+    expect(showReleasedScreen({ ...watched, role: "visitor" })).toBe(false);
+    expect(showReleasedScreen({ ...watched, status: "funded", handoverOpen: true })).toBe(false);
+    expect(showReleasedScreen({ ...watched, status: "refunded" })).toBe(false);
   });
 });
 

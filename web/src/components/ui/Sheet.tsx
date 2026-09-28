@@ -8,6 +8,8 @@ import { Icon } from "./Icon";
  * Modal built on the native <dialog> (replaces window.confirm, which in-app browsers can block):
  * the browser traps focus, Esc closes, focus returns to the opener.
  * "sheet": bottom sheet on phones, centred from sm up. "full": covers the screen (handover mode, Released).
+ * `onClose` runs only when the viewer closes it (Esc, the backdrop, the close button, or a control that calls it);
+ * when the parent sets `open` to false, the parent already knows.
  */
 export function Sheet({
   open,
@@ -25,14 +27,27 @@ export function Sheet({
   className?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  /** True from the parent's close until its `close` event (the browser fires it in a later task). */
+  const closedByParent = useRef(false);
   const titleId = useId();
 
   useEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;
     if (open && !dialog.open) dialog.showModal();
-    if (!open && dialog.open) dialog.close();
+    if (!open && dialog.open) {
+      closedByParent.current = true;
+      dialog.close();
+    }
   }, [open]);
+
+  function handleClose() {
+    if (closedByParent.current) {
+      closedByParent.current = false;
+      return;
+    }
+    onClose();
+  }
 
   function closeOnBackdrop(event: MouseEvent<HTMLDialogElement>) {
     // A click on the <dialog> element itself (not its content) is a click on the backdrop.
@@ -43,7 +58,7 @@ export function Sheet({
     <dialog
       ref={ref}
       aria-labelledby={titleId}
-      onClose={onClose}
+      onClose={handleClose}
       onClick={variant === "sheet" ? closeOnBackdrop : undefined}
       className={cx(
         "p-0 text-fg",

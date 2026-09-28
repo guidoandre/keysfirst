@@ -177,6 +177,14 @@ export function nextStep(o: { status: DealStatus; role: Role; times: DealTimes; 
   }
 }
 
+/**
+ * Whether the landlord's Released screen is up (spec §6.5): the deal was released while this page watched it, or while
+ * handover mode was open, and the landlord hasn't dismissed the screen themself.
+ */
+export function showReleasedScreen(o: { role: Role; status: DealStatus; handoverOpen: boolean; justReleased: boolean; dismissed: boolean }): boolean {
+  return o.role === "landlord" && o.status === "released" && !o.dismissed && (o.handoverOpen || o.justReleased);
+}
+
 export function actionLabel(action: Action, role: Role, amount: string): string {
   switch (action) {
     case "fund":
