@@ -2575,7 +2575,7 @@ git commit -m "feat(web): route groups, devnet ribbon, headers, footer and one c
   - `interface DealRow { key: string; time: string; title: string; detail?: string; state: "done" | "now" | "next" | "later"; tone?: "released" | "returned"; signature?: string }`, `dealRows({ status, times: DealTimes & { createdAt; fundedAt; settledAt }, signatures, now, amount }): DealRow[]`
 - Produces: `toDealData(account: DealAccount): DealData` from `@/lib/deal-data`; `useDeal(id: string): { address: PublicKey | null; deal: DealAccount | null | undefined; signatures: string[]; loadError: string | null; statusChanged: boolean; justReleased: boolean; refresh: () => Promise<void> }` from `@/lib/use-deal`.
 
-- [ ] **Step 1: Write the failing tests `web/src/lib/deal-view.test.ts`**
+- [x] **Step 1: Write the failing tests `web/src/lib/deal-view.test.ts`**
 
 ```ts
 import { describe, expect, it } from "vitest";
@@ -2725,12 +2725,12 @@ describe("dealRows", () => {
 });
 ```
 
-- [ ] **Step 2: Run the tests to see them fail**
+- [x] **Step 2: Run the tests to see them fail**
 
 Run: `npm test`
 Expected: FAIL with `Failed to resolve import "./deal-view"`.
 
-- [ ] **Step 3: Write `web/src/lib/deal-view.ts`**
+- [x] **Step 3: Write `web/src/lib/deal-view.ts`**
 
 ```ts
 import { formatShortDateTime } from "./format";
@@ -3048,7 +3048,7 @@ export function dealRows(o: {
 }
 ```
 
-- [ ] **Step 4: Write the failing test `web/src/lib/deal-data.test.ts`**
+- [x] **Step 4: Write the failing test `web/src/lib/deal-data.test.ts`**
 
 ```ts
 import { BN } from "@anchor-lang/core";
@@ -3092,12 +3092,12 @@ describe("toDealData", () => {
 });
 ```
 
-- [ ] **Step 5: Run it to see it fail**
+- [x] **Step 5: Run it to see it fail**
 
 Run: `npm test`
 Expected: FAIL with `Failed to resolve import "./deal-data"` (the deal-view tests may pass already).
 
-- [ ] **Step 6: Write `web/src/lib/deal-data.ts`**
+- [x] **Step 6: Write `web/src/lib/deal-data.ts`**
 
 ```ts
 import type { DealData } from "./deal-view";
@@ -3121,12 +3121,12 @@ export function toDealData(d: DealAccount): DealData {
 }
 ```
 
-- [ ] **Step 7: Run all tests to see them pass**
+- [x] **Step 7: Run all tests to see them pass**
 
 Run: `npm test`
 Expected: PASS (all files).
 
-- [ ] **Step 8: Write `web/src/lib/use-deal.ts`** (the polling logic from today's `DealClient`, unchanged, plus `statusChanged` / `justReleased`)
+- [x] **Step 8: Write `web/src/lib/use-deal.ts`** (the polling logic from today's `DealClient`, unchanged, plus `statusChanged` / `justReleased`)
 
 ```ts
 "use client";
@@ -3213,11 +3213,11 @@ export function useDeal(id: string): DealState {
 }
 ```
 
-- [ ] **Step 9: Verify**
+- [x] **Step 9: Verify**
 
 Run: `npm test` → PASS. `npm run lint` → no errors (the hook is not used yet; Task 6 wires it in). `npm run build` → succeeds.
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ```bash
 git add web/src/lib/deal-view.ts web/src/lib/deal-view.test.ts web/src/lib/deal-data.ts web/src/lib/deal-data.test.ts web/src/lib/use-deal.ts
@@ -3239,7 +3239,7 @@ git commit -m "feat(web): deal phases, next-step matrix, timetable rows and useD
 - Consumes: Tasks 3–5; `LoginButton`, `OpenInPhantom`, `TestFundsButton` (Task 4); `fundIx`, `confirmHandoverIx`, `refundIx`, `cancelDealIx` from `@/lib/instructions`; `signAndSend`, `friendlyError` from `@/lib/send`; `useNow` from `@/lib/hooks`; `HandoverQR` from `@/components/HandoverQR` (temporary).
 - Produces: `DealView(props: DealViewProps)` with `interface DealViewProps { id: string; origin: string; data: DealData; role: Role; now: number; connected: boolean; created: boolean; signatures: string[]; statusChanged: boolean; busy: Action | null; error: string | null; signature: string | null; onAction: (action: Action) => void }`; `DealClient({ id: string; origin: string; created: boolean })`; `DealLoading({ loadError })`, `DealMessage({ title, children?, action? })`.
 
-- [ ] **Step 1: Write the deal components**
+- [x] **Step 1: Write the deal components**
 
 `web/src/components/deal/DealHero.tsx`:
 
@@ -3654,7 +3654,7 @@ export function DealView(p: DealViewProps) {
 }
 ```
 
-- [ ] **Step 2: Replace `web/src/app/(app)/deal/[id]/DealClient.tsx`**
+- [x] **Step 2: Replace `web/src/app/(app)/deal/[id]/DealClient.tsx`**
 
 ```tsx
 "use client";
@@ -3801,7 +3801,7 @@ export function DealClient({ id, origin, created }: { id: string; origin: string
 }
 ```
 
-- [ ] **Step 3: Replace `web/src/app/(app)/deal/[id]/page.tsx`** (passes `?created=1`; the preview image moves to a file in Task 14)
+- [x] **Step 3: Replace `web/src/app/(app)/deal/[id]/page.tsx`** (passes `?created=1`; the preview image moves to a file in Task 14)
 
 ```tsx
 import type { Metadata } from "next";
@@ -3838,7 +3838,7 @@ export default async function DealPage({ params, searchParams }: Props) {
 }
 ```
 
-- [ ] **Step 4: Write `web/src/app/(app)/deal/[id]/loading.tsx`**
+- [x] **Step 4: Write `web/src/app/(app)/deal/[id]/loading.tsx`**
 
 ```tsx
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -3858,7 +3858,7 @@ export default function LoadingDeal() {
 }
 ```
 
-- [ ] **Step 5: Write the deal gallery** (every phase × role without a wallet)
+- [x] **Step 5: Write the deal gallery** (every phase × role without a wallet)
 
 `web/src/app/(app)/dev/deal/page.tsx`:
 
@@ -3977,11 +3977,11 @@ export function DealGallery() {
 }
 ```
 
-- [ ] **Step 6: Delete the replaced components**
+- [x] **Step 6: Delete the replaced components**
 
 Run: `git rm web/src/components/DealActions.tsx web/src/components/ShareLink.tsx web/src/components/Timeline.tsx`
 
-- [ ] **Step 7: Verify**
+- [x] **Step 7: Verify**
 
 Run: `npm test` → PASS. `npm run lint` → no errors. `npm run build` → succeeds (`/deal/[id]` dynamic).
 Browser, `http://localhost:3000/dev/deal` at 375 and 1280 px: step through every phase with each viewer and "Logged out":
@@ -3993,7 +3993,7 @@ Browser, `http://localhost:3000/dev/deal` at 375 and 1280 px: step through every
 Then a real deal: `http://localhost:3000/deal/8cTvC1gnouTSxswytgt1as8FXgLmp1yJU6bfVopj8xTy` (released on 2026-09-27) shows the green band, three receipts and no action buttons; `/deal/not-a-key` shows "This isn't a valid deal link"; a valid but unused address (e.g. `/deal/11111111111111111111111111111112`) shows "We can't find this deal". Network tab: the deal page polls about every 2 s and stops while the tab is hidden.
 Confirmation dialogs: the gallery's buttons do nothing on purpose; the dialog itself was checked in Task 3's UI gallery, and the real release, cancel and refund flows are part of Task 20's Phantom regression.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add -A web/src
@@ -4015,7 +4015,7 @@ git commit -m "feat(web): deal page with status band, countdown, one next step p
 - Consumes: `Sheet` (Task 3), `LogoMark` (Task 2), `formatCountdown`, `formatShortDateTime`, `explorerTx` from `@/lib/format`, `QRCodeSVG` from `qrcode.react`, `useDeal().justReleased` (Task 5).
 - Produces: `useWakeLock(active: boolean): void` from `@/lib/hooks`; `HandoverMode({ open, onClose, dealId, origin, title, amount, deadline, now })`; `ReleasedScreen({ open, onClose, title, amount, settledAt, receipt? })`.
 
-- [ ] **Step 1: Append `useWakeLock` to `web/src/lib/hooks.ts`**
+- [x] **Step 1: Append `useWakeLock` to `web/src/lib/hooks.ts`**
 
 ```ts
 /** Keeps the screen on while `active` (the landlord's handover code). Ignored where the browser can't. */
@@ -4048,7 +4048,7 @@ export function useWakeLock(active: boolean) {
 
 (`useEffect` is already imported at the top of `hooks.ts`.)
 
-- [ ] **Step 2: Write `web/src/components/deal/HandoverMode.tsx`**
+- [x] **Step 2: Write `web/src/components/deal/HandoverMode.tsx`**
 
 ```tsx
 "use client";
@@ -4142,7 +4142,7 @@ export function HandoverMode({
 }
 ```
 
-- [ ] **Step 3: Write `web/src/components/deal/ReleasedScreen.tsx`**
+- [x] **Step 3: Write `web/src/components/deal/ReleasedScreen.tsx`**
 
 ```tsx
 "use client";
@@ -4208,7 +4208,7 @@ export function ReleasedScreen({
 }
 ```
 
-- [ ] **Step 4: Wire them into `web/src/app/(app)/deal/[id]/DealClient.tsx`**
+- [x] **Step 4: Wire them into `web/src/app/(app)/deal/[id]/DealClient.tsx`**
 
 1. Replace the import `import { HandoverQR } from "@/components/HandoverQR";` with the lines below, and put the `const HandoverMode = …` line directly under the last import (module level, outside the component):
 
@@ -4301,7 +4301,7 @@ with:
 
 6. Delete the old component: `git rm web/src/components/HandoverQR.tsx`
 
-- [ ] **Step 5: Replace `web/src/app/(app)/dev/deal/DealGallery.tsx`** (same as Task 6 plus two buttons)
+- [x] **Step 5: Replace `web/src/app/(app)/dev/deal/DealGallery.tsx`** (same as Task 6 plus two buttons)
 
 ```tsx
 "use client";
@@ -4436,7 +4436,7 @@ export function DealGallery() {
 }
 ```
 
-- [ ] **Step 6: Verify**
+- [x] **Step 6: Verify**
 
 Run: `npm test` → PASS. `npm run lint` → no errors. `npm run build` → succeeds.
 Browser, `/dev/deal` at 375 × 812 and 1280 × 800:
@@ -4446,7 +4446,7 @@ Browser, `/dev/deal` at 375 × 812 and 1280 × 800:
 - Landlord + funded-window: "Start the handover" opens handover mode.
 - No console errors.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add -A web/src
@@ -4464,7 +4464,7 @@ git commit -m "feat(web): full-screen landlord handover with wake lock and the R
 - Consumes: `getOrigin` (unchanged), `getProgram`, `RPC_URL`, `toDealData` (Task 5), `handoverOpensAt`, `formatEur`, `formatShortDateTime(…, "Europe/Berlin")`, `buttonClass`, `Callout`, `Icon`, `cx`.
 - Produces: the same URL, `/deal/<id>/handover`, still linking to `solana:<origin>/api/handover/<id>` (constraint 1).
 
-- [ ] **Step 1: Replace `web/src/app/(app)/deal/[id]/handover/page.tsx`**
+- [x] **Step 1: Replace `web/src/app/(app)/deal/[id]/handover/page.tsx`**
 
 ```tsx
 import { Connection, PublicKey } from "@solana/web3.js";
@@ -4577,7 +4577,7 @@ export default async function HandoverPage({ params }: { params: Promise<{ id: s
 }
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 Run: `npm run lint`, `npm run build` → succeed (the route stays dynamic).
 Browser at 375 px:
@@ -4587,7 +4587,7 @@ Browser at 375 px:
 - A locked deal inside its window (the normal case) is checked on the phone in Task 20's regression.
 - No console errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add "web/src/app/(app)/deal/[id]/handover/page.tsx"
@@ -4613,7 +4613,7 @@ git commit -m "feat(web): tenant hand-off page with the deal summary, a checklis
 - Consumes: `parseEur`, `formatEur`, `formatShortDateTime`, `toLocalInputValue` from `@/lib/format`; `HANDOVER_OPENS_BEFORE_MOVE_IN`, `MAX_HANDOVER_WINDOW` from `@/lib/rules`; `createDealIx`, `randomDealId` from `@/lib/instructions`; `signAndSend`, `friendlyError`; UI primitives; `LoginButton`, `OpenInPhantom`.
 - Produces (from `@/lib/new-deal`): `WINDOW_CHOICES` (`{ value: "1d" | "3d" | "7d" | "14d"; label; seconds }[]`), `type WindowChoice`, `DEFAULT_WINDOW = "3d"`, `DEMO_WINDOW_SECONDS = 300`, `DEMO_VALUES = { title: "Room in Vallendar", amount: "600" }`, `TITLE_MAX_BYTES = 64`, `STEP_FIELDS`, `titleBytes(title)`, `windowSeconds({ window, demo })`, `handoverWindow(moveIn, seconds): { opens; deadline }`, `interface NewDealForm { title; amount; moveIn: number; window: WindowChoice; demo: boolean }`, `validateNewDeal(form, now): { values: { title; amount: bigint; moveIn; deadline } | null; errors: Partial<Record<"title" | "amount" | "moveIn", string>> }`. `/new` redirects to `/deal/<id>?created=1` after creation.
 
-- [ ] **Step 1: Write the failing tests `web/src/lib/new-deal.test.ts`**
+- [x] **Step 1: Write the failing tests `web/src/lib/new-deal.test.ts`**
 
 ```ts
 import { describe, expect, it } from "vitest";
@@ -4661,12 +4661,12 @@ describe("validateNewDeal", () => {
 });
 ```
 
-- [ ] **Step 2: Run the tests to see them fail**
+- [x] **Step 2: Run the tests to see them fail**
 
 Run: `npm test`
 Expected: FAIL with `Failed to resolve import "./new-deal"`.
 
-- [ ] **Step 3: Write `web/src/lib/new-deal.ts`**
+- [x] **Step 3: Write `web/src/lib/new-deal.ts`**
 
 ```ts
 import { parseEur } from "./format";
@@ -4742,12 +4742,12 @@ export function validateNewDeal(form: NewDealForm, now: number): { values: NewDe
 }
 ```
 
-- [ ] **Step 4: Run the tests to see them pass**
+- [x] **Step 4: Run the tests to see them pass**
 
 Run: `npm test`
 Expected: PASS.
 
-- [ ] **Step 5: Write `web/src/app/(app)/new/CreateDealFlow.tsx`**
+- [x] **Step 5: Write `web/src/app/(app)/new/CreateDealFlow.tsx`**
 
 ```tsx
 "use client";
@@ -5024,7 +5024,7 @@ export function CreateDealFlow() {
 }
 ```
 
-- [ ] **Step 6: Replace `web/src/app/(app)/new/page.tsx`**
+- [x] **Step 6: Replace `web/src/app/(app)/new/page.tsx`**
 
 ```tsx
 import type { Metadata } from "next";
@@ -5040,7 +5040,7 @@ export default function NewDealPage() {
 }
 ```
 
-- [ ] **Step 7: Verify**
+- [x] **Step 7: Verify**
 
 Run: `npm test` → PASS. `npm run lint` → no errors. `npm run build` → `/new` is `○ (Static)`.
 Browser at 375 and 1280 px (logged out is fine for steps 1–2):
@@ -5051,7 +5051,7 @@ Browser at 375 and 1280 px (logged out is fine for steps 1–2):
 - No console errors, no horizontal scroll.
 Creating a real deal needs Phantom: done in Task 20's regression (it must land on `/deal/<id>?created=1` with the "link is ready" callout and the share box).
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add web/src/lib/new-deal.ts web/src/lib/new-deal.test.ts "web/src/app/(app)/new"
@@ -5073,7 +5073,7 @@ git commit -m "feat(web): three-step create flow with preview, demo values and p
 - Consumes: `DealData`, `dealPhase` (Task 5), `toDealData` (Task 5), `getProgram`, `friendlyError`, `formatCountdown`, `formatShortDateTime`, `formatEur`, `handoverOpensAt`, `MAX_LOCK_DURATION`, UI primitives, `LoginButton`, `OpenInPhantom`.
 - Produces (from `@/lib/dashboard`): `type DealRole = "landlord" | "tenant"`, `interface DealSummary extends DealData { address: string; role: DealRole }`, `type DealFilter = "all" | "letting" | "renting"`, `type Urgency = "now" | "waiting" | "done"`, `toSummary(address, data, wallet): DealSummary | null`, `mergeDeals(...lists: DealSummary[][]): DealSummary[]`, `urgencyOf(deal, now): Urgency`, `nextActionText(deal, now): string`, `countdownLine(deal, now): string`, `sortDeals(deals, now)`, `filterDeals(deals, filter)`, `countByFilter(deals): Record<DealFilter, number>`. From `@/lib/use-my-deals`: `useMyDeals(): { state: MyDealsState; refresh: () => void; wallet: string | null }` with `type MyDealsState = { status: "idle" } | { status: "loading" } | { status: "ready"; deals: DealSummary[] } | { status: "error"; message: string }`. `DealCard({ deal: DealSummary; now: number })`.
 
-- [ ] **Step 1: Write the failing tests `web/src/lib/dashboard.test.ts`**
+- [x] **Step 1: Write the failing tests `web/src/lib/dashboard.test.ts`**
 
 ```ts
 import { describe, expect, it } from "vitest";
@@ -5179,12 +5179,12 @@ describe("sorting and filtering", () => {
 });
 ```
 
-- [ ] **Step 2: Run the tests to see them fail**
+- [x] **Step 2: Run the tests to see them fail**
 
 Run: `npm test`
 Expected: FAIL with `Failed to resolve import "./dashboard"`.
 
-- [ ] **Step 3: Write `web/src/lib/dashboard.ts`**
+- [x] **Step 3: Write `web/src/lib/dashboard.ts`**
 
 ```ts
 import { dealPhase, type DealData } from "./deal-view";
@@ -5309,12 +5309,12 @@ export function countByFilter(deals: DealSummary[]): Record<DealFilter, number> 
 }
 ```
 
-- [ ] **Step 4: Run the tests to see them pass**
+- [x] **Step 4: Run the tests to see them pass**
 
 Run: `npm test`
 Expected: PASS.
 
-- [ ] **Step 5: Write `web/src/lib/use-my-deals.ts`**
+- [x] **Step 5: Write `web/src/lib/use-my-deals.ts`**
 
 ```ts
 "use client";
@@ -5385,7 +5385,7 @@ export function useMyDeals(): { state: MyDealsState; refresh: () => void; wallet
 }
 ```
 
-- [ ] **Step 6: Write `web/src/components/deal/DealCard.tsx`**
+- [x] **Step 6: Write `web/src/components/deal/DealCard.tsx`**
 
 ```tsx
 import Link from "next/link";
@@ -5421,7 +5421,7 @@ export function DealCard({ deal, now }: { deal: DealSummary; now: number }) {
 }
 ```
 
-- [ ] **Step 7: Write the page**
+- [x] **Step 7: Write the page**
 
 `web/src/app/(app)/deals/page.tsx`:
 
@@ -5588,7 +5588,7 @@ export function MyDeals() {
 }
 ```
 
-- [ ] **Step 8: Write the dashboard gallery**
+- [x] **Step 8: Write the dashboard gallery**
 
 `web/src/app/(app)/dev/deals/page.tsx`:
 
@@ -5642,7 +5642,7 @@ export function DealsGallery() {
 }
 ```
 
-- [ ] **Step 9: Verify**
+- [x] **Step 9: Verify**
 
 Run: `npm test` → PASS. `npm run lint` → no errors. `npm run build` → succeeds.
 Browser at 375 and 1280 px:
@@ -5651,7 +5651,7 @@ Browser at 375 and 1280 px:
 - Logged in (Task 20 with Phantom): the user's real deals appear with the right role; Network shows two `getProgramAccounts` calls per load, none while idle, and a new pair when coming back to the tab after 15 s.
 - No console errors, no horizontal scroll.
 
-- [ ] **Step 10: Commit and close milestone M3**
+- [x] **Step 10: Commit and close milestone M3**
 
 ```bash
 git add web/src/lib/dashboard.ts web/src/lib/dashboard.test.ts web/src/lib/use-my-deals.ts web/src/components/deal/DealCard.tsx "web/src/app/(app)/deals" "web/src/app/(app)/dev/deals"
@@ -5677,7 +5677,7 @@ Report M3: works / doesn't / next.
   - `interface FaqEntry { id; question; answer: string[]; link?: { href; label } }`, `interface FaqGroup { id; title; entries: FaqEntry[] }`, `FAQ: FaqGroup[]`, `LANDING_FAQ_IDS: string[]`, `faqEntries(ids: string[]): FaqEntry[]` from `@/content/faq`.
   - `SectionHeader({ id; eyebrow?; title; lead?; align? })`, `RulesTimetable()`, `StepList({ steps: Step[] })` with `interface Step { pictogram: PictogramName; title: string; text: string }`, `ProblemSteps()`, `AudienceSplit()`, `ScenarioGrid({ scenarios })`, `WhySolana()`, `FaqList({ entries })`, `CtaBand()`, `AskLandlord({ tone?: "light" | "dark" })`.
 
-- [ ] **Step 1: Write `web/src/content/scenarios.ts`**
+- [x] **Step 1: Write `web/src/content/scenarios.ts`**
 
 ```ts
 import type { PictogramName } from "@/components/brand/Pictogram";
@@ -5766,7 +5766,7 @@ export function scenariosFor(audience: "tenant" | "landlord"): Scenario[] {
 }
 ```
 
-- [ ] **Step 2: Write `web/src/content/faq.ts`**
+- [x] **Step 2: Write `web/src/content/faq.ts`**
 
 ```ts
 export interface FaqEntry {
@@ -5960,7 +5960,7 @@ export function faqEntries(ids: string[]): FaqEntry[] {
 }
 ```
 
-- [ ] **Step 3: Write the marketing blocks**
+- [x] **Step 3: Write the marketing blocks**
 
 `web/src/components/marketing/SectionHeader.tsx`:
 
@@ -6322,7 +6322,7 @@ export function CtaBand() {
 }
 ```
 
-- [ ] **Step 4: Replace `web/src/app/(site)/page.tsx`**
+- [x] **Step 4: Replace `web/src/app/(site)/page.tsx`**
 
 ```tsx
 import type { Metadata } from "next";
@@ -6446,7 +6446,7 @@ export default function LandingPage() {
 }
 ```
 
-- [ ] **Step 5: Verify**
+- [x] **Step 5: Verify**
 
 Run: `npm test` → PASS. `npm run lint` → no errors. `npm run build` → `/` is `○ (Static)` (the `dynamic = "error"` guard would fail the build otherwise).
 Browser at 375 and 1280 px:
@@ -6455,7 +6455,7 @@ Browser at 375 and 1280 px:
 - "Ask your landlord on WhatsApp" opens `wa.me` with the message ending in `/landlords`; "Copy the message" copies it.
 - No console errors, no horizontal scroll. Network: no `@solana` chunk on `/`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add web/src/content web/src/components/marketing "web/src/app/(site)/page.tsx"
@@ -6474,7 +6474,7 @@ git commit -m "feat(web): landing page with the rules as a timetable, the scam p
 - Consumes: `LoginButton`, `OpenInPhantom`, `TestFundsButton`, `ButtonLink`, `Callout`, `shortAddress`, `useWallet`, `useMounted`.
 - Produces: `/start` with anchors `#install`, `#devnet`, `#funds`, `#try`, `#tips` (linked from the connect sheet, the FAQ and the footer); `InstallIllustration`, `DevnetIllustration`, `FundsIllustration`, `ScanIllustration`.
 
-- [ ] **Step 1: Write `web/src/components/guide/GuideIllustrations.tsx`** (schematic screens in the pictogram line style; Phantom is named, never drawn)
+- [x] **Step 1: Write `web/src/components/guide/GuideIllustrations.tsx`** (schematic screens in the pictogram line style; Phantom is named, never drawn)
 
 ```tsx
 import type { ReactNode } from "react";
@@ -6586,7 +6586,7 @@ export function ScanIllustration() {
 }
 ```
 
-- [ ] **Step 2: Write `web/src/app/(app)/start/GuideFunds.tsx`**
+- [x] **Step 2: Write `web/src/app/(app)/start/GuideFunds.tsx`**
 
 ```tsx
 "use client";
@@ -6621,7 +6621,7 @@ export function GuideFunds() {
 }
 ```
 
-- [ ] **Step 3: Write `web/src/app/(app)/start/page.tsx`**
+- [x] **Step 3: Write `web/src/app/(app)/start/page.tsx`**
 
 ```tsx
 import type { Metadata } from "next";
@@ -6718,7 +6718,7 @@ export default function GetStartedPage() {
 }
 ```
 
-- [ ] **Step 4: Verify**
+- [x] **Step 4: Verify**
 
 Run: `npm run lint`, `npm run build` → `/start` is `○ (Static)`.
 Browser at 375 and 1280 px:
@@ -6727,7 +6727,7 @@ Browser at 375 and 1280 px:
 - Logged out: "Log in" in step 3 opens the connect sheet. Logged in (Task 20): the address and "Get test funds" appear, and the faucet answers.
 - No console errors, no horizontal scroll.
 
-- [ ] **Step 5: Commit and close milestone M4**
+- [x] **Step 5: Commit and close milestone M4**
 
 ```bash
 git add web/src/components/guide "web/src/app/(app)/start"
@@ -6749,7 +6749,7 @@ Report M4: works / doesn't / next.
 - Consumes: `SiteHeader` (Task 4), `Button`, `ButtonLink`, `Callout`, `barlow`, `barlowCondensed`, `globals.css`.
 - Produces: `ErrorView({ error, retry })`. Every unmatched URL renders the branded 404; an error inside a group keeps that group's header (the group-level `error.tsx` sits inside the group layout); a root-layout failure renders `global-error.tsx`.
 
-- [ ] **Step 1: Write `web/src/components/site/ErrorView.tsx`**
+- [x] **Step 1: Write `web/src/components/site/ErrorView.tsx`**
 
 ```tsx
 "use client";
@@ -6782,7 +6782,7 @@ export function ErrorView({ error, retry }: { error: Error & { digest?: string }
 }
 ```
 
-- [ ] **Step 2: Write the three `error.tsx` files** (identical content; each must be a client module)
+- [x] **Step 2: Write the three `error.tsx` files** (identical content; each must be a client module)
 
 `web/src/app/error.tsx`, `web/src/app/(site)/error.tsx` and `web/src/app/(app)/error.tsx`:
 
@@ -6796,7 +6796,7 @@ export default function ErrorPage(props: { error: Error & { digest?: string }; r
 }
 ```
 
-- [ ] **Step 3: Write `web/src/app/global-error.tsx`**
+- [x] **Step 3: Write `web/src/app/global-error.tsx`**
 
 ```tsx
 "use client";
@@ -6830,7 +6830,7 @@ export default function GlobalError({ retry }: { error: Error & { digest?: strin
 
 If `npm run build` rejects the font import in this client file, delete the `fonts` import and the `className` on `<html>`: this page then uses the system font, which is acceptable for a last-resort screen.
 
-- [ ] **Step 4: Write `web/src/app/not-found.tsx`**
+- [x] **Step 4: Write `web/src/app/not-found.tsx`**
 
 ```tsx
 import { SiteHeader } from "@/components/site/SiteHeader";
@@ -6865,7 +6865,7 @@ export default function NotFound() {
 }
 ```
 
-- [ ] **Step 5: Verify**
+- [x] **Step 5: Verify**
 
 Run: `npm run lint`, `npm run build` → succeed.
 Browser at 375 and 1280 px:
@@ -6873,7 +6873,7 @@ Browser at 375 and 1280 px:
 - Error boundary: temporarily add `throw new Error("test")` at the top of `web/src/app/(site)/faq/page.tsx`'s component once it exists, or of the landing page now; reload: the error view appears under the site header, "Try again" re-renders; remove the throw again (`git diff` must be empty for that file afterwards).
 - No console errors apart from the deliberate test error.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add web/src/components/site/ErrorView.tsx web/src/app/not-found.tsx web/src/app/error.tsx "web/src/app/(site)/error.tsx" "web/src/app/(app)/error.tsx" web/src/app/global-error.tsx
@@ -6900,7 +6900,7 @@ git commit -m "feat(web): branded 404, error boundaries with retry and a last-re
 - Consumes: `siteUrl` (Task 1), `formatEur`, `STATUS_LABEL`, `statusOf`, `getProgram`, `RPC_URL`.
 - Produces: `OG_SIZE`, `OG_CONTENT_TYPE`, `ogCard({ kicker?, title, subtitle? }): Promise<ImageResponse>` from `@/lib/og` (Task 17 uses it for the content pages); `/icon.png?size=<16–512>&simple=1` (default 256, unchanged URL for wallets).
 
-- [ ] **Step 1: Add the approved font file**
+- [x] **Step 1: Add the approved font file**
 
 ```bash
 mkdir -p web/assets/fonts
@@ -6917,7 +6917,7 @@ Append to `.gitattributes`:
 *.ico binary
 ```
 
-- [ ] **Step 2: Write `web/src/lib/og.tsx`**
+- [x] **Step 2: Write `web/src/lib/og.tsx`**
 
 ```tsx
 import { readFile } from "node:fs/promises";
@@ -6985,7 +6985,7 @@ export async function ogCard({ kicker, title, subtitle }: { kicker?: string; tit
 }
 ```
 
-- [ ] **Step 3: Replace `web/src/app/opengraph-image.tsx`**
+- [x] **Step 3: Replace `web/src/app/opengraph-image.tsx`**
 
 ```tsx
 import { OG_CONTENT_TYPE, OG_SIZE, ogCard } from "@/lib/og";
@@ -6999,7 +6999,7 @@ export default function OpenGraphImage() {
 }
 ```
 
-- [ ] **Step 4: Write `web/src/app/(app)/deal/[id]/opengraph-image.tsx`**
+- [x] **Step 4: Write `web/src/app/(app)/deal/[id]/opengraph-image.tsx`**
 
 ```tsx
 import { Connection, PublicKey } from "@solana/web3.js";
@@ -7034,7 +7034,7 @@ export default async function DealImage({ params }: { params: Promise<{ id: stri
 }
 ```
 
-- [ ] **Step 5: Drop the hand-written image from the deal page's metadata**
+- [x] **Step 5: Drop the hand-written image from the deal page's metadata**
 
 In `web/src/app/(app)/deal/[id]/page.tsx`, replace the two lines
 
@@ -7051,7 +7051,7 @@ with
     return { title, description: DESCRIPTION, robots: { index: false } };
 ```
 
-- [ ] **Step 6: Icons, manifest, robots and sitemap**
+- [x] **Step 6: Icons, manifest, robots and sitemap**
 
 Replace `web/src/app/icon.png/route.tsx`:
 
@@ -7164,7 +7164,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 }
 ```
 
-- [ ] **Step 7: Regenerate the favicon**
+- [x] **Step 7: Regenerate the favicon**
 
 Create `web/scripts/make-favicon.mjs`:
 
@@ -7209,7 +7209,7 @@ console.log(`Wrote src/app/favicon.ico (${sizes.join(", ")} px)`);
 With `npm run dev` running, run (in `web/`): `node scripts/make-favicon.mjs`
 Expected: `Wrote src/app/favicon.ico (16, 32, 48 px)`; opening `http://localhost:3000/favicon.ico` shows the yellow key mark.
 
-- [ ] **Step 8: Ship the font with the server functions** (replace `web/next.config.ts`)
+- [x] **Step 8: Ship the font with the server functions** (replace `web/next.config.ts`)
 
 ```ts
 import type { NextConfig } from "next";
@@ -7222,12 +7222,12 @@ const nextConfig: NextConfig = {
 export default nextConfig;
 ```
 
-- [ ] **Step 9: Remove the unused create-next-app files**
+- [x] **Step 9: Remove the unused create-next-app files**
 
 Run: `git grep -n -e "icon.svg" -e "next.svg" -e "vercel.svg" -e "globe.svg" -e "file.svg" -e "window.svg" -- web/src` → only `manifest.ts` (`/icon.svg`, now served from `app/icon.svg`).
 Then: `git rm web/public/icon.svg web/public/next.svg web/public/vercel.svg web/public/globe.svg web/public/file.svg web/public/window.svg`
 
-- [ ] **Step 10: Verify**
+- [x] **Step 10: Verify**
 
 Run: `npm test`, `npm run lint`, `npm run build` → all pass. The route list includes `/opengraph-image`, `/deal/[id]/opengraph-image`, `/apple-icon`, `/icon.png`, `/icon.svg`, `/manifest.webmanifest`, `/robots.txt`, `/sitemap.xml`. If the build reports a conflict between `app/icon.svg` and the `app/icon.png` route, delete `app/icon.svg` and its manifest entry (the favicon then covers browser tabs).
 With the dev server:
@@ -7259,7 +7259,7 @@ Report M5: works / doesn't / next.
 - Consumes: `Timetable`, `StatusChip`, `Icon`, `ButtonLink`, `SectionHeader`, `ScenarioGrid`, `CtaBand`, `SCENARIOS`, `explorerAddress`, `idl.address`.
 - Produces: `/how-it-works` with anchors `#rules`, `#what-if`, `#no-arbiter`, `#limits` (the FAQ links to `#limits`).
 
-- [ ] **Step 1: Write `web/src/app/(site)/how-it-works/page.tsx`**
+- [x] **Step 1: Write `web/src/app/(site)/how-it-works/page.tsx`**
 
 ```tsx
 import type { Metadata } from "next";
@@ -7401,12 +7401,12 @@ export default function HowItWorksPage() {
 }
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 Run: `npm run lint`, `npm run build` → `/how-it-works` is `○ (Static)`.
 Browser at 375 and 1280 px: the timetable and the two outcome cards, seven rules, eight scenario cards, the no-judge section and eight limits; `/how-it-works#limits` lands on the limits heading just below the sticky header (the `SectionHeader` heading carries `scroll-mt-24`). Compare `RULES` and `LIMITS` word for word with product spec §6 and §10: nothing softened, nothing added. No console errors, no horizontal scroll.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add "web/src/app/(site)/how-it-works"
@@ -7425,7 +7425,7 @@ git commit -m "feat(web): How it works and safety page with the rules, what-ifs,
 - Consumes: `FAQ` (Task 11), `FaqList`, `SectionHeader`, `CtaBand`.
 - Produces: `/faq` where `#<entry id>` (e.g. `#devnet` from the ribbon) opens and shows that answer.
 
-- [ ] **Step 1: Write `web/src/components/marketing/OpenHashDetails.tsx`**
+- [x] **Step 1: Write `web/src/components/marketing/OpenHashDetails.tsx`**
 
 ```tsx
 "use client";
@@ -7450,7 +7450,7 @@ export function OpenHashDetails() {
 }
 ```
 
-- [ ] **Step 2: Write `web/src/app/(site)/faq/page.tsx`**
+- [x] **Step 2: Write `web/src/app/(site)/faq/page.tsx`**
 
 ```tsx
 import type { Metadata } from "next";
@@ -7489,12 +7489,12 @@ export default function FaqPage() {
 }
 ```
 
-- [ ] **Step 3: Verify**
+- [x] **Step 3: Verify**
 
 Run: `npm run lint`, `npm run build` → `/faq` is `○ (Static)`.
 Browser at 375 and 1280 px: four groups; each question opens and closes with a click, Enter or Space; the chevron turns. Click "What's devnet?" in the ribbon from another page: `/faq#devnet` opens the devnet answer below the header. Read the §551 BGB answer against the brand guidelines (only the wording given in Task 11). No console errors.
 
-- [ ] **Step 4: Commit and close milestone M6's Tier 2**
+- [x] **Step 4: Commit and close milestone M6's Tier 2**
 
 ```bash
 git add web/src/components/marketing/OpenHashDetails.tsx "web/src/app/(site)/faq"
@@ -7516,7 +7516,7 @@ Cut order if time runs out: skip Step 3 (About) first, then Steps 1–2 (tenants
 - Consumes: `StepList`, `ScenarioGrid`, `scenariosFor`, `SectionHeader`, `CtaBand`, `AskLandlord`, `ButtonLink`, `Callout`, `Icon`, `ogCard`, `OG_SIZE`, `OG_CONTENT_TYPE`.
 - Produces: `/tenants`, `/landlords`, `/about`, and a page-specific link preview for each content page.
 
-- [ ] **Step 1: Write `web/src/app/(site)/tenants/page.tsx`**
+- [x] **Step 1: Write `web/src/app/(site)/tenants/page.tsx`**
 
 ```tsx
 import type { Metadata } from "next";
@@ -7607,7 +7607,7 @@ export default function TenantsPage() {
 }
 ```
 
-- [ ] **Step 2: Write `web/src/app/(site)/landlords/page.tsx`**
+- [x] **Step 2: Write `web/src/app/(site)/landlords/page.tsx`**
 
 ```tsx
 import type { Metadata } from "next";
@@ -7699,7 +7699,7 @@ export default function LandlordsPage() {
 }
 ```
 
-- [ ] **Step 3: Write `web/src/app/(site)/about/page.tsx`**
+- [x] **Step 3: Write `web/src/app/(site)/about/page.tsx`**
 
 ```tsx
 import type { Metadata } from "next";
@@ -7790,7 +7790,7 @@ export default function AboutPage() {
 }
 ```
 
-- [ ] **Step 4: Write the page-specific link previews**
+- [x] **Step 4: Write the page-specific link previews**
 
 `web/src/app/(site)/how-it-works/opengraph-image.tsx`:
 
@@ -7862,12 +7862,12 @@ export default function Image() {
 }
 ```
 
-- [ ] **Step 5: Verify**
+- [x] **Step 5: Verify**
 
 Run: `npm run lint`, `npm run build` → the three pages and five images are `○ (Static)`.
 Browser at 375 and 1280 px: `/tenants` (Ask your landlord works; "What you need" links land on the guide's steps), `/landlords`, `/about`; every link in the header, the mobile menu and the footer resolves (no 404). View source on each content page: its own `og:image`. No console errors, no horizontal scroll.
 
-- [ ] **Step 6: Commit and close milestone M6**
+- [x] **Step 6: Commit and close milestone M6**
 
 ```bash
 git add "web/src/app/(site)"
