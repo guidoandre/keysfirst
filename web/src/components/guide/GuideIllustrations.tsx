@@ -100,7 +100,7 @@ export function ScanIllustration() {
         <rect x="14" y="40" width="92" height="92" rx="4" fill={MIST} />
         <path d="M22 50v-6h8M98 50v-6h-8M22 122v6h8M98 122v6h-8" stroke={MARKER} strokeWidth="4" fill="none" />
         <rect x="14" y="150" width="92" height="28" rx="6" fill={INK} />
-        <text x="60" y="168" textAnchor="middle" fontSize="9" fontWeight="600" fill="#fff">Approve in Phantom</text>
+        <text x="60" y="168" textAnchor="middle" fontSize="9" fontWeight="600" fill="#fff">I have the keys</text>
       </Phone>
     </Figure>
   );
