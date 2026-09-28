@@ -1,33 +1,35 @@
-import type { Metadata } from "next";
-import Link from "next/link";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import "@solana/wallet-adapter-react-ui/styles.css";
 import "./globals.css";
-import { WalletButton } from "@/components/WalletButton";
-import { Providers } from "./providers";
+import { DevnetRibbon } from "@/components/site/DevnetRibbon";
+import { SiteFooter } from "@/components/site/SiteFooter";
+import { siteUrl } from "@/lib/site";
+import { barlow, barlowCondensed } from "./fonts";
 
 export const metadata: Metadata = {
-  title: "Keysfirst — the deposit moves only when the keys do",
+  metadataBase: new URL(siteUrl()),
+  title: { default: "Keysfirst · The deposit moves only when the keys do", template: "%s · Keysfirst" },
   description:
-    "Lock a rental deposit on Solana. The landlord gets it when the tenant scans the handover QR code; otherwise it comes back automatically. Devnet prototype with test money.",
+    "A deposit link for renting a room in Germany from abroad. The landlord is paid only when the tenant confirms the key handover; otherwise the deposit goes back. Solana devnet prototype with test money.",
+  openGraph: { siteName: "Keysfirst", type: "website" },
+  twitter: { card: "summary_large_image" },
 };
+
+export const viewport: Viewport = { themeColor: "#16181D" };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-stone-50 text-stone-900 antialiased">
-        <Providers>
-          <div className="bg-amber-100 px-4 py-2 text-center text-xs text-amber-900">
-            Prototype on Solana devnet · test money only, nothing here has real value
-          </div>
-          <header className="mx-auto flex max-w-xl items-center justify-between px-4 py-4">
-            <Link href="/" className="text-lg font-semibold">
-              Keysfirst
-            </Link>
-            <WalletButton />
-          </header>
-          <main className="mx-auto max-w-xl px-4 pb-16">{children}</main>
-        </Providers>
+    <html lang="en" className={`${barlow.variable} ${barlowCondensed.variable}`}>
+      <body className="flex min-h-dvh flex-col antialiased">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-inverse focus:px-4 focus:py-3 focus:text-fg-inverse"
+        >
+          Skip to content
+        </a>
+        <DevnetRibbon />
+        {children}
+        <SiteFooter />
       </body>
     </html>
   );

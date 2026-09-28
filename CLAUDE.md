@@ -11,3 +11,7 @@
 - Deadline confirmed by the sponsor: Sun 4 Oct 2026, 23:59 (German time). Target submission: Sat 3 Oct.
 - APP_URL (Vercel production, root dir `web`, public): https://keysfirst.vercel.app
 - Phantom domain review form submitted on 2026-09-27 for https://keysfirst.vercel.app (new-domain warning). Re-check the warning before recording the demo.
+- Redesign (Sep–Oct 2026): brand "Clear Rules" in docs/brand-guidelines.md, tokens and components in docs/design-system.md (Tailwind v4 @theme in web/src/app/globals.css; only semantic colour utilities exist). Spec: docs/superpowers/specs/2026-09-28-keysfirst-redesign-design.md, plan: docs/superpowers/plans/2026-09-28-keysfirst-redesign.md.
+- Route groups: web/src/app/(site) = static marketing pages with no wallet code (keep it that way: Lighthouse); web/src/app/(app) = wallet pages under one Providers + connect sheet. Dev galleries at /dev/ui, /dev/deal, /dev/deals (404 in production).
+- Links from marketing pages into (app) routes use prefetch={false} (isAppRoute in web/src/lib/site.ts): Next's prefetch pulled ~200 KiB of wallet code into the landing page. Audit and Lighthouse notes: docs/audits/2026-09-28-accessibility.md.
+- Deal logic for the UI lives in web/src/lib/deal-view.ts (next-step matrix, tested); never offer an action that rules.ts availableActions() doesn't return.

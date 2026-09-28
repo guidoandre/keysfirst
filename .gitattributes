@@ -2,3 +2,5 @@
 *.png binary
 *.jpg binary
 *.so binary
+*.ttf binary
+*.ico binary

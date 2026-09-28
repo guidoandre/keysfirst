@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keysfirst · Direction C · Green Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@600;700;800;900&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#0A2B1F; --moss:#3F5C50; --mint:#34E39A; --mintbg:#E8FAF1; --white:#FFFFFF;
+  --amber:#FFB224; --green-text:#0B7A4B; --blue:#2E5BFF; --red:#CC3421; --line:#6F9384; --rule:#D5EBE0;
+  --display:"Gabarito",system-ui,sans-serif; --text:"Onest",system-ui,sans-serif;
+  --r1:12px; --r2:18px; --r3:26px; --r4:36px;
+  --snap:cubic-bezier(.2,.9,.1,1);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--white);color:var(--forest);font:400 16px/1.5 var(--text);font-variant-numeric:tabular-nums}
+a{color:inherit}
+.board{max-width:1240px;margin:0 auto;padding:28px 20px 96px}
+.top{display:flex;flex-wrap:wrap;gap:16px 32px;align-items:flex-end;justify-content:space-between;background:var(--forest);color:var(--white);border-radius:var(--r4);padding:28px;position:relative;overflow:hidden}
+.top::after{content:"";position:absolute;right:-110px;top:-110px;width:210px;height:210px;border-radius:50%;background:var(--mint)}
+@media (max-width:760px){.top::after{display:none}}
+.top > *{position:relative;z-index:1}
+.kicker{font:600 14px/1 var(--text);color:var(--mint);margin:0 0 10px}
+.top h1{font:900 clamp(44px,6.6vw,76px)/.92 var(--display);letter-spacing:-.03em;margin:0}
+.top p.thesis{max-width:520px;margin:0;font-size:18px;color:#D6E7DF}
+.back{font:600 14px var(--text);color:var(--white)}
+h2.sec{font:900 32px/1 var(--display);letter-spacing:-.02em;margin:56px 0 18px}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(12,1fr)}
+.card{background:var(--mintbg);border-radius:var(--r3);padding:24px}
+.card h3{font:800 23px/1.15 var(--display);margin:0 0 6px;letter-spacing:-.01em}
+.card .note{color:var(--moss);font-size:14.5px;margin:0 0 16px}
+.c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}.c7{grid-column:span 7}.c8{grid-column:span 8}.c12{grid-column:span 12}
+@media (max-width:980px){.c4,.c5,.c6,.c7,.c8{grid-column:span 12}}
+
+.wordmark{font:900 40px/1 var(--display);letter-spacing:-.045em}
+.lockup{display:flex;align-items:center;gap:10px}
+.logo-stage{display:grid;gap:14px;justify-items:start}
+.logo-on{border-radius:var(--r2);padding:16px 18px}
+.icons{display:flex;gap:16px;align-items:flex-end;margin-top:18px}
+.icons figure{margin:0;text-align:center;font-size:12.5px;color:var(--moss)}
+.icons figcaption{margin-top:6px}
+
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.sw{border-radius:var(--r1);overflow:hidden;background:var(--white)}
+.sw .chip{height:66px;display:flex;align-items:flex-end;padding:8px 10px;font:800 14px var(--display)}
+.sw .meta{padding:8px 10px;font-size:12.5px;line-height:1.35;color:var(--moss)}
+.sw .meta b{display:block;color:var(--forest);font:700 14px var(--text)}
+.sw .meta code{font:500 12px ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--forest)}
+.group-label{font:700 13px var(--text);color:var(--moss);margin:14px 0 8px}
+
+.spec-row{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:baseline;border-top:1px solid var(--rule);padding:12px 0}
+.spec-row small{color:var(--moss);font-size:12.5px;line-height:1.3}
+.t-display{font:900 46px/.95 var(--display);letter-spacing:-.035em}
+.t-h2{font:800 28px/1.1 var(--display);letter-spacing:-.02em}
+.t-body{font:400 17px/1.55 var(--text)}
+.t-label{font:700 14px/1 var(--text)}
+.t-num{font:900 42px/1 var(--display);letter-spacing:-.03em}
+
+.shapes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.shapes figure{margin:0;background:var(--white);border-radius:var(--r2);padding:12px 8px 10px;text-align:center;font-size:13px;color:var(--moss)}
+.shapes svg{width:100%;height:118px;display:block;margin-bottom:6px}
+
+.stage{position:relative;height:250px;border-radius:var(--r3);background:var(--forest);overflow:hidden;display:grid;place-items:center}
+.stage .qr{background:var(--white);padding:10px;border-radius:14px}
+.wipe{position:absolute;inset:0;background:var(--mint);color:var(--forest);display:flex;flex-direction:column;justify-content:center;padding:0 26px;clip-path:circle(0% at 50% 50%)}
+.wipe.go{animation:wipe .75s var(--snap) forwards}
+@keyframes wipe{to{clip-path:circle(150% at 50% 50%)}}
+.wipe b{font:900 44px/.95 var(--display);letter-spacing:-.03em}
+.wipe span{font:800 26px var(--display);margin-top:6px}
+.play{margin-top:14px;display:inline-flex;align-items:center;gap:8px;border:0;background:var(--forest);color:var(--mint);border-radius:999px;padding:11px 18px;font:700 15px var(--text);cursor:pointer}
+.play:focus-visible,.btn:focus-visible{outline:3px solid var(--forest);outline-offset:3px;box-shadow:0 0 0 6px var(--mint)}
+.rules-list{margin:12px 0 0;padding:0;list-style:none;font-size:14.5px;color:var(--moss)}
+.rules-list li{padding:6px 0;border-top:1px solid var(--rule)}
+.rules-list b{color:var(--forest)}
+
+.voice-table{width:100%;border-collapse:collapse;font-size:14.5px}
+.voice-table th,.voice-table td{text-align:left;vertical-align:top;border-top:1px solid var(--rule);padding:10px 8px}
+.voice-table th{font:700 13px var(--text);color:var(--moss)}
+.voice-table td:first-child{font:800 18px var(--display);white-space:nowrap}
+.say{display:grid;gap:10px;margin-top:14px}
+.say p{margin:0;background:var(--white);border-radius:var(--r1);padding:10px 14px;font-size:16px}
+.say p.no{color:var(--moss);text-decoration:line-through;text-decoration-color:rgba(204,52,33,.5)}
+.say small{display:block;font:700 12px var(--text);color:var(--green-text);margin-bottom:2px}
+.say p.no small{color:var(--red)}
+
+.frames{display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap}
+.browser{flex:1 1 640px;min-width:0;border-radius:var(--r3);overflow:hidden;background:var(--white);box-shadow:0 0 0 1px var(--rule),0 30px 60px -38px rgba(10,43,31,.45)}
+.browser .bar{height:38px;display:flex;align-items:center;gap:7px;padding:0 14px;background:var(--mintbg)}
+.browser .dot{width:10px;height:10px;border-radius:50%;background:#B9D8C9}
+.browser .url{margin-left:10px;flex:0 1 340px;height:24px;border-radius:999px;background:var(--white);font-size:12px;color:var(--moss);display:flex;align-items:center;padding:0 12px}
+.scaler{position:relative;overflow:hidden}
+.scaler>.canvas{width:1200px;position:absolute;top:0;left:0;transform-origin:0 0}
+.frames>div:not(.browser){flex:0 0 auto;width:min(375px,100%)}
+.phone{width:100%;border:10px solid #06170F;border-radius:46px;overflow:hidden;background:var(--white);box-shadow:0 30px 60px -36px rgba(10,43,31,.55)}
+.phone .screen{position:relative;min-height:740px}
+.cap{font-size:13.5px;color:var(--moss);margin:10px 6px 0}
+
+/* ===== product UI ===== */
+.ui{font:400 16px/1.5 var(--text);color:var(--forest);background:var(--white)}
+.ribbon{background:var(--forest);color:#CFE5DA;font-size:13px;text-align:center;padding:7px 12px}
+.ribbon b{color:var(--mint)}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 40px}
+.nav .links{display:flex;gap:28px;font:600 16px var(--text)}
+.nav .right{display:flex;align-items:center;gap:18px;font-weight:600}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 26px;border-radius:999px;font:700 16px/1 var(--text);text-decoration:none;border:0;cursor:pointer;transition:transform .2s var(--snap)}
+.btn:active{transform:scale(.97)}
+.btn-forest{background:var(--forest);color:var(--mint)}
+.btn-mint{background:var(--mint);color:var(--forest)}
+.btn-outline{background:var(--white);color:var(--forest);box-shadow:inset 0 0 0 2px var(--forest)}
+.btn[disabled]{background:var(--mintbg);color:var(--moss);cursor:not-allowed}
+.hl{background:var(--mint);border-radius:.18em;padding:0 .12em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.hero{display:grid;grid-template-columns:6fr 5fr;gap:40px;padding:48px 40px 56px;align-items:center}
+.hero h1{font:900 82px/.9 var(--display);letter-spacing:-.045em;margin:0}
+.lede{font-size:20px;line-height:1.5;color:var(--moss);margin:24px 0 30px;max-width:33ch}
+.ctas{display:flex;flex-wrap:wrap;align-items:center;gap:14px}
+.cta-note{display:block;font-size:13.5px;color:var(--moss);margin:8px 0 0 12px}
+.visual{position:relative;height:520px}
+.visual .big{position:absolute;right:10px;top:10px;width:430px;height:430px;border-radius:50%;background:var(--mint)}
+.visual .amb{position:absolute;left:0;bottom:30px;width:120px;height:120px;border-radius:50%;background:var(--amber)}
+.visual .ph{position:absolute;left:90px;top:40px;width:250px;height:470px;border-radius:38px;background:var(--forest);padding:10px;box-shadow:0 30px 60px -30px rgba(10,43,31,.6)}
+.visual .ph .in{height:100%;border-radius:30px;background:var(--mint);padding:22px 18px;display:flex;flex-direction:column;justify-content:space-between}
+.visual .ph b{font:900 44px/.9 var(--display);letter-spacing:-.04em;display:block}
+.visual .ph small{font-weight:600;font-size:13px}
+.visual .ph .s{font:900 34px var(--display);letter-spacing:-.03em}
+.visual .float{position:absolute;right:0;bottom:56px;background:var(--white);border-radius:var(--r2);padding:14px 16px;box-shadow:0 20px 40px -24px rgba(10,43,31,.5);display:flex;gap:12px;align-items:center}
+.visual .float i{width:14px;height:14px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 5px #FFE9BD}
+.visual .float b{font:800 18px var(--display);display:block}
+.visual .float small{color:var(--moss);font-size:13px}
+.proof{display:flex;gap:12px;padding:0 40px 40px;flex-wrap:wrap}
+.proof span{background:var(--mintbg);border-radius:999px;padding:9px 16px;font:600 14.5px var(--text)}
+
+.app-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px}
+.wallet-chip{display:inline-flex;align-items:center;gap:6px;background:var(--mintbg);border-radius:999px;padding:7px 12px;font:600 13px var(--text)}
+.wallet-chip i{width:8px;height:8px;border-radius:50%;background:var(--green-text)}
+.m-hero{padding:14px 18px 22px}
+.m-hero h1{font:900 48px/.9 var(--display);letter-spacing:-.045em;margin:0}
+.m-hero .lede{font-size:17px;margin:14px 0 20px}
+.m-hero .btn{width:100%}
+.m-hero .btn + .btn{margin-top:10px}
+.menu-btn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--mintbg)}
+.m-states{display:flex;gap:10px;padding:0 18px 24px}
+.m-states div{flex:1;border-radius:var(--r2);padding:14px}
+.m-states b{font:900 22px/1 var(--display);display:block;margin-top:6px}
+.m-states small{font-weight:700;font-size:12.5px}
+
+.status-block{margin:6px 14px 0;background:var(--amber);border-radius:var(--r3);padding:18px}
+.status-block .lbl{display:inline-flex;align-items:center;gap:8px;font:800 15px var(--display)}
+.status-block .lbl i{width:10px;height:10px;border-radius:50%;background:var(--forest)}
+.status-block .amt{font:900 58px/.95 var(--display);letter-spacing:-.04em;margin:10px 0 4px}
+.status-block .room{font-weight:600}
+.track{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:16px}
+.track span{height:8px;border-radius:999px;background:rgba(10,43,31,.18)}
+.track span.on{background:var(--forest)}
+.track span.now{background:var(--forest);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+.track-labels{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px;font:700 12px var(--text)}
+.deal-body{padding:14px}
+.timer{display:flex;align-items:center;justify-content:space-between;background:var(--forest);color:var(--white);border-radius:999px;padding:10px 12px 10px 18px}
+.timer b{font:900 24px/1 var(--display);color:var(--mint);letter-spacing:-.01em}
+.timer small{font-size:13px;color:#CFE5DA}
+.ifs{display:grid;gap:8px;margin-top:12px}
+.ifs div{display:flex;gap:10px;align-items:center;background:var(--mintbg);border-radius:var(--r1);padding:11px 12px;font-size:14.5px}
+.ifs b{font:800 15.5px var(--display)}
+.ifs i{flex:0 0 12px;height:12px;border-radius:50%}
+.done-list{list-style:none;margin:12px 0 0;padding:0;font-size:13.5px;color:var(--moss)}
+.done-list li{display:flex;justify-content:space-between;padding:7px 2px;border-top:1px solid var(--rule)}
+.done-list a{color:var(--green-text);font-weight:700}
+.deal-body .btn{width:100%;margin-top:12px}
+.deal-body .note2{display:block;text-align:center;color:var(--moss);font-size:13px;margin-top:6px}
+
+.released-screen{position:absolute;inset:0;background:var(--mint);color:var(--forest);display:flex;flex-direction:column;justify-content:space-between;padding:22px 20px 26px;overflow:hidden}
+.released-screen .t-label{font-size:13.5px}
+.released-screen .ring{width:120px;height:120px;border-radius:50%;background:var(--forest);display:grid;place-items:center;margin:26px 0 18px}
+.released-screen h3{font:900 58px/.9 var(--display);letter-spacing:-.045em;margin:0 0 12px}
+.released-screen p{font-size:18px;margin:0 0 4px;font-weight:500}
+.released-screen .sum{font:900 44px/1 var(--display);letter-spacing:-.03em;margin:16px 0 2px}
+.released-screen .btn{width:100%}
+.released-screen .rx{font-size:14.5px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+
+.tradeoffs ul{margin:0;padding:0;list-style:none}
+.tradeoffs li{padding:10px 0;border-top:1px solid var(--rule);font-size:15.5px}
+.tradeoffs .plus li::before{content:"+ ";font-weight:900;color:var(--green-text)}
+.tradeoffs .minus li::before{content:"– ";font-weight:900;color:var(--red)}
+@media (prefers-reduced-motion:reduce){.wipe.go{animation:none;clip-path:none}.track span.now{animation:none}.btn{transition:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="sig" viewBox="0 0 48 48"><rect width="48" height="48" rx="14" fill="#0A2B1F"/><circle cx="17" cy="24" r="11" fill="#34E39A" opacity=".28"/><circle cx="17" cy="24" r="7.5" fill="#34E39A"/><rect x="22" y="21.5" width="18" height="5" rx="2.5" fill="#34E39A"/><rect x="31" y="24" width="4.5" height="8" rx="2" fill="#34E39A"/><rect x="36" y="24" width="4" height="6" rx="2" fill="#34E39A"/></symbol>
+  </defs>
+</svg>
+<main class="board">
+  <header class="top">
+    <div>
+      <p class="kicker">Keysfirst brand direction C of 3</p>
+      <h1>Green Light</h1>
+    </div>
+    <p class="thesis">The moment that matters is a green light at the door, so that green becomes the brand. The world: signals. Amber means waiting, green means go, the way boarding gates, traffic lights and the landlord's screen work.</p>
+    <a class="back" href="index.html">← All three directions</a>
+  </header>
+
+  <h2 class="sec">Identity</h2>
+  <div class="grid">
+    <section class="card c5" aria-labelledby="logo-c">
+      <h3 id="logo-c">Logo: a key with a signal light</h3>
+      <p class="note">The bow of the key is a green light. A heavy, tight lowercase wordmark: confident, quick to read, big on a phone.</p>
+      <div class="logo-stage">
+        <span class="lockup"><svg width="46" height="46" aria-hidden="true"><use href="#sig"/></svg><span class="wordmark">keysfirst</span></span>
+        <span class="logo-on" style="background:#34E39A"><span class="lockup"><svg width="40" height="40" aria-hidden="true"><use href="#sig"/></svg><span class="wordmark" style="font-size:32px">keysfirst</span></span></span>
+      </div>
+      <div class="icons">
+        <figure><svg width="72" height="72" aria-hidden="true"><use href="#sig"/></svg><figcaption>App icon</figcaption></figure>
+        <figure><svg width="40" height="40" aria-hidden="true"><use href="#sig"/></svg><figcaption>Wallet request</figcaption></figure>
+        <figure><svg width="20" height="20" aria-hidden="true"><use href="#sig"/></svg><figcaption>Favicon</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="card c7" aria-labelledby="pal-c">
+      <h3 id="pal-c">Palette: committed signal colours</h3>
+      <p class="note">Mint and forest own the brand. Amber means "locked, waiting"; mint means "released". Mint is a fill colour only; it never carries text on white. Ratios are WCAG contrast against the pair shown.</p>
+      <p class="group-label">Primary</p>
+      <div class="swatches">
+        <div class="sw"><div class="chip" style="background:#34E39A">Aa</div><div class="meta"><b>Signal mint</b><code>#34E39A</code> · fields, CTA text<br>forest on it 9.1:1</div></div>
+        <div class="sw"><div class="chip" style="background:#0A2B1F;color:#34E39A">Aa</div><div class="meta"><b>Forest</b><code>#0A2B1F</code> · text, buttons<br>15.2:1 on white</div></div>
+        <div class="sw"><div class="chip" style="background:#E8FAF1">Aa</div><div class="meta"><b>Mint mist</b><code>#E8FAF1</code> · surfaces<br>forest on it 14.1:1</div></div>
+      </div>
+      <p class="group-label">Signals</p>
+      <div class="swatches">
+        <div class="sw"><div class="chip" style="background:#FFB224">Locked</div><div class="meta"><b>Amber</b><code>#FFB224</code> · waiting<br>forest on it 8.5:1</div></div>
+        <div class="sw"><div class="chip" style="background:#2E5BFF;color:#fff">Returned</div><div class="meta"><b>Blue</b><code>#2E5BFF</code><br>white on it 5.2:1</div></div>
+        <div class="sw"><div class="chip" style="background:#CC3421;color:#fff">Error</div><div class="meta"><b>Red</b><code>#CC3421</code><br>white on it 5.2:1</div></div>
+      </div>
+      <p class="group-label">Neutrals</p>
+      <div class="swatches">
+        <div class="sw"><div class="chip" style="background:#3F5C50;color:#fff">Aa</div><div class="meta"><b>Moss</b><code>#3F5C50</code> · body 2<br>7.4:1 on white</div></div>
+        <div class="sw"><div class="chip" style="background:#0B7A4B;color:#fff">Aa</div><div class="meta"><b>Green text</b><code>#0B7A4B</code> · links<br>5.4:1 on white</div></div>
+        <div class="sw"><div class="chip" style="background:#6F9384;color:#fff">Line</div><div class="meta"><b>Line</b><code>#6F9384</code> · input borders<br>3.4:1 on white</div></div>
+      </div>
+    </section>
+
+    <section class="card c6" aria-labelledby="type-c">
+      <h3 id="type-c">Type: Gabarito + Onest</h3>
+      <p class="note">Gabarito Black gives big, friendly, geometric headlines that read from across a room. Onest is a clean, open body face that stays sharp in small sizes. Both free (OFL), next/font.</p>
+      <div class="spec-row"><small>Display<br>900 · 46/0.95</small><span class="t-display">No keys, no money.</span></div>
+      <div class="spec-row"><small>Heading<br>800 · 28/1.1</small><span class="t-h2">Handover opens in 18 h</span></div>
+      <div class="spec-row"><small>Body<br>Onest 400 · 17/1.55</small><span class="t-body">Scan the landlord's code at the door. The money moves in seconds.</span></div>
+      <div class="spec-row"><small>Label<br>Onest 700 · 14</small><span class="t-label">Returned to tenant</span></div>
+      <div class="spec-row"><small>Figures<br>tabular</small><span class="t-num">€600.00 · 14:00</span></div>
+    </section>
+
+    <section class="card c6" aria-labelledby="gfx-c">
+      <h3 id="gfx-c">Graphics: bold shapes and big numbers</h3>
+      <p class="note">Flat circles and pills, chunky keys and phones, amounts set as graphics. No outlines, no gradients, no glow. Icons use a 2.5 px stroke with rounded ends.</p>
+      <div class="shapes">
+        <figure><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="40" cy="60" r="30" fill="#FFB224"/><circle cx="84" cy="60" r="30" fill="#34E39A"/><text x="84" y="66" text-anchor="middle" font-family="Gabarito" font-weight="900" font-size="18" fill="#0A2B1F">go</text></svg>Wait, then go</figure>
+        <figure><svg viewBox="0 0 120 120" aria-hidden="true"><rect x="36" y="14" width="48" height="92" rx="12" fill="#0A2B1F"/><rect x="42" y="22" width="36" height="76" rx="8" fill="#34E39A"/><path d="M52 60l6 6 12-14" fill="none" stroke="#0A2B1F" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>Released screen</figure>
+        <figure><svg viewBox="0 0 120 120" aria-hidden="true"><rect x="12" y="34" width="96" height="52" rx="26" fill="#E8FAF1"/><text x="60" y="70" text-anchor="middle" font-family="Gabarito" font-weight="900" font-size="30" fill="#0A2B1F">€600</text></svg>Amount as graphic</figure>
+      </div>
+    </section>
+
+    <section class="card c5" aria-labelledby="motion-c">
+      <h3 id="motion-c">Motion: the green wipe</h3>
+      <p class="note">Fast and crisp (200 to 300 ms), snappy ease-out. When the tenant scans, green floods out from the code across the landlord's screen, once. Reduced-motion settings show it instantly.</p>
+      <div class="stage" id="stageC">
+        <div class="qr"><svg id="qrC" width="120" height="120" viewBox="0 0 25 25" shape-rendering="crispEdges" aria-hidden="true"></svg></div>
+        <div class="wipe" id="wipeC" role="status"><b>Released.</b><span>Hand over the keys.</span></div>
+      </div>
+      <button class="play" type="button" id="playC">▶ Scan the code</button>
+      <ul class="rules-list">
+        <li><b>Enter:</b> 220 ms, 16 px rise. <b>Press:</b> scale to 0.97.</li>
+        <li><b>Released:</b> circular wipe from the code, 750 ms, then still.</li>
+      </ul>
+    </section>
+
+    <section class="card c7" aria-labelledby="voice-c">
+      <h3 id="voice-c">Tone of voice: direct, confident, upbeat</h3>
+      <p class="note">Short lines, verbs first. States the rule like a fact. Celebrates the handover, never the money.</p>
+      <table class="voice-table">
+        <thead><tr><th>We are</th><th>Do</th><th>Don't</th></tr></thead>
+        <tbody>
+          <tr><td>Direct</td><td>"Pay the deposit. Get the keys. Done."</td><td>"Our solution enables secure payments."</td></tr>
+          <tr><td>Confident</td><td>"No keys, no money."</td><td>"We aim to potentially reduce risk."</td></tr>
+          <tr><td>Upbeat</td><td>"Released. Hand over the keys."</td><td>"Status: completed (1/1)."</td></tr>
+          <tr><td>Honest</td><td>"Test money on Solana devnet."</td><td>"Guaranteed safe."</td></tr>
+        </tbody>
+      </table>
+      <div class="say">
+        <p><small>Status</small>Locked. €600.00 is waiting for the keys.</p>
+        <p><small>Error</small>Wrong wallet. Switch to the one that paid, then scan again.</p>
+        <p class="no"><small>Never</small>WAGMI 🚀 funds secured on-chain</p>
+      </div>
+    </section>
+  </div>
+
+  <h2 class="sec">Landing hero</h2>
+  <div class="frames">
+    <div class="browser">
+      <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">keysfirst.vercel.app</span></div>
+      <div class="scaler"><div class="canvas ui">
+        <div class="ribbon">Prototype on Solana devnet · <b>test money only</b>, nothing here has real value</div>
+        <header class="nav">
+          <span class="lockup"><svg width="38" height="38" aria-hidden="true"><use href="#sig"/></svg><span class="wordmark" style="font-size:30px">keysfirst</span></span>
+          <nav class="links"><a>How it works</a><a>For tenants</a><a>For landlords</a><a>FAQ</a></nav>
+          <div class="right"><a>Get started</a><span class="btn btn-outline" style="min-height:44px">Connect wallet</span></div>
+        </header>
+        <section class="hero">
+          <div>
+            <h1>The deposit moves only when the <span class="hl">keys</span> do.</h1>
+            <p class="lede">Keysfirst holds a rental deposit in a lock until the key handover. The tenant scans the landlord's code at the door and the landlord is paid in seconds. No handover? The money goes back to the tenant.</p>
+            <div class="ctas">
+              <div><span class="btn btn-forest">Create a deposit link</span><span class="cta-note">For landlords · free on devnet</span></div>
+              <span class="btn btn-outline" style="align-self:flex-start">I'm renting: how it protects me</span>
+            </div>
+          </div>
+          <div class="visual" aria-hidden="true">
+            <div class="big"></div><div class="amb"></div>
+            <div class="ph"><div class="in"><div><small>Room in Vallendar</small><b style="margin-top:14px">Released.<br>Hand over the keys.</b></div><div><span class="s">€600.00</span><br><small>is in your wallet now</small></div></div></div>
+            <div class="float"><i></i><div><b>€600.00 locked</b><small>waiting for the keys</small></div></div>
+          </div>
+        </section>
+        <div class="proof"><span>Works with any listing</span><span>Money only goes to tenant or landlord</span><span>Automatic return after the deadline</span></div>
+      </div></div>
+    </div>
+
+    <div>
+      <div class="phone"><div class="screen ui">
+        <div class="ribbon" style="font-size:12px">Solana devnet prototype · <b>test money only</b></div>
+        <div class="app-bar">
+          <span class="lockup"><svg width="32" height="32" aria-hidden="true"><use href="#sig"/></svg><span class="wordmark" style="font-size:26px">keysfirst</span></span>
+          <span class="menu-btn" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16M4 16h16" stroke="#0A2B1F" stroke-width="2.5" stroke-linecap="round"/></svg></span>
+        </div>
+        <section class="m-hero">
+          <h1>The deposit moves only when the <span class="hl">keys</span> do.</h1>
+          <p class="lede">Locked until the key handover. The landlord is paid when the tenant scans at the door. No handover? It goes back to the tenant.</p>
+          <span class="btn btn-forest">Create a deposit link</span>
+          <span class="btn btn-outline">I'm renting: how it protects me</span>
+        </section>
+        <div class="m-states" aria-hidden="true">
+          <div style="background:var(--amber)"><small>Before the door</small><b>€600 locked</b></div>
+          <div style="background:var(--mint)"><small>After the scan</small><b>Released</b></div>
+        </div>
+      </div></div>
+      <p class="cap">375 px, as in Phantom's in-app browser</p>
+    </div>
+  </div>
+
+  <h2 class="sec">Deal page</h2>
+  <div class="frames">
+    <div>
+      <div class="phone"><div class="screen ui">
+        <div class="app-bar">
+          <span class="lockup"><svg width="32" height="32" aria-hidden="true"><use href="#sig"/></svg><b style="font:800 18px var(--display)">My deals</b></span>
+          <span class="wallet-chip"><i></i>7xKp…3mQe</span>
+        </div>
+        <section class="status-block">
+          <span class="lbl"><i></i>Deposit locked</span>
+          <div class="amt">€600.00</div>
+          <div class="room">Room in Vallendar · you're the tenant</div>
+          <div class="track"><span class="on"></span><span class="now"></span><span></span></div>
+          <div class="track-labels"><span>Paid</span><span>Handover</span><span>Done</span></div>
+        </section>
+        <section class="deal-body">
+          <div class="timer"><small>Handover opens in</small><b>18:42:07</b></div>
+          <div class="ifs">
+            <div><i style="background:var(--mint)"></i><span><b>You scan at the door</b><br>€600.00 goes to the landlord</span></div>
+            <div><i style="background:var(--blue)"></i><span><b>No scan by Sun 4 Oct, 14:00</b><br>€600.00 comes back to you</span></div>
+          </div>
+          <ul class="done-list">
+            <li><span>Deal created · Sun 27 Sep, 10:12</span><a>Receipt</a></li>
+            <li><span>Deposit locked · Sun 27 Sep, 10:20</span><a>Receipt</a></li>
+          </ul>
+          <button class="btn btn-forest" disabled>I have the keys: release the deposit</button>
+          <span class="note2">Opens Wed 30 Sep, 14:00 · or scan the landlord's code</span>
+        </section>
+      </div></div>
+      <p class="cap">Tenant, deposit locked, before the handover window</p>
+    </div>
+    <div>
+      <div class="phone"><div class="screen ui">
+        <div class="released-screen" role="status">
+          <div>
+            <span class="t-label">Room in Vallendar · Thu 1 Oct, 14:07</span>
+            <div class="ring"><svg width="58" height="58" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#34E39A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h3>Released.<br>Hand over the keys.</h3>
+            <p class="sum">€600.00</p>
+            <p>is in your wallet now.</p>
+          </div>
+          <div>
+            <a class="rx">See the receipt on Solana Explorer ↗</a>
+            <div style="height:14px"></div>
+            <span class="btn btn-forest">Back to the deal</span>
+          </div>
+        </div>
+      </div></div>
+      <p class="cap">Landlord, handover mode, seconds after the scan</p>
+    </div>
+  </div>
+
+  <h2 class="sec">Honest trade-offs</h2>
+  <div class="grid tradeoffs">
+    <section class="card c6"><h3>Why it works</h3><ul class="plus">
+      <li>The most energetic and modern. The "Released" moment becomes the brand's signature, which is great for the demo video.</li>
+      <li>Big and bold, so it's very legible on phones. Amber for locked and green for released is understood without reading.</li>
+    </ul></section>
+    <section class="card c6"><h3>What to watch</h3><ul class="minus">
+      <li>The least calm. Bright mint on every screen can feel loud for a €600 decision.</li>
+      <li>Closest to existing green money apps, so it's harder to own.</li>
+      <li>Mint fails as text or as control borders on white (1.7:1). It is a fill colour only.</li>
+    </ul></section>
+  </div>
+</main>
+<script>
+function fit(){document.querySelectorAll('.scaler').forEach(function(s){var c=s.firstElementChild,k=s.clientWidth/1200;c.style.transform='scale('+k+')';s.style.height=Math.ceil(c.offsetHeight*k)+'px';});}
+addEventListener('resize',fit);document.fonts&&document.fonts.ready.then(fit);fit();
+// Decorative QR-like pattern for the motion demo (not a real code).
+(function(){
+  var svg=document.getElementById('qrC'),n=25,seed=7,out='';
+  function rnd(){seed=(seed*16807)%2147483647;return seed/2147483647;}
+  function finder(x,y){out+='<rect x="'+x+'" y="'+y+'" width="7" height="7" fill="#0A2B1F"/><rect x="'+(x+1)+'" y="'+(y+1)+'" width="5" height="5" fill="#fff"/><rect x="'+(x+2)+'" y="'+(y+2)+'" width="3" height="3" fill="#0A2B1F"/>';}
+  for(var y=0;y<n;y++)for(var x=0;x<n;x++){var f=(x<8&&y<8)||(x>n-9&&y<8)||(x<8&&y>n-9);if(!f&&rnd()>.52)out+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="#0A2B1F"/>';}
+  finder(0,0);finder(n-7,0);finder(0,n-7);svg.innerHTML=out;
+  var wipe=document.getElementById('wipeC');
+  document.getElementById('playC').addEventListener('click',function(){wipe.classList.remove('go');void wipe.offsetWidth;wipe.classList.add('go');});
+})();
+</script>
+</body>
+</html>

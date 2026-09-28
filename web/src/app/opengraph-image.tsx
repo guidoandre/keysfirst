@@ -1,25 +1,9 @@
-import { ImageResponse } from "next/og";
+import { OG_CONTENT_TYPE, OG_SIZE, ogCard } from "@/lib/og";
 
-export const size = { width: 1200, height: 630 };
-export const contentType = "image/png";
 export const alt = "Keysfirst: the deposit moves only when the keys do";
+export const size = OG_SIZE;
+export const contentType = OG_CONTENT_TYPE;
 
 export default function OpenGraphImage() {
-  return new ImageResponse(
-    (
-      <div
-        style={{
-          width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center",
-          padding: 80, background: "#047857", color: "white",
-        }}
-      >
-        <div style={{ fontSize: 44, opacity: 0.9 }}>Keysfirst</div>
-        <div style={{ fontSize: 76, fontWeight: 700, marginTop: 24, lineHeight: 1.1 }}>
-          The deposit moves only when the keys do.
-        </div>
-        <div style={{ fontSize: 30, marginTop: 32, opacity: 0.85 }}>Solana devnet prototype · test money only</div>
-      </div>
-    ),
-    size,
-  );
+  return ogCard({ title: "The deposit moves only when the keys do.", subtitle: "A deposit link for renting a room in Germany from abroad." });
 }

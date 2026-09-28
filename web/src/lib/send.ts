@@ -24,6 +24,14 @@ export async function signAndSend(
   return signature;
 }
 
+const NEEDS_SOL = "Your wallet needs a little more devnet SOL for network fees. Use “Get test funds”, then try again.";
+const NEEDS_TEST_EUR = "Not enough Test EUR. Use “Get test funds” first.";
+
+/** True when the fix for this friendlyError() message is the faucet (“Get test funds”). */
+export function needsTestFunds(message: string | null): boolean {
+  return message === NEEDS_SOL || message === NEEDS_TEST_EUR;
+}
+
 /** Turns wallet and program errors into one plain-English sentence. */
 export function friendlyError(error: unknown): string {
   const logs = (error as { logs?: unknown })?.logs;
@@ -35,7 +43,8 @@ export function friendlyError(error: unknown): string {
   if (programMessage) return `${programMessage[1].trim().replace(/\.$/, "")}.`;
   if (/User rejected/i.test(text)) return "You cancelled the request in your wallet.";
   if (/\b429\b|Too many requests|rate limit/i.test(text)) return "Solana devnet is busy right now. Wait a few seconds and try again.";
-  if (/no record of a prior credit/i.test(text)) return "Your wallet has no devnet SOL for fees. Use “Get test funds” first.";
-  if (/insufficient funds/i.test(text)) return "Not enough Test EUR. Use “Get test funds” first.";
+  // A new deal's accounts and every fee are paid in devnet SOL; the system program logs "insufficient lamports" when it runs out.
+  if (/no record of a prior credit|insufficient lamports/i.test(text)) return NEEDS_SOL;
+  if (/insufficient funds/i.test(text)) return NEEDS_TEST_EUR;
   return "Something went wrong. Check that Phantom is set to Solana Devnet and try again.";
 }

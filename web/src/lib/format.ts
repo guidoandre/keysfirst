@@ -45,3 +45,38 @@ export const explorerAddress = (address: string) => `https://explorer.solana.com
 export function phantomBrowseUrl(pageUrl: string): string {
   return `https://phantom.app/ul/browse/${encodeURIComponent(pageUrl)}?ref=${encodeURIComponent(new URL(pageUrl).origin)}`;
 }
+
+/** Time left, ticking: 90061 -> "1 day 1 h", 3660 -> "1 h 1 min", 252 -> "4 min 12 s", 45 -> "45 s" */
+export function formatCountdown(seconds: number): string {
+  const s = Math.max(0, Math.floor(seconds));
+  if (s >= 3_600) return formatDuration(s);
+  const minutes = Math.floor(s / 60);
+  const rest = s % 60;
+  if (minutes > 0) return `${minutes} min${rest ? ` ${rest} s` : ""}`;
+  return `${rest} s`;
+}
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** "Wed 30 Sep, 14:00" in the viewer's time zone (or `timeZone`). Built from parts so every browser prints the same. */
+export function formatShortDateTime(unixSeconds: number, timeZone?: string): string {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone,
+    weekday: "short",
+    day: "numeric",
+    month: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date(unixSeconds * 1000));
+  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((p) => p.type === type)?.value ?? "";
+  // en-GB's CLDR data zero-pads the day when day+month are both requested as "numeric" (e.g. "04/10"); strip it back to a plain number.
+  return `${part("weekday")} ${Number(part("day"))} ${MONTHS[Number(part("month")) - 1]}, ${part("hour")}:${part("minute")}`;
+}
+
+/** "7xKpQ2…3mQe" -> "7xKp…3mQe" */
+export function shortAddress(address: string): string {
+  return address.length > 10 ? `${address.slice(0, 4)}…${address.slice(-4)}` : address;
+}
+
+export const whatsappUrl = (text: string) => `https://wa.me/?text=${encodeURIComponent(text)}`;

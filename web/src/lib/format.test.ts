@@ -1,5 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { explorerTx, formatDuration, formatEur, parseEur, phantomBrowseUrl } from "./format";
+import {
+  explorerTx,
+  formatCountdown,
+  formatDuration,
+  formatEur,
+  formatShortDateTime,
+  parseEur,
+  phantomBrowseUrl,
+  shortAddress,
+  whatsappUrl,
+} from "./format";
 
 describe("formatEur", () => {
   it("formats base units as euros", () => {
@@ -42,5 +52,40 @@ describe("links", () => {
     expect(phantomBrowseUrl("https://k.app/deal/x")).toBe(
       "https://phantom.app/ul/browse/https%3A%2F%2Fk.app%2Fdeal%2Fx?ref=https%3A%2F%2Fk.app",
     );
+  });
+});
+
+describe("formatCountdown", () => {
+  it("shows two units above an hour and ticks in seconds below it", () => {
+    expect(formatCountdown(90_061)).toBe("1 day 1 h");
+    expect(formatCountdown(3_660)).toBe("1 h 1 min");
+    expect(formatCountdown(252)).toBe("4 min 12 s");
+    expect(formatCountdown(240)).toBe("4 min");
+    expect(formatCountdown(45)).toBe("45 s");
+    expect(formatCountdown(-3)).toBe("0 s");
+  });
+});
+
+describe("formatShortDateTime", () => {
+  const wed30Sep1400Utc = Date.UTC(2026, 8, 30, 14, 0) / 1000;
+  it("formats as weekday, day, month and 24-hour time", () => {
+    expect(formatShortDateTime(wed30Sep1400Utc, "UTC")).toBe("Wed 30 Sep, 14:00");
+    expect(formatShortDateTime(Date.UTC(2026, 9, 4, 9, 5) / 1000, "UTC")).toBe("Sun 4 Oct, 09:05");
+  });
+  it("uses the given time zone", () => {
+    expect(formatShortDateTime(wed30Sep1400Utc - 2 * 3600, "Europe/Berlin")).toBe("Wed 30 Sep, 14:00");
+  });
+  it("defaults to the viewer's time zone (UTC in tests)", () => {
+    expect(formatShortDateTime(wed30Sep1400Utc)).toBe("Wed 30 Sep, 14:00");
+  });
+});
+
+describe("shortAddress / whatsappUrl", () => {
+  it("shortens wallet addresses", () => {
+    expect(shortAddress("7xKpQ2mZr9sT4uV6wX8yA1bC3dE5fG7hJ9kL3mQe")).toBe("7xKp…3mQe");
+    expect(shortAddress("short")).toBe("short");
+  });
+  it("builds a WhatsApp share link", () => {
+    expect(whatsappUrl("Pay here: https://k.app/deal/x")).toBe("https://wa.me/?text=Pay%20here%3A%20https%3A%2F%2Fk.app%2Fdeal%2Fx");
   });
 });
