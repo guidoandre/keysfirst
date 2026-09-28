@@ -1,24 +1,108 @@
+import { Connection, PublicKey } from "@solana/web3.js";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { buttonClass } from "@/components/ui/Button";
+import { Callout } from "@/components/ui/Callout";
+import { Icon } from "@/components/ui/Icon";
+import { RPC_URL } from "@/lib/config";
+import { cx } from "@/lib/cx";
+import { toDealData } from "@/lib/deal-data";
+import type { DealData } from "@/lib/deal-view";
+import { formatEur, formatShortDateTime } from "@/lib/format";
 import { getOrigin } from "@/lib/origin";
+import { getProgram } from "@/lib/program";
+import { handoverOpensAt } from "@/lib/rules";
+
+export const metadata: Metadata = { title: "Confirm the key handover", robots: { index: false } };
+
+// Rendered on the server, where the clock is UTC; the handover happens at a door in Germany.
+const GERMAN_TIME = "Europe/Berlin";
+const at = (unixSeconds: number) => `${formatShortDateTime(unixSeconds, GERMAN_TIME)} (German time)`;
+
+const CHECKLIST = ["You are inside the room.", "You have the keys, or they are in front of you.", "Phantom is on the wallet that paid the deposit."];
+
+/** `data` is undefined when devnet couldn't be reached: the page then works exactly as before (checklist + button). */
+async function loadDeal(id: string): Promise<{ data: DealData | null | undefined; now: number }> {
+  const now = Math.floor(Date.now() / 1000);
+  try {
+    const deal = await getProgram(new Connection(RPC_URL, "confirmed")).account.deal.fetchNullable(new PublicKey(id));
+    return { data: deal ? toDealData(deal) : null, now };
+  } catch {
+    return { data: undefined, now };
+  }
+}
+
+/** Why this deal can't be released from here right now; null when the tenant may approve. */
+function blocker(d: DealData, now: number): string | null {
+  switch (d.status) {
+    case "funded":
+      if (now < handoverOpensAt(d)) return `The handover opens ${at(handoverOpensAt(d))}. Come back then, standing in the room.`;
+      if (now > d.deadline) return "The handover deadline has passed, so the deposit goes back to the tenant.";
+      return null;
+    case "open":
+      return "Nobody has paid this deposit yet, so there is nothing to release.";
+    case "released":
+      return `This deposit was already released to the landlord on ${at(d.settledAt)}.`;
+    case "refunded":
+      return `This deposit already went back to the tenant on ${at(d.settledAt)}.`;
+    case "cancelled":
+      return "The landlord cancelled this deal.";
+  }
+}
 
 export default async function HandoverPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const solanaPayUrl = `solana:${await getOrigin()}/api/handover/${id}`;
+  const { data, now } = await loadDeal(id);
+  const blocked = data === null ? "We can't find this deal. Ask the landlord for the deal link." : data ? blocker(data, now) : null;
+
   return (
-    <div className="space-y-5 rounded-2xl border border-stone-200 bg-white p-6 text-center">
-      <h1 className="text-2xl font-semibold">Confirm the key handover</h1>
-      <p className="text-sm text-stone-600">
-        Only continue if you have checked the room and are holding the keys. Approving pays the landlord immediately.
-      </p>
-      <a href={solanaPayUrl} className="block rounded-xl bg-violet-600 px-4 py-4 text-lg font-semibold text-white">
-        Approve in Phantom
-      </a>
-      <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
-        Phantom must be on the wallet that paid the deposit. With any other wallet, Phantom only says it could not load
-        the request: switch wallets in Phantom and tap the button again.
-      </p>
-      <p className="text-xs text-stone-500">
-        Approve within a minute: the request expires quickly. If it does, tap the button again for a fresh one.
-      </p>
+    <div className="mx-auto max-w-app px-4 py-8 sm:py-12">
+      <p className="label text-fg-muted">Key handover</p>
+      <h1 className="mt-2 font-display text-title font-bold">Confirm the key handover</h1>
+      {data && (
+        <p className="mt-3 text-lead text-fg-muted">
+          <span className="font-semibold text-fg tabular-nums">{formatEur(data.amount)}</span> · {data.title}
+        </p>
+      )}
+
+      {blocked ? (
+        <div className="mt-6 space-y-4">
+          <Callout tone="neutral" role="status">
+            {blocked}
+          </Callout>
+          <Link href={`/deal/${id}`} className={buttonClass({ variant: "secondary", fullWidth: true })}>
+            Open the deal page
+          </Link>
+        </div>
+      ) : (
+        <>
+          <ul className="mt-6 space-y-3">
+            {CHECKLIST.map((item) => (
+              <li key={item} className="flex gap-3">
+                <Icon name="check" size={20} className="mt-0.5 shrink-0 text-released" />
+                <span className="text-body">{item}</span>
+              </li>
+            ))}
+          </ul>
+          <a href={solanaPayUrl} className={cx(buttonClass({ size: "lg", fullWidth: true }), "mt-8")}>
+            Approve in Phantom
+          </a>
+          <p className="mt-3 text-center text-sm text-fg-muted">Approving pays the landlord immediately. Only continue with the keys in hand.</p>
+          <Callout tone="info" className="mt-6" title="Use the wallet that paid">
+            Phantom must be on the wallet that paid the deposit. With any other wallet, Phantom only says it could not load the request: switch
+            wallets in Phantom and tap the button again.
+          </Callout>
+          <p className="mt-4 text-sm text-fg-muted">
+            Approve within a minute: the request expires quickly. If it does, tap the button again for a fresh one.
+          </p>
+          <p className="mt-6">
+            <Link href={`/deal/${id}`} className={buttonClass({ variant: "quiet" })}>
+              Open the deal page instead
+            </Link>
+          </p>
+        </>
+      )}
     </div>
   );
 }
