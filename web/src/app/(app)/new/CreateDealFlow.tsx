@@ -11,6 +11,7 @@ import { Segmented } from "@/components/ui/Segmented";
 import { Timetable } from "@/components/ui/Timetable";
 import { LoginButton } from "@/components/wallet/LoginButton";
 import { OpenInPhantom } from "@/components/wallet/OpenInPhantom";
+import { TestFundsButton } from "@/components/wallet/TestFundsButton";
 import { cx } from "@/lib/cx";
 import { formatEur, formatShortDateTime, toLocalInputValue } from "@/lib/format";
 import { useNow } from "@/lib/hooks";
@@ -29,7 +30,7 @@ import {
   type WindowChoice,
 } from "@/lib/new-deal";
 import { getProgram } from "@/lib/program";
-import { friendlyError, signAndSend } from "@/lib/send";
+import { friendlyError, needsTestFunds, signAndSend } from "@/lib/send";
 
 type Step = 1 | 2 | 3;
 const STEP_TITLES: Record<Step, string> = { 1: "The room", 2: "The handover", 3: "Check and create" };
@@ -260,6 +261,7 @@ export function CreateDealFlow() {
                 {error}
               </Callout>
             )}
+            {needsTestFunds(error) && <TestFundsButton />}
           </>
         )}
 

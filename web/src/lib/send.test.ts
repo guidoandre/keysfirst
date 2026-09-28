@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { friendlyError } from "./send";
+import { friendlyError, needsTestFunds } from "./send";
 
 describe("friendlyError", () => {
   it("surfaces the program's own message", () => {
@@ -10,9 +10,27 @@ describe("friendlyError", () => {
   });
   it("explains common wallet problems", () => {
     expect(friendlyError(new Error("User rejected the request."))).toBe("You cancelled the request in your wallet.");
-    expect(friendlyError(new Error("Attempt to debit an account but found no record of a prior credit."))).toMatch(/no devnet SOL/);
+    expect(friendlyError(new Error("Attempt to debit an account but found no record of a prior credit."))).toMatch(/more devnet SOL/);
     expect(friendlyError(new Error("Program log: Error: insufficient funds"))).toMatch(/Not enough Test EUR/);
     expect(friendlyError(new Error("Connect your wallet first."))).toBe("Connect your wallet first.");
+  });
+  it("explains a wallet that can't pay for a new deal's accounts (seen when creating a 7th deal on one faucet top-up)", () => {
+    const e = new Error(
+      [
+        "Simulation failed. ",
+        "Message: Transaction simulation failed: Error processing Instruction 0: custom program error: 0x1. ",
+        "Logs: [",
+        '  "Program 11111111111111111111111111111111 invoke [2]",',
+        '  "Transfer: insufficient lamports 2570769, need 1818640",',
+        '  "Program 11111111111111111111111111111111 failed: custom program error: 0x1"',
+        "].",
+      ].join("\n"),
+    );
+    expect(friendlyError(e)).toMatch(/more devnet SOL/);
+    expect(needsTestFunds(friendlyError(e))).toBe(true);
+    expect(needsTestFunds(friendlyError(new Error("Program log: Error: insufficient funds")))).toBe(true);
+    expect(needsTestFunds(friendlyError(new Error("User rejected the request.")))).toBe(false);
+    expect(needsTestFunds(null)).toBe(false);
   });
   it("explains a settlement that already happened (the vault is closed)", () => {
     const e = new Error(

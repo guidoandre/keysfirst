@@ -8,6 +8,7 @@ import { OpenInPhantom } from "@/components/wallet/OpenInPhantom";
 import { TestFundsButton } from "@/components/wallet/TestFundsButton";
 import { actionLabel, loginLabel, type NextStepView } from "@/lib/deal-view";
 import { explorerTx } from "@/lib/format";
+import { needsTestFunds } from "@/lib/send";
 import type { Action, Role } from "@/lib/rules";
 
 /** One primary action for this viewer right now; secondary actions below; errors and receipts inline. */
@@ -93,6 +94,7 @@ export function NextStep({
           {error}
         </Callout>
       )}
+      {connected && primary !== "fund" && needsTestFunds(error) && <TestFundsButton />}
       {signature && (
         <Callout tone="success" role="status">
           Done.{" "}
