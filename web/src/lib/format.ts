@@ -16,6 +16,15 @@ export function parseEur(input: string): bigint | null {
   return cents > 0n ? cents * UNITS_PER_CENT : null;
 }
 
+/** 600500000 (base units) -> 60050 (cents). Deals are created from parseEur, so amounts are whole cents. */
+export function toCents(baseUnits: bigint | string): number {
+  return Number(BigInt(baseUnits) / UNITS_PER_CENT);
+}
+
+export function fromCents(cents: number): bigint {
+  return BigInt(cents) * UNITS_PER_CENT;
+}
+
 export function formatDateTime(unixSeconds: number): string {
   return new Date(unixSeconds * 1000).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
 }

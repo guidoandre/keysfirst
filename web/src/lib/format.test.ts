@@ -5,9 +5,11 @@ import {
   formatDuration,
   formatEur,
   formatShortDateTime,
+  fromCents,
   parseEur,
   phantomBrowseUrl,
   shortAddress,
+  toCents,
   whatsappUrl,
 } from "./format";
 
@@ -87,5 +89,13 @@ describe("shortAddress / whatsappUrl", () => {
   });
   it("builds a WhatsApp share link", () => {
     expect(whatsappUrl("Pay here: https://k.app/deal/x")).toBe("https://wa.me/?text=Pay%20here%3A%20https%3A%2F%2Fk.app%2Fdeal%2Fx");
+  });
+});
+
+describe("cents", () => {
+  it("converts base units (6 decimals) to cents and back", () => {
+    expect(toCents(600_000_000n)).toBe(60_000);
+    expect(toCents("600500000")).toBe(60_050);
+    expect(fromCents(60_050)).toBe(600_500_000n);
   });
 });
