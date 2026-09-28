@@ -72,8 +72,8 @@ export function UiGallery() {
             <Logo inverse href={null} />
           </span>
           <LogoMark size={64} />
-          <LogoMark size={24} simplified />
-          <LogoMark size={16} simplified />
+          <LogoMark size={24} />
+          <LogoMark size={16} />
         </div>
       </Block>
 

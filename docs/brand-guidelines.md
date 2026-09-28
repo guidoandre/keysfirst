@@ -61,7 +61,7 @@ Status labels are fixed and always written exactly: **Waiting for deposit · Dep
 
 ## 2. Logo
 
-**Idea:** the key is a timeline. The bow is where a deal starts; the two teeth are its two milestones (handover, deadline).
+**Idea:** the lock and the letters are one shape. A padlock shackle closes over a "K" whose arms run into the two bars of an "F": Keysfirst, locked until the keys change hands.
 
 ### Variants
 
@@ -69,29 +69,31 @@ Status labels are fixed and always written exactly: **Waiting for deposit · Dep
 |---|---|
 | **Lockup** (mark + "Keysfirst" wordmark, horizontal) | Header, footer, link previews, documents |
 | **Mark on yellow plate** | App icon, favicon, wallet request icon (PNG), avatar |
-| **Mono mark** (ink key, no plate) | One-colour contexts, watermarks |
+| **Mono mark** (ink padlock-K, no plate) | One-colour contexts, watermarks |
 | **Lockup on ink** (yellow plate, white wordmark) | Dark bands, the handover screen header |
 
 ### Construction (48-unit grid)
 
-- Plate: 48 × 48, corner radius 10, fill Highlighter.
-- Bow: circle at (15, 24), radius 6.5, 4-unit ink stroke.
-- Shaft: from x 21.5 to 39 at y 24, 4-unit stroke, square caps.
-- Teeth: x 30 down to y 30.5 and x 37 down to y 29, same stroke.
-- At 24 px or smaller (favicon), drop the second tooth and thicken the stroke to 5 units.
-- Wordmark: "Keysfirst" in Barlow Semi Condensed Bold, tracking −1%, cap height ≈ 0.6 × plate height.
+The geometry lives in one place, `web/src/components/brand/mark.tsx`; the header, footer, favicon, app icons, wallet request icon and link previews all draw from it.
+
+- Plate: 48 × 48, corner radius 9, fill Highlighter.
+- Shackle: a half ring centred at (23.85, 17.2), centreline radius 8, 4.6-unit ink stroke, flat ends, open at the bottom above the letters.
+- K: stem x 11 to 16.25, y 19.5 to 39.9; the upper arm rises from the stem into the F's top bar (y 19.5 to 23.75, out to x 36.9); the leg runs down to the baseline at x 25.2 to 31.65.
+- F middle bar: x 27.4 to 36.9, y 27.3 to 31.6.
+- One drawing at every size, favicon included (no simplified version).
+- Wordmark: "Keysfirst" in Barlow ExtraBold (800), tracking −2%, set at 0.74 × plate height, gap 0.3 × plate height.
 
 ### Clear space and minimum size
 
 - Clear space: half the plate height on every side.
-- Minimum: lockup 96 px wide; mark 16 px (simplified favicon version below 24 px).
+- Minimum: lockup 96 px wide; mark 16 px.
 
 ### Don'ts
 
 - Don't recolour the plate (Highlighter only, or the mono version).
 - Don't put the yellow plate on a yellow field; use the mono mark instead.
 - Don't rotate, stretch, outline, shadow or animate the logo (the one exception is the loading key, see the design system).
-- Don't use the key-timeline as a generic "key" icon inside the UI; it is the brand mark only.
+- Don't use the padlock-K as a generic "lock" icon inside the UI; it is the brand mark only.
 
 ## 3. Colour
 
