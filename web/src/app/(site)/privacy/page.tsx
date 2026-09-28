@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 };
 
 const SHORT_VERSION = [
-  "No accounts, no passwords, no database.",
-  "No cookies, no analytics, no tracking, no ads.",
-  "Your wallet's keys never reach us.",
+  "No database of our own: your account is created and kept by Privy, our login provider.",
+  "No analytics, no tracking, no ads. Keysfirst itself sets no cookies; Privy sets cookies to keep you logged in.",
+  "Your password, card details and account keys never reach us.",
   "Deals are written to a public blockchain, where nobody (not even us) can change or delete them. Keep personal details out of them.",
 ];
 
@@ -60,19 +60,28 @@ export default function PrivacyPage() {
 
       <LegalSection id="storage" title="Cookies and browser storage">
         <p>
-          Keysfirst sets no cookies. When you log in with a wallet, your browser remembers which wallet you chose (for example
-          &ldquo;Phantom&rdquo;) in its local storage, under the name <code>walletName</code>, so you stay logged in on your next visit. This is
-          strictly necessary for the service you asked for, so it needs no consent (§ 25(2) no. 2 TDDDG). It stays on your device; clearing
-          this site&apos;s data in your browser removes it.
+          Keysfirst itself sets no cookies. Our login provider Privy sets two cookies (&ldquo;privy-token&rdquo;, &ldquo;privy-session&rdquo;) and
+          several local-storage entries starting with &ldquo;privy:&rdquo; to keep you logged in. Keysfirst also uses your browser&apos;s storage
+          to remember an unfinished card payment for a deal (&ldquo;keysfirst:card:…&rdquo;) and that your account&apos;s network costs were
+          covered this session (&ldquo;keysfirst:gas:…&rdquo;). This is strictly necessary for the service you asked for, so it needs no consent
+          (§ 25(2) no. 2 TDDDG). It stays on your device; clearing this site&apos;s data in your browser removes it.
         </p>
       </LegalSection>
 
-      <LegalSection id="wallet" title="Your wallet">
+      <LegalSection id="account" title="Logging in">
         <p>
-          You log in with your own wallet app, such as Phantom. Keysfirst sees only your public wallet address, never your keys or recovery
-          phrase. Every payment is approved by you inside the wallet. The wallet app is run by its own provider under its own privacy policy,
-          for example <ExternalLink href="https://phantom.com/privacy">Phantom&apos;s privacy policy</ExternalLink>. The &ldquo;Open in
-          Phantom&rdquo; button passes the address of the page you are on to Phantom.
+          You log in with your email address or Google, or with your own Solana wallet such as Phantom. Login is provided by Privy (Privy, Inc.,
+          USA), which receives your email address or the account you log in with, creates your Solana wallet and keeps its keys protected so that
+          neither Privy nor Keysfirst can move your money without you. Keysfirst receives your email address from Privy only to show it in the
+          header, and your public account number. See <ExternalLink href="https://www.privy.io/privacy-policy">Privy&apos;s privacy policy</ExternalLink>.
+        </p>
+      </LegalSection>
+
+      <LegalSection id="payments" title="Card payments">
+        <p>
+          Card payments are processed by Stripe (Stripe Payments Europe, Ltd., Ireland) in test mode. You enter your card details on
+          Stripe&apos;s own page; Keysfirst never sees them. Stripe tells us whether the payment succeeded, the amount, and the deal and account
+          number the payment belongs to. See <ExternalLink href="https://stripe.com/privacy">Stripe&apos;s privacy policy</ExternalLink>.
         </p>
       </LegalSection>
 
@@ -84,8 +93,8 @@ export default function PrivacyPage() {
           <ExternalLink href="https://www.helius.dev/privacy-policy">Helius&apos;s privacy policy</ExternalLink>.
         </p>
         <p>
-          When you tap Get test funds, or approve the handover by scanning the landlord&apos;s code, your wallet address is sent to our server
-          on Vercel, which prepares the transaction. We don&apos;t store it beyond the server logs described above.
+          When you log in, pay by card or approve the handover by scanning the landlord&apos;s code, your account number is sent to our server so
+          it can cover network costs, prepare your deposit or build the handover request.
         </p>
       </LegalSection>
 
@@ -121,7 +130,7 @@ export default function PrivacyPage() {
           To use them, email <MailLink email={OPERATOR.email} />. You can also complain to a data protection supervisory authority, for example
           the one in the German state or EU country where you live (Art. 77 GDPR).
         </p>
-        <p>You don&apos;t have to give us any data. Without a wallet address you can read the site, but you can&apos;t create or pay a deal.</p>
+        <p>You don&apos;t have to give us any data. Without logging in you can read the site, but you can&apos;t create or pay a deal.</p>
       </LegalSection>
 
       <LegalSection id="changes" title="Changes">

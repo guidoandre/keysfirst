@@ -3,7 +3,7 @@ import { StepList, type Step } from "./StepList";
 
 const RENTING: Step[] = [
   { pictogram: "share-link", title: "Get a deposit link", text: "Ask your landlord to create one. It takes a minute." },
-  { pictogram: "pay-into-lock", title: "Pay into the lock", text: "The deposit leaves your wallet app (like Phantom) but doesn't reach the landlord yet: it waits in the lock." },
+  { pictogram: "pay-into-lock", title: "Pay into the lock", text: "You pay by card, but the deposit doesn't reach the landlord yet: it waits in the lock." },
   { pictogram: "scan-at-door", title: "Scan at the door", text: "Check the room, then scan the landlord's code or tap “I have the keys”. Only then are they paid. No handover? You take it back after the deadline." },
 ];
 

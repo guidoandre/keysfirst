@@ -35,7 +35,7 @@ export const FAQ: FaqGroup[] = [
         id: "landlord-paid",
         question: "How does the landlord get paid?",
         answer: [
-          "At the handover the landlord shows a code on their phone or laptop. The tenant checks the room, scans the code with their phone camera and approves in Phantom. The deposit reaches the landlord in seconds and the landlord's screen turns green.",
+          "At the handover the landlord shows a code on their phone or laptop. The tenant checks the room, scans the code with their phone camera and taps “I have the keys”. The deposit reaches the landlord's Keysfirst balance in seconds and the landlord's screen turns green. From there the landlord withdraws it to their bank.",
         ],
       },
       {
@@ -49,8 +49,8 @@ export const FAQ: FaqGroup[] = [
         id: "cost",
         question: "What does it cost?",
         answer: [
-          "Nothing real: this prototype runs on Solana's test network with test money. Each step costs a tiny network fee in test SOL, which Get test funds covers.",
-          "The plan for a live version is a small flat fee per deal, paid separately, so the deposit itself only ever goes to the tenant or the landlord.",
+          "The tenant pays a Keysfirst fee on top of the deposit: 3.5% when paying by card, or 2% by bank transfer, and at least €12. For a €600 deposit that is €21 by card. Landlords pay nothing.",
+          "The fee is paid separately, so the deposit itself only ever goes to the tenant or the landlord. It isn't refunded if the deposit comes back. In this prototype every payment uses Stripe's test mode and test money, and only card payment is switched on.",
         ],
       },
     ],
@@ -141,58 +141,50 @@ export const FAQ: FaqGroup[] = [
         id: "data",
         question: "What happens to my data?",
         answer: [
-          "Keysfirst has no accounts, cookies or tracking, and never sees your wallet's keys. Deals are public on the blockchain and can't be deleted by anyone, so the room title must never contain names, street addresses or phone numbers.",
+          "Keysfirst has no database and no tracking. Logging in is handled by Privy, card payments by Stripe; neither shares your card details or password with us. Deals are public on the blockchain and can't be deleted by anyone, so the room title must never contain names, street addresses or phone numbers.",
         ],
         link: { href: "/privacy", label: "Privacy policy" },
       },
     ],
   },
   {
-    id: "wallets",
-    title: "Wallets and test money",
+    id: "accounts",
+    title: "Your account and test money",
     entries: [
       {
-        id: "wallet",
-        question: "What is a wallet, and why Phantom?",
+        id: "login",
+        question: "Do I need a wallet app or crypto?",
         answer: [
-          "A wallet is an app that holds your money and approves payments; your keys never leave it. Keysfirst is tested with Phantom, a popular Solana wallet for phones and browsers.",
+          "No. Log in with your email or Google and Keysfirst sets up your account, including the Solana wallet behind it, for you. Keysfirst also covers the network costs. If you already use Phantom, you can log in with it instead.",
         ],
         link: { href: "/start", label: "Get started in 5 minutes" },
+      },
+      {
+        id: "test-card",
+        question: "How do I pay in this prototype?",
+        answer: [
+          "By card on Stripe's test page. Use the card number 4242 4242 4242 4242, any future expiry date and any three digits. No real money moves.",
+        ],
+      },
+      {
+        id: "withdraw",
+        question: "How do I get money out?",
+        answer: [
+          "Tap your account in the top corner, then “Withdraw to bank”, and enter your IBAN. In this prototype the money leaves your Keysfirst balance, but the bank transfer itself is a demo.",
+        ],
       },
       {
         id: "devnet",
         question: "What are devnet and test money?",
         answer: [
-          "Devnet is Solana's test network. Money there has no value, so you can try everything safely. This prototype uses its own Test EUR on devnet; a live version would use EURC, a regulated euro stablecoin.",
-        ],
-      },
-      {
-        id: "test-money",
-        question: "How do I get test money?",
-        answer: [
-          "Log in, then use Get test funds in the wallet menu or in the guide. It sends 1,000 Test EUR and, if your wallet has none, a little devnet SOL for fees.",
-        ],
-        link: { href: "/start#funds", label: "Get test funds" },
-      },
-      {
-        id: "phone-login",
-        question: "I can't log in on my phone.",
-        answer: [
-          "Phone browsers like Safari can't reach Phantom. Tap Open in Phantom: the page reopens inside Phantom's own browser, where logging in and paying work.",
+          "Devnet is Solana's test network. Money there has no value, so you can try everything safely. This prototype uses its own Test EUR on devnet; a live version would use EURC, a regulated euro stablecoin, and a licensed partner for card and bank payments.",
         ],
       },
       {
         id: "qr",
         question: "The code doesn't open anything.",
         answer: [
-          "Use the phone's normal camera app and tap the link it shows. The page that opens has an Approve in Phantom button. Approve within a minute; if the request expires, tap the button again.",
-        ],
-      },
-      {
-        id: "unsafe",
-        question: "Phantom says this site may be unsafe.",
-        answer: [
-          "Phantom warns about new websites it doesn't know yet. This is a prototype on the test network with test money only. A review of the domain was requested from Phantom on 27 September 2026.",
+          "Use the phone's normal camera app and tap the link it shows. On the page that opens, tap Continue, log in with the account that paid, then tap “I have the keys”.",
         ],
       },
     ],

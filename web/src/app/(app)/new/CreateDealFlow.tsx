@@ -229,13 +229,13 @@ export function CreateDealFlow() {
                 <Timetable
                   title="How your deal runs"
                   aside={values.title}
-                  footer="Creating the link costs a tiny network fee in test SOL."
+                  footer="Creating the link is free: Keysfirst covers the network costs."
                   rows={[
                     {
                       key: "pay",
                       time: `By ${formatShortDateTime(handover.deadline)}`,
                       title: `Your tenant pays ${formatEur(values.amount)} into the lock`,
-                      detail: "The exact amount, from their own wallet.",
+                      detail: "The exact amount, by card.",
                       state: "now",
                     },
                     {
@@ -279,7 +279,7 @@ export function CreateDealFlow() {
           {step < 3 ? (
             <Button type="submit">Next</Button>
           ) : wallet.publicKey ? (
-            <Button type="submit" size="lg" loading={busy} loadingText="Waiting for your wallet…" disabled={!values}>
+            <Button type="submit" size="lg" loading={busy} loadingText="Creating your link…" disabled={!values}>
               Create deposit link
             </Button>
           ) : (

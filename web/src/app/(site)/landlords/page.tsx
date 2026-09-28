@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 const WHY: Array<{ icon: IconName; title: string; text: string }> = [
   { icon: "key", title: "Trust from the first message", text: "Your tenant can pay before arriving without taking your word for it." },
-  { icon: "clock", title: "Paid at the door", text: "The deposit reaches your wallet in seconds, before you hand over the keys, and it can't be charged back." },
+  { icon: "clock", title: "Paid at the door", text: "The deposit reaches your Keysfirst balance in seconds, before you hand over the keys, and it can't be charged back." },
   { icon: "check", title: "Free while it's a prototype", text: "Keysfirst runs on Solana's test network with test money." },
 ];
 

@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { DevnetIllustration, FundsIllustration, InstallIllustration, ScanIllustration } from "@/components/guide/GuideIllustrations";
+import { ScanIllustration } from "@/components/guide/GuideIllustrations";
 import { ButtonLink } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
-import { GuideFunds } from "./GuideFunds";
+import { GuideLogin } from "./GuideLogin";
 
 export const dynamic = "error";
 
 export const metadata: Metadata = {
   title: "Get started",
-  description: "Install Phantom, switch it to Solana Devnet, get free test money and try Keysfirst as landlord and tenant.",
+  description: "Log in with your email or Google, create a deposit link, pay it with a test card and try the key handover.",
 };
 
 function GuideStep({ id, number, title, children, art }: { id: string; number: number; title: string; children: ReactNode; art?: ReactNode }) {
@@ -33,59 +33,46 @@ export default function GetStartedPage() {
       <p className="label text-fg-muted">Guide</p>
       <h1 className="mt-3 font-display text-title font-bold">Get started in 5 minutes</h1>
       <p className="mt-4 max-w-2xl text-lead text-fg-muted">
-        Keysfirst runs on Solana&apos;s test network, so everything here uses test money. You need a wallet app, the test network switched on and
-        some test money.
+        Keysfirst runs on test money, so you can try everything safely. You need an email address (or a Google or Apple account) and, for the
+        handover, a phone.
       </p>
 
       <div className="mt-10">
-        <GuideStep id="install" number={1} title="Install Phantom" art={<InstallIllustration />}>
-          <p>
-            Phantom is a wallet app: it holds your money and approves payments, and your keys never leave it. On a phone, install it from the App
-            Store or Google Play. On a laptop, add the browser extension.
-          </p>
-          <ButtonLink href="https://phantom.com/download" external variant="secondary">
-            Download Phantom
-          </ButtonLink>
+        <GuideStep id="login" number={1} title="Log in">
+          <p>Use your email or Google. Keysfirst sets up your account for you: no app to install, nothing to pay for network costs.</p>
+          <GuideLogin />
         </GuideStep>
 
-        <GuideStep id="devnet" number={2} title="Switch Phantom to Solana Devnet" art={<DevnetIllustration />}>
+        <GuideStep id="landlord" number={2} title="As the landlord: create a deposit link">
           <p>
-            In Phantom open <strong className="text-fg">Settings → Developer Settings</strong>, turn on <strong className="text-fg">Testnet Mode</strong>{" "}
-            and choose <strong className="text-fg">Solana Devnet</strong>.
+            Enter the room, the deposit and the move-in date. Use the demo values to see the whole cycle in a few minutes. Send the link to your
+            tenant.
           </p>
-          <p>Keysfirst only works there, and nothing on devnet has real value.</p>
-        </GuideStep>
-
-        <GuideStep id="funds" number={3} title="Log in and get test money" art={<FundsIllustration />}>
-          <p>Get test funds sends 1,000 Test EUR and, if your wallet has none, a little devnet SOL for network fees.</p>
-          <GuideFunds />
-        </GuideStep>
-
-        <GuideStep id="try" number={4} title="Try both sides" art={<ScanIllustration />}>
-          <p>
-            <strong className="text-fg">As the landlord</strong> (laptop): create a deposit link with the demo values. The 5-minute window lets you
-            see the whole cycle quickly.
-          </p>
-          <p>
-            <strong className="text-fg">As the tenant</strong> (phone): open the link inside Phantom&apos;s browser, pay into the lock, then at the
-            &ldquo;door&rdquo; scan the landlord&apos;s code with the phone camera and approve in Phantom. Or, once the handover window is open, tap
-            &ldquo;I have the keys: release the deposit&rdquo; on the deal page.
-          </p>
-          <Callout tone="neutral">Use a second wallet for the tenant: the landlord can&apos;t pay their own deal.</Callout>
           <ButtonLink href="/new">Create a deposit link</ButtonLink>
         </GuideStep>
 
-        <GuideStep id="tips" number={5} title="Tips for phones">
-          <ul className="list-disc space-y-2 pl-5">
-            <li>On iPhone, open Keysfirst inside Phantom (Open in Phantom) to log in and pay.</li>
-            <li>Scan the handover code with the normal Camera app, then tap Approve in Phantom.</li>
-            <li>Approve within a minute. If the request expires, tap the button again for a fresh one.</li>
-            <li>Phantom must be on the wallet that paid; with any other wallet it can&apos;t load the request.</li>
-            <li>
-              Phantom may warn that the site is new. This prototype only uses test money; a review of the domain was requested from Phantom on
-              27 September 2026.
-            </li>
-          </ul>
+        <GuideStep id="pay" number={3} title="As the tenant: pay by card">
+          <p>
+            Open the link and log in with a different email. Pay the deposit plus the Keysfirst fee (3.5% by card, at least €12). This prototype
+            uses Stripe&apos;s test mode: pay with the card number <strong className="text-fg tabular-nums">4242 4242 4242 4242</strong>, any
+            future date and any three digits. No real money moves.
+          </p>
+          <p>After the payment the deposit locks automatically. The landlord can&apos;t take it.</p>
+          <Callout tone="neutral">The landlord can&apos;t pay their own deal: use a second account for the tenant.</Callout>
+        </GuideStep>
+
+        <GuideStep id="door" number={4} title="At the door: confirm the handover" art={<ScanIllustration />}>
+          <p>
+            The landlord taps &ldquo;Start the handover&rdquo; and shows a code. The tenant checks the room, scans the code with the phone camera,
+            taps Continue and then &ldquo;I have the keys&rdquo;. The landlord is paid in seconds.
+          </p>
+        </GuideStep>
+
+        <GuideStep id="withdraw" number={5} title="Withdraw to your bank">
+          <p>
+            Money you receive, as the landlord or as a tenant whose deposit came back, shows as your balance. Tap your account in the top corner,
+            then &ldquo;Withdraw to bank&rdquo;. In this prototype the bank transfer is a demo.
+          </p>
         </GuideStep>
       </div>
     </div>
