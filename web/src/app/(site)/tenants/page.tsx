@@ -41,7 +41,7 @@ export default function TenantsPage() {
         </p>
         <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
           <AskLandlord />
-          <ButtonLink href="/start" variant="quiet">
+          <ButtonLink href="/start" prefetch={false} variant="quiet">
             Get started
           </ButtonLink>
         </div>
@@ -60,7 +60,7 @@ export default function TenantsPage() {
             <ul className="grid gap-3">
               {NEEDS.map((need) => (
                 <li key={need.href}>
-                  <Link href={need.href} className="block rounded-md border-[1.5px] border-rule bg-canvas p-4 hover:border-fg">
+                  <Link href={need.href} prefetch={false} className="block rounded-md border-[1.5px] border-rule bg-canvas p-4 hover:border-fg">
                     <span className="font-display text-card font-bold">{need.title}</span>
                     <span className="mt-1 block text-body text-fg-muted">{need.text}</span>
                   </Link>

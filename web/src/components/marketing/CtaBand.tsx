@@ -19,12 +19,12 @@ export function CtaBand() {
         <div>
           <h2 className="font-display text-section font-bold">Letting a room? Create a link in a minute.</h2>
           <p className="mt-3 max-w-md text-fg-inverse-muted">Your tenant pays into the lock, and you&apos;re paid at the door.</p>
-          <ButtonLink href="/new" variant="secondary" className="mt-6">
+          <ButtonLink href="/new" prefetch={false} variant="secondary" className="mt-6">
             Create a deposit link
           </ButtonLink>
         </div>
         <p className="lg:col-span-2">
-          <Link href="/start" className={cx(buttonClass({ variant: "quiet" }), "text-fg-inverse")}>
+          <Link href="/start" prefetch={false} className={cx(buttonClass({ variant: "quiet" }), "text-fg-inverse")}>
             New to wallets? Get started in 5 minutes
           </Link>
         </p>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { PRODUCTION_URL, siteUrl } from "./site";
+import { isAppRoute, PRODUCTION_URL, siteUrl } from "./site";
 
 describe("siteUrl", () => {
   it("uses the production domain in production", () => {
@@ -12,5 +12,18 @@ describe("siteUrl", () => {
   });
   it("falls back to localhost", () => {
     expect(siteUrl({})).toBe("http://localhost:3000");
+  });
+});
+
+describe("isAppRoute", () => {
+  it("matches the wallet pages, with or without a query or hash", () => {
+    for (const href of ["/new", "/start", "/start#funds", "/deals", "/deals?login=1", "/deal/8cTvC1gnouTSxswytgt1as8FXgLmp1yJU6bfVopj8xTy/handover"]) {
+      expect(isAppRoute(href)).toBe(true);
+    }
+  });
+  it("leaves marketing pages alone", () => {
+    for (const href of ["/", "/how-it-works#limits", "/faq#devnet", "/tenants", "/landlords", "/about", "/newsletter", "/dealbreakers"]) {
+      expect(isAppRoute(href)).toBe(false);
+    }
   });
 });

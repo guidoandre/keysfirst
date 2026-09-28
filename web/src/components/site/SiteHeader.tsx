@@ -21,14 +21,15 @@ export function SiteHeader() {
         <nav aria-label="Main" className="hidden lg:block">
           <NavLinks items={SITE_NAV} />
         </nav>
+        {/* prefetch={false} on links into the wallet pages: see isAppRoute in lib/site.ts */}
         <div className="flex items-center gap-3">
-          <Link href="/start" className={cx(buttonClass({ variant: "quiet" }), "max-sm:hidden")}>
+          <Link href="/start" prefetch={false} className={cx(buttonClass({ variant: "quiet" }), "max-sm:hidden")}>
             Get started
           </Link>
-          <ButtonLink href="/deals?login=1" variant="secondary" size="sm">
+          <ButtonLink href="/deals?login=1" prefetch={false} variant="secondary" size="sm">
             Log in
           </ButtonLink>
-          <MobileMenu items={[...SITE_NAV, { href: "/start", label: "Get started" }]} />
+          <MobileMenu items={[...SITE_NAV, { href: "/start", label: "Get started", prefetch: false }]} />
         </div>
       </div>
     </header>

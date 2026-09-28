@@ -40,7 +40,7 @@ export default function LandlordsPage() {
           paid the moment they scan your code at the handover.
         </p>
         <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-          <ButtonLink href="/new" size="lg">
+          <ButtonLink href="/new" prefetch={false} size="lg">
             Create a deposit link
           </ButtonLink>
           <ButtonLink href="/how-it-works" variant="quiet">

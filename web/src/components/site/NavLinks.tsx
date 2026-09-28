@@ -8,6 +8,8 @@ import { cx } from "@/lib/cx";
 export interface NavItem {
   href: string;
   label: string;
+  /** false: don't prefetch (a wallet page linked from a marketing page). */
+  prefetch?: false;
 }
 
 export function NavLinks({
@@ -28,6 +30,7 @@ export function NavLinks({
           <li key={item.href}>
             <Link
               href={item.href}
+              prefetch={item.prefetch}
               onClick={onNavigate}
               aria-current={current ? "page" : undefined}
               className={cx(

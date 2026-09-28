@@ -35,7 +35,7 @@ export function AudienceSplit() {
         <div className="mt-5">
           <StepList steps={LETTING} />
         </div>
-        <ButtonLink href="/new" className="mt-6">
+        <ButtonLink href="/new" prefetch={false} className="mt-6">
           Create a deposit link
         </ButtonLink>
       </section>

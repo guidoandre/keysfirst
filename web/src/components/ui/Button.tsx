@@ -78,10 +78,11 @@ export function ButtonLink({
   size,
   fullWidth,
   external = false,
+  prefetch,
   className,
   children,
   ...rest
-}: ButtonLook & { href: string; external?: boolean; children: ReactNode } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href">) {
+}: ButtonLook & { href: string; external?: boolean; prefetch?: boolean; children: ReactNode } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href">) {
   const cls = cx(buttonClass({ variant, size, fullWidth }), className);
   if (external) {
     return (
@@ -93,7 +94,7 @@ export function ButtonLink({
     );
   }
   return (
-    <Link href={href} className={cls} {...rest}>
+    <Link href={href} prefetch={prefetch} className={cls} {...rest}>
       {children}
     </Link>
   );

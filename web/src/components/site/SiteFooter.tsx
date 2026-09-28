@@ -5,6 +5,7 @@ import { Icon } from "@/components/ui/Icon";
 import idl from "@/idl/keysfirst.json";
 import { cx } from "@/lib/cx";
 import { explorerAddress } from "@/lib/format";
+import { isAppRoute } from "@/lib/site";
 
 // Cut rule: remove links to pages that were cut (About, For tenants, For landlords).
 const COLUMNS = [
@@ -53,7 +54,11 @@ export function SiteFooter() {
             <ul className="mt-1.5">
               {column.links.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="inline-flex min-h-11 min-w-11 items-center underline-offset-4 hover:underline">
+                  <Link
+                    href={link.href}
+                    prefetch={isAppRoute(link.href) ? false : undefined}
+                    className="inline-flex min-h-11 min-w-11 items-center underline-offset-4 hover:underline"
+                  >
                     {link.label}
                   </Link>
                 </li>

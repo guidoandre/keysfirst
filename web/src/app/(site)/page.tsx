@@ -40,7 +40,7 @@ export default function LandingPage() {
           </p>
           <div className="mt-8 flex flex-col gap-5 sm:flex-row sm:items-start">
             <div>
-              <ButtonLink href="/new" size="lg" fullWidth className="sm:w-auto">
+              <ButtonLink href="/new" prefetch={false} size="lg" fullWidth className="sm:w-auto">
                 Create a deposit link
               </ButtonLink>
               <p className="mt-2 text-sm text-fg-subtle">For landlords · free on devnet</p>
