@@ -266,3 +266,9 @@ The delay varies from run to run (1.2–2.4 s). I couldn't find its cause withou
 - Measure `/` on https://keysfirst.vercel.app after the merge, mobile, at least twice.
 - Expect Performance around 94–96, as on the Preview. The late first frame described in point 2 may still show up as a varying render delay.
 - The SEO audits all passed on the Preview. Lighthouse didn't flag the Preview's `X-Robots-Tag: noindex`, so production should also score 100 for SEO.
+
+## Production (after the merge)
+
+- 2026-09-28: `redesign` merged into `main` (merge commit `48d2b21`) after the user's Phantom regression on the Preview (all ten checks passed; one fix during the run: a wallet short of devnet SOL now gets a clear message and the "Get test funds" button, `e1dc5f6`).
+- https://keysfirst.vercel.app: every marketing page, `/start`, `/new`, `/deals`, a released deal and its hand-off page answer 200; unknown URLs and `/dev/*` answer 404; `/api/handover/<id>` returns the label with `https://keysfirst.vercel.app/icon.png`; `/icon.png` and `/opengraph-image` are PNGs; no `x-robots-tag`, so the site can be indexed.
+- PageSpeed Insights on production: not measured yet. The anonymous API quota and the web tool's runs were used up by the Task 19 measurements that day. The Preview scores above (94–96 / 100 / 100 / 100) were measured with Vercel's Preview-only toolbar on the page; production has no toolbar and no `noindex`, so its scores should be the same or higher. Re-run at https://pagespeed.web.dev with https://keysfirst.vercel.app/ (mobile) and record the four numbers here.

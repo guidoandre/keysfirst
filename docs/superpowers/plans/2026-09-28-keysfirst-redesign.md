@@ -4594,7 +4594,7 @@ git add "web/src/app/(app)/deal/[id]/handover/page.tsx"
 git commit -m "feat(web): tenant hand-off page with the deal summary, a checklist and clear blocked states" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
-- [ ] **Step 4: Milestone M2: push and ask for a quick phone check**
+- [x] **Step 4: Milestone M2: push and ask for a quick phone check**
 
 1. `git push` and wait for the Preview deployment (the `/dev/*` galleries return 404 there by design).
 2. Ask the user for a 5-minute phone check on the Preview (their iPhone, inside Phantom's browser): log in via the connect sheet, open one of their deals, and if one is locked in its window, try "Start the handover" on the laptop and scan it with the iPhone Camera. Report what they see (the full regression comes in Task 20).
@@ -7237,7 +7237,7 @@ With the dev server:
 - `curl -s http://localhost:3000/api/handover/8cTvC1gnouTSxswytgt1as8FXgLmp1yJU6bfVopj8xTy` still returns `"icon":"http://localhost:3000/icon.png"`; that URL returns the new 256 px PNG.
 - `/robots.txt` and `/sitemap.xml` render.
 
-- [ ] **Step 11: Commit and close milestone M5**
+- [x] **Step 11: Commit and close milestone M5**
 
 ```bash
 git add .gitattributes web/assets web/scripts/make-favicon.mjs web/next.config.ts web/src/lib/og.tsx web/src/app
@@ -7987,15 +7987,15 @@ git push
 **Files:**
 - Modify: `CLAUDE.md` (redesign notes), this plan (ticks), `docs/audits/…` (final numbers)
 
-- [ ] **Step 1: Full checks**
+- [x] **Step 1: Full checks**
 
 Run (in `web/`): `npm test` → all pass; `npm run lint` → no errors; `npm run build` → succeeds, and the route table shows every marketing page and `/start`, `/new` as `○ (Static)`.
 
-- [ ] **Step 2: Browser tour at 375 and 1280 px**
+- [x] **Step 2: Browser tour at 375 and 1280 px**
 
 Visit and screenshot every route: `/`, `/how-it-works`, `/faq`, `/tenants`, `/landlords`, `/about`, `/start`, `/new` (steps 1–3), `/deals` (logged out), a released deal, its hand-off page, `/this-does-not-exist`, and on the dev server `/dev/deal` for every phase plus handover mode and the Released screen. For each: no console errors, no horizontal scroll, header and footer links resolve. Share the phone and desktop screenshots of the landing page, a deal page and handover mode with the user.
 
-- [ ] **Step 3: Update `CLAUDE.md`**
+- [x] **Step 3: Update `CLAUDE.md`**
 
 Append:
 
@@ -8005,7 +8005,7 @@ Append:
 - Deal logic for the UI lives in web/src/lib/deal-view.ts (next-step matrix, tested); never offer an action that rules.ts availableActions() doesn't return.
 ```
 
-- [ ] **Step 4: Hand the user the Phantom regression checklist (on the Preview)**
+- [x] **Step 4: Hand the user the Phantom regression checklist (on the Preview)**
 
 Send the Preview URL and these steps (spec §13); wait for their results:
 
@@ -8021,14 +8021,14 @@ Send the Preview URL and these steps (spec §13); wait for their results:
 
 Fix anything that fails (systematic-debugging first), push, and ask the user to re-run only the failed steps.
 
-- [ ] **Step 5: Merge after the user approves the Preview**
+- [ ] **Step 5: Merge after the user approves the Preview** (merged and checked on production 2026-09-28; the production PageSpeed run is still open: the PageSpeed Insights quota was used up that day)
 
 Use superpowers:finishing-a-development-branch. Default (the user's process): on the user's explicit approval, `git checkout main`, `git merge --no-ff redesign -m "Merge the Keysfirst redesign" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"`, `git push`. Then on production (https://keysfirst.vercel.app):
 - The landing page, a deal page and the hand-off page load; `curl -s https://keysfirst.vercel.app/api/handover/8cTvC1gnouTSxswytgt1as8FXgLmp1yJU6bfVopj8xTy` returns the label JSON; `/icon.png` is the new PNG.
 - Re-run Task 19's PageSpeed Insights command against `https://keysfirst.vercel.app/` and record the final four scores (SEO now without the Preview's `noindex`).
 - Report to the user: what works, what doesn't, what's next (Fri: rehearsal and demo wallets from the original plan's Task 15, README, deck; when the repository becomes public, add an FAQ entry "Where can I see the code?" that links to it).
 
-- [ ] **Step 6: Commit the notes**
+- [x] **Step 6: Commit the notes**
 
 ```bash
 git add CLAUDE.md docs/superpowers/plans/2026-09-28-keysfirst-redesign.md docs/audits
