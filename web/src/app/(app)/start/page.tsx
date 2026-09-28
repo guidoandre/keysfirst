@@ -33,7 +33,7 @@ export default function GetStartedPage() {
       <p className="label text-fg-muted">Guide</p>
       <h1 className="mt-3 font-display text-title font-bold">Get started in 5 minutes</h1>
       <p className="mt-4 max-w-2xl text-lead text-fg-muted">
-        Keysfirst runs on test money, so you can try everything safely. You need an email address (or a Google or Apple account) and, for the
+        Keysfirst runs on test money, so you can try everything safely. You need an email address (or a Google account) and, for the
         handover, a phone.
       </p>
 
