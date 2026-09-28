@@ -1,7 +1,8 @@
 "use client";
 
 import { BN } from "@anchor-lang/core";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useAccount } from "@/components/wallet/AccountProvider";
+import { useConnection } from "@/lib/connection";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
@@ -38,7 +39,7 @@ const FIELD_ID: Record<NewDealField, string> = { title: "title", amount: "amount
 
 export function CreateDealFlow() {
   const { connection } = useConnection();
-  const wallet = useWallet();
+  const { wallet } = useAccount();
   const router = useRouter();
   const program = useMemo(() => getProgram(connection), [connection]);
   const now = useNow();

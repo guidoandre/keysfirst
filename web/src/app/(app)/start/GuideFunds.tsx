@@ -1,6 +1,6 @@
 "use client";
 
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useAccount } from "@/components/wallet/AccountProvider";
 import { LoginButton } from "@/components/wallet/LoginButton";
 import { TestFundsButton } from "@/components/wallet/TestFundsButton";
 import { shortAddress } from "@/lib/format";
@@ -9,7 +9,7 @@ import { useMounted } from "@/lib/hooks";
 /** Step 3 of the guide, live: log in, then get test funds right here. */
 export function GuideFunds() {
   const mounted = useMounted();
-  const { publicKey } = useWallet();
+  const { address: publicKey } = useAccount();
   if (!mounted || !publicKey) {
     return (
       <div className="max-w-sm">

@@ -50,11 +50,6 @@ export function toLocalInputValue(date: Date): string {
 export const explorerTx = (signature: string) => `https://explorer.solana.com/tx/${signature}?cluster=devnet`;
 export const explorerAddress = (address: string) => `https://explorer.solana.com/address/${address}?cluster=devnet`;
 
-/** Opens `pageUrl` inside Phantom's in-app browser (needed on phones). */
-export function phantomBrowseUrl(pageUrl: string): string {
-  return `https://phantom.app/ul/browse/${encodeURIComponent(pageUrl)}?ref=${encodeURIComponent(new URL(pageUrl).origin)}`;
-}
-
 /** Time left, ticking: 90061 -> "1 day 1 h", 3660 -> "1 h 1 min", 252 -> "4 min 12 s", 45 -> "45 s" */
 export function formatCountdown(seconds: number): string {
   const s = Math.max(0, Math.floor(seconds));

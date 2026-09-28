@@ -1,32 +1,38 @@
 "use client";
 
-import type { WalletError } from "@solana/wallet-adapter-base";
-import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
-import { useCallback, useState, type ReactNode } from "react";
-import { ConnectProvider } from "@/components/wallet/ConnectProvider";
-import { RPC_URL } from "@/lib/config";
-import { friendlyError } from "@/lib/send";
+import { PrivyProvider } from "@privy-io/react-auth";
+import { toSolanaWalletConnectors } from "@privy-io/react-auth/solana";
+import type { ReactNode } from "react";
+import { AccountProvider } from "@/components/wallet/AccountProvider";
+import { PRIVY_APP_ID, RPC_URL } from "@/lib/config";
+import { ConnectionProvider } from "@/lib/connection";
 
-// No automatic retries on "429 Too Many Requests": each refusal was retried up to 5 times, which kept
-// the whole Wi-Fi network over devnet's rate limit. The deal page's 2-second poll is the retry.
-const CONNECTION_CONFIG = { commitment: "confirmed" as const, disableRetryOnRateLimit: true };
+// Phantom and other installed Solana wallets, for "I already have a wallet" (spec D1).
+const solanaConnectors = toSolanaWalletConnectors({ shouldAutoConnect: true });
 
-/**
- * Phantom (and other Wallet Standard wallets) are detected automatically, so `wallets` stays empty.
- * autoConnect: choosing a wallet in the connect sheet connects it, and a returning visitor is reconnected.
- */
+/** One login for the whole app: email, Google or an existing Solana wallet (spec D1). */
 export function Providers({ children }: { children: ReactNode }) {
-  const [walletError, setWalletError] = useState<string | null>(null);
-  const handleWalletError = useCallback((error: WalletError) => setWalletError(friendlyError(error)), []);
-  const clearWalletError = useCallback(() => setWalletError(null), []);
-
   return (
-    <ConnectionProvider endpoint={RPC_URL} config={CONNECTION_CONFIG}>
-      <WalletProvider wallets={[]} autoConnect onError={handleWalletError}>
-        <ConnectProvider walletError={walletError} clearWalletError={clearWalletError}>
-          {children}
-        </ConnectProvider>
-      </WalletProvider>
-    </ConnectionProvider>
+    <PrivyProvider
+      appId={PRIVY_APP_ID}
+      config={{
+        loginMethods: ["email", "google", "wallet"],
+        appearance: {
+          theme: "light",
+          accentColor: "#16181d",
+          logo: "/icon.png",
+          landingHeader: "Log in to Keysfirst",
+          loginMessage: "Use your email or Google. No wallet app needed.",
+          walletChainType: "solana-only",
+          walletList: ["phantom", "detected_solana_wallets"],
+        },
+        embeddedWallets: { solana: { createOnLogin: "users-without-wallets" }, ethereum: { createOnLogin: "off" } },
+        externalWallets: { solana: { connectors: solanaConnectors } },
+      }}
+    >
+      <ConnectionProvider endpoint={RPC_URL}>
+        <AccountProvider>{children}</AccountProvider>
+      </ConnectionProvider>
+    </PrivyProvider>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useAccount } from "@/components/wallet/AccountProvider";
+import { useConnection } from "@/lib/connection";
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { DealLoading, DealMessage } from "@/components/deal/DealStates";
@@ -28,7 +29,7 @@ const REQUIRED_STATUS: Record<WalletAction, DealStatus> = { fund: "open", confir
 
 export function DealClient({ id, origin, created }: { id: string; origin: string; created: boolean }) {
   const { connection } = useConnection();
-  const wallet = useWallet();
+  const { wallet } = useAccount();
   const program = useMemo(() => getProgram(connection), [connection]);
   const { address, deal, signatures, loadError, statusChanged, justReleased, refresh } = useDeal(id);
   const now = useNow();

@@ -7,7 +7,6 @@ import {
   formatShortDateTime,
   fromCents,
   parseEur,
-  phantomBrowseUrl,
   shortAddress,
   toCents,
   whatsappUrl,
@@ -49,11 +48,6 @@ describe("formatDuration", () => {
 describe("links", () => {
   it("points Explorer at devnet", () => {
     expect(explorerTx("abc")).toBe("https://explorer.solana.com/tx/abc?cluster=devnet");
-  });
-  it("opens a page inside Phantom's browser", () => {
-    expect(phantomBrowseUrl("https://k.app/deal/x")).toBe(
-      "https://phantom.app/ul/browse/https%3A%2F%2Fk.app%2Fdeal%2Fx?ref=https%3A%2F%2Fk.app",
-    );
   });
 });
 

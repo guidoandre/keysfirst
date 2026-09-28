@@ -1,12 +1,12 @@
 "use client";
 
-import { useWallet } from "@solana/wallet-adapter-react";
 import { useState } from "react";
 import { Button, type ButtonVariant } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
+import { useAccount } from "./AccountProvider";
 
 export function TestFundsButton({ variant = "secondary" }: { variant?: ButtonVariant }) {
-  const { publicKey } = useWallet();
+  const { address: publicKey } = useAccount();
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
   if (!publicKey) return null;
