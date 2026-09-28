@@ -17,9 +17,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const deal = await getProgram(new Connection(RPC_URL, "confirmed")).account.deal.fetchNullable(new PublicKey(id));
     if (!deal) return { title: "Deal not found", robots: { index: false } };
     const title = `${formatEur(deal.amount.toString())} deposit · ${deal.title}`;
-    // Next merges metadata shallowly: setting openGraph here drops the root's image unless we repeat it (Task 14 replaces this with a file).
-    const images = [{ url: "/opengraph-image", width: 1200, height: 630 }];
-    return { title, description: DESCRIPTION, robots: { index: false }, openGraph: { title, description: DESCRIPTION, images } };
+    // No openGraph here: an explicit images list would override the deal's opengraph-image file.
+    return { title, description: DESCRIPTION, robots: { index: false } };
   } catch {
     return { title: "Deal", robots: { index: false } };
   }
