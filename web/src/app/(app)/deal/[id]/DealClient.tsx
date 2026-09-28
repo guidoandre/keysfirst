@@ -16,7 +16,7 @@ import { useNow } from "@/lib/hooks";
 import { cancelDealIx, confirmHandoverIx, fundIx, refundIx } from "@/lib/instructions";
 import { getProgram } from "@/lib/program";
 import { isExpired, roleOf, statusOf, type Action, type DealStatus, type DealTimes } from "@/lib/rules";
-import { friendlyError, signAndSend } from "@/lib/send";
+import { friendlyError, needsTopUp, signAndSend } from "@/lib/send";
 import { useDeal } from "@/lib/use-deal";
 
 // The QR library loads only when the landlord first opens handover mode (spec §10).
@@ -29,7 +29,7 @@ const REQUIRED_STATUS: Record<WalletAction, DealStatus> = { fund: "open", confir
 
 export function DealClient({ id, origin, created }: { id: string; origin: string; created: boolean }) {
   const { connection } = useConnection();
-  const { wallet } = useAccount();
+  const { wallet, topUp, refreshBalance } = useAccount();
   const program = useMemo(() => getProgram(connection), [connection]);
   const { address, deal, signatures, loadError, statusChanged, justReleased, refresh } = useDeal(id);
   const now = useNow();
@@ -92,8 +92,11 @@ export function DealClient({ id, origin, created }: { id: string; origin: string
       setSignature(await signAndSend(connection, wallet, [await build[action]()]));
       await refresh();
     } catch (e) {
-      setError(friendlyError(e));
+      const message = friendlyError(e);
+      if (needsTopUp(message)) void topUp();
+      setError(message);
     } finally {
+      void refreshBalance();
       setBusy(null);
     }
   }

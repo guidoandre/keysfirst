@@ -5,7 +5,6 @@ import { Button, ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Sheet } from "@/components/ui/Sheet";
 import { useAccount } from "./AccountProvider";
-import { TestFundsButton } from "./TestFundsButton";
 
 /** The logged-in state: email (or short account number) + a menu. */
 export function WalletChip() {
@@ -50,7 +49,6 @@ export function WalletChip() {
           <p aria-live="polite" className="sr-only">
             {copied ? "Copied to the clipboard" : ""}
           </p>
-          <TestFundsButton />
           <Button
             variant="quiet"
             className="mt-2 justify-center"

@@ -4,10 +4,8 @@ import { Button } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
 import { Icon } from "@/components/ui/Icon";
 import { LoginButton } from "@/components/wallet/LoginButton";
-import { TestFundsButton } from "@/components/wallet/TestFundsButton";
 import { actionLabel, loginLabel, type NextStepView } from "@/lib/deal-view";
 import { explorerTx } from "@/lib/format";
-import { needsTestFunds } from "@/lib/send";
 import type { Action, Role } from "@/lib/rules";
 
 /** One primary action for this viewer right now; secondary actions below; errors and receipts inline. */
@@ -61,8 +59,6 @@ export function NextStep({
           <LoginButton label={loginLabel(primary)} variant="primary" size="lg" fullWidth />
         ))}
 
-      {primary === "fund" && connected && <TestFundsButton />}
-
       {secondary.length > 0 && (
         <div className="grid gap-2">
           {secondary.map((action) => (
@@ -86,7 +82,6 @@ export function NextStep({
           {error}
         </Callout>
       )}
-      {connected && primary !== "fund" && needsTestFunds(error) && <TestFundsButton />}
       {signature && (
         <Callout tone="success" role="status">
           Done.{" "}

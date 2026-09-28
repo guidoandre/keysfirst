@@ -11,7 +11,6 @@ import { TextField } from "@/components/ui/Field";
 import { Segmented } from "@/components/ui/Segmented";
 import { Timetable } from "@/components/ui/Timetable";
 import { LoginButton } from "@/components/wallet/LoginButton";
-import { TestFundsButton } from "@/components/wallet/TestFundsButton";
 import { cx } from "@/lib/cx";
 import { formatEur, formatShortDateTime, toLocalInputValue } from "@/lib/format";
 import { useNow } from "@/lib/hooks";
@@ -30,7 +29,7 @@ import {
   type WindowChoice,
 } from "@/lib/new-deal";
 import { getProgram } from "@/lib/program";
-import { friendlyError, needsTestFunds, signAndSend } from "@/lib/send";
+import { friendlyError, needsTopUp, signAndSend } from "@/lib/send";
 
 type Step = 1 | 2 | 3;
 const STEP_TITLES: Record<Step, string> = { 1: "The room", 2: "The handover", 3: "Check and create" };
@@ -39,7 +38,7 @@ const FIELD_ID: Record<NewDealField, string> = { title: "title", amount: "amount
 
 export function CreateDealFlow() {
   const { connection } = useConnection();
-  const { wallet } = useAccount();
+  const { wallet, topUp } = useAccount();
   const router = useRouter();
   const program = useMemo(() => getProgram(connection), [connection]);
   const now = useNow();
@@ -114,7 +113,9 @@ export function CreateDealFlow() {
       await signAndSend(connection, wallet, [ix]);
       router.push(`/deal/${address.toBase58()}?created=1`);
     } catch (e) {
-      setError(friendlyError(e));
+      const message = friendlyError(e);
+      if (needsTopUp(message)) void topUp();
+      setError(message);
       setBusy(false);
     }
   }
@@ -263,7 +264,6 @@ export function CreateDealFlow() {
                   {error}
                 </Callout>
               )}
-              {needsTestFunds(error) && <TestFundsButton />}
             </>
           )}
         </div>

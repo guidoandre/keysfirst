@@ -3,8 +3,10 @@
 import { usePrivy } from "@privy-io/react-auth";
 import { useSignTransaction, useWallets } from "@privy-io/react-auth/solana";
 import { PublicKey, Transaction } from "@solana/web3.js";
-import { createContext, useCallback, useContext, useEffect, useMemo, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { accountLabel, pickSigningWallet } from "@/lib/account";
+import { readBalance } from "@/lib/balance";
+import { useConnection } from "@/lib/connection";
 import type { SigningWallet } from "@/lib/send";
 
 export interface Account {
@@ -58,6 +60,50 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     [address, signer, signTransaction],
   );
 
+  const { connection } = useConnection();
+  const [balance, setBalance] = useState<{ owner: string; amount: bigint } | null>(null);
+  const owner = address?.toBase58() ?? null;
+
+  const refreshBalance = useCallback(async () => {
+    if (!address) return;
+    try {
+      setBalance({ owner: address.toBase58(), amount: await readBalance(connection, address) });
+    } catch {
+      // Devnet busy: keep the last known balance; the next refresh tries again.
+    }
+  }, [address, connection]);
+
+  const topUp = useCallback(async () => {
+    if (!owner) return;
+    await fetch("/api/gas", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ account: owner }) }).catch(
+      () => undefined,
+    );
+  }, [owner]);
+
+  // Once per browser session and account: cover network costs before the first action (spec D4), read the balance.
+  useEffect(() => {
+    if (!owner) return;
+    const timer = setTimeout(() => {
+      void refreshBalance();
+      const key = `keysfirst:gas:${owner}`;
+      try {
+        if (sessionStorage.getItem(key)) return;
+        sessionStorage.setItem(key, "1");
+      } catch {
+        // Storage blocked: top up anyway (the server skips accounts that have enough).
+      }
+      void topUp();
+    }, 0);
+    const onVisible = () => {
+      if (!document.hidden) void refreshBalance();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [owner, refreshBalance, topUp]);
+
   // The marketing pages' "Log in" link lands on /deals?login=1: open Privy's modal once it is ready.
   useEffect(() => {
     if (!privyReady || !new URLSearchParams(window.location.search).has("login")) return;
@@ -77,7 +123,6 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     else login();
   }, [authenticated, login, logout]);
 
-  const noop = useCallback(async () => {}, []);
   const value = useMemo<Account>(
     () => ({
       ready,
@@ -86,11 +131,11 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       wallet,
       login: startLogin,
       logout,
-      balance: null,
-      refreshBalance: noop,
-      topUp: noop,
+      balance: balance && balance.owner === owner ? balance.amount : null,
+      refreshBalance,
+      topUp,
     }),
-    [ready, address, user, wallet, startLogin, logout, noop],
+    [ready, address, owner, user, wallet, startLogin, logout, balance, refreshBalance, topUp],
   );
 
   return <AccountContext.Provider value={value}>{children}</AccountContext.Provider>;

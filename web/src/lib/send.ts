@@ -14,7 +14,7 @@ export async function signAndSend(
   wallet: SigningWallet,
   instructions: TransactionInstruction[],
 ): Promise<string> {
-  if (!wallet.publicKey || !wallet.signTransaction) throw new Error("Connect your wallet first.");
+  if (!wallet.publicKey || !wallet.signTransaction) throw new Error("Log in first.");
   const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("confirmed");
   const tx = new Transaction({ feePayer: wallet.publicKey, blockhash, lastValidBlockHeight }).add(...instructions);
   const signed = await wallet.signTransaction(tx);
@@ -24,19 +24,19 @@ export async function signAndSend(
   return signature;
 }
 
-const NEEDS_SOL = "Your wallet needs a little more devnet SOL for network fees. Use “Get test funds”, then try again.";
-const NEEDS_TEST_EUR = "Not enough Test EUR. Use “Get test funds” first.";
+const NEEDS_SOL = "Your account is being topped up for network costs. Try again in a few seconds.";
+const NEEDS_TEST_EUR = "Your balance doesn't cover this deposit yet. Pay by card instead.";
 
-/** True when the fix for this friendlyError() message is the faucet (“Get test funds”). */
-export function needsTestFunds(message: string | null): boolean {
-  return message === NEEDS_SOL || message === NEEDS_TEST_EUR;
+/** True when the fix for this friendlyError() message is a network-cost top-up (/api/gas). */
+export function needsTopUp(message: string | null): boolean {
+  return message === NEEDS_SOL;
 }
 
 /** Turns wallet and program errors into one plain-English sentence. */
 export function friendlyError(error: unknown): string {
   const logs = (error as { logs?: unknown })?.logs;
   const text = [error instanceof Error ? error.message : String(error), ...(Array.isArray(logs) ? logs : [])].join("\n");
-  if (text.includes("Connect your wallet first.")) return "Connect your wallet first.";
+  if (text.includes("Log in first.")) return "Log in first.";
   // Settling closes the vault, so a second settlement fails on the missing vault before any deal rule runs.
   if (text.includes("AccountNotInitialized")) return "This deal has already been settled. Reload the page to see its status.";
   const programMessage = text.match(/Error Message: ([^"\n\]]+)/);
@@ -46,5 +46,5 @@ export function friendlyError(error: unknown): string {
   // A new deal's accounts and every fee are paid in devnet SOL; the system program logs "insufficient lamports" when it runs out.
   if (/no record of a prior credit|insufficient lamports/i.test(text)) return NEEDS_SOL;
   if (/insufficient funds/i.test(text)) return NEEDS_TEST_EUR;
-  return "Something went wrong. Check that Phantom is set to Solana Devnet and try again.";
+  return "Something went wrong. Try again. If you use Phantom, check that it is set to Solana Devnet.";
 }
