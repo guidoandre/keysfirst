@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { OpenInPhantom } from "@/components/OpenInPhantom";
-import { TestFundsButton } from "@/components/TestFundsButton";
 
 const STEPS = [
   ["The landlord creates a deposit link", "…and sends it to you on WhatsApp, WG-Gesucht or wherever you found the room."],
@@ -62,15 +60,11 @@ export default function Home() {
         </p>
       </section>
 
-      <section className="space-y-3 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm">
+      <section className="space-y-3 rounded-lg bg-subtle p-5 text-sm">
         <h2 className="text-lg font-semibold">Try it (test money only)</h2>
-        <ol className="list-decimal space-y-1 pl-5">
-          <li>Install the Phantom wallet (browser extension or phone app).</li>
-          <li>In Phantom: Settings → Developer Settings → turn on Testnet Mode and choose Solana Devnet.</li>
-          <li>Connect your wallet (top right), then get free test funds:</li>
-        </ol>
-        <OpenInPhantom />
-        <TestFundsButton />
+        <p>
+          <Link href="/deals?login=1" className="underline">Log in</Link> with Phantom set to Solana Devnet, then use Get test funds in the wallet menu.
+        </p>
       </section>
     </div>
   );

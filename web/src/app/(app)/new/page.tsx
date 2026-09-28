@@ -4,8 +4,8 @@ import { BN } from "@anchor-lang/core";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, type FormEvent } from "react";
-import { OpenInPhantom } from "@/components/OpenInPhantom";
-import { WalletButton } from "@/components/WalletButton";
+import { LoginButton } from "@/components/wallet/LoginButton";
+import { OpenInPhantom } from "@/components/wallet/OpenInPhantom";
 import { parseEur, toLocalInputValue } from "@/lib/format";
 import { createDealIx, randomDealId } from "@/lib/instructions";
 import { getProgram } from "@/lib/program";
@@ -114,7 +114,7 @@ export default function NewDealPage() {
       ) : (
         <div className="text-center">
           <p className="mb-3 text-sm text-stone-600">Connect your Phantom wallet (set to Solana Devnet) to continue.</p>
-          <div className="flex justify-center"><WalletButton /></div>
+          <div className="flex justify-center"><LoginButton /></div>
           <OpenInPhantom />
         </div>
       )}

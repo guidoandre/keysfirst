@@ -8,9 +8,9 @@ import { cancelDealIx, confirmHandoverIx, fundIx, refundIx } from "@/lib/instruc
 import { getProgram, type DealAccount } from "@/lib/program";
 import { STATUS_LABEL, statusOf, type Action, type DealStatus, type Role } from "@/lib/rules";
 import { friendlyError, signAndSend } from "@/lib/send";
-import { OpenInPhantom } from "./OpenInPhantom";
-import { TestFundsButton } from "./TestFundsButton";
-import { WalletButton } from "./WalletButton";
+import { LoginButton } from "./wallet/LoginButton";
+import { OpenInPhantom } from "./wallet/OpenInPhantom";
+import { TestFundsButton } from "./wallet/TestFundsButton";
 
 type ButtonAction = Exclude<Action, "showQr">;
 
@@ -52,7 +52,7 @@ export function DealActions({
     return (
       <section className="rounded-2xl border border-stone-200 bg-white p-5 text-center">
         <p className="mb-3 text-sm text-stone-700">Connect your Phantom wallet (set to Solana Devnet) to continue.</p>
-        <div className="flex justify-center"><WalletButton /></div>
+        <div className="flex justify-center"><LoginButton /></div>
         <OpenInPhantom />
       </section>
     );

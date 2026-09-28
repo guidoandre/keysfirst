@@ -2,6 +2,8 @@
 
 import { WalletReadyState } from "@solana/wallet-adapter-base";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { Button } from "@/components/ui/Button";
+import { Callout } from "@/components/ui/Callout";
 import { phantomBrowseUrl } from "@/lib/format";
 import { useMounted } from "@/lib/hooks";
 
@@ -12,17 +14,16 @@ export function OpenInPhantom() {
   const hasWallet = wallets.some((w) => w.readyState === WalletReadyState.Installed);
   if (!mounted || hasWallet) return null;
   return (
-    <div className="mt-4 rounded-xl bg-stone-100 p-4 text-sm">
-      <p>On your phone? Open this page inside the Phantom app to connect your wallet.</p>
-      <button
-        type="button"
+    <Callout tone="info" title="On your phone?">
+      <p>Open this page inside the Phantom app to log in and approve payments.</p>
+      <Button
+        className="mt-3"
         onClick={() => {
           window.location.href = phantomBrowseUrl(window.location.href);
         }}
-        className="mt-2 rounded-lg bg-violet-600 px-4 py-2 font-semibold text-white"
       >
         Open in Phantom
-      </button>
-    </div>
+      </Button>
+    </Callout>
   );
 }
