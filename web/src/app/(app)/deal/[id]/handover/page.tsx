@@ -75,7 +75,7 @@ export default async function HandoverPage({ params }: { params: Promise<{ id: s
         : null;
 
   return (
-    <div className="mx-auto max-w-app px-4 py-8 sm:py-12">
+    <div className="enter-stack mx-auto max-w-app px-4 py-8 sm:py-12">
       <p className="label text-fg-muted">Key handover</p>
       <h1 className="mt-2 font-display text-title font-bold">Confirm the key handover</h1>
       {data && (

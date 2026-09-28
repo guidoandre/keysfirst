@@ -9,7 +9,6 @@ import { FaqList } from "@/components/marketing/FaqList";
 import { ProblemSteps } from "@/components/marketing/ProblemSteps";
 import { RulesTimetable } from "@/components/marketing/RulesTimetable";
 import { ScenarioGrid } from "@/components/marketing/ScenarioGrid";
-import { ScrollReveal } from "@/components/marketing/ScrollReveal";
 import { SectionHeader } from "@/components/marketing/SectionHeader";
 import { WhySolana } from "@/components/marketing/WhySolana";
 import { faqEntries, LANDING_FAQ_IDS } from "@/content/faq";
@@ -125,7 +124,6 @@ export default function LandingPage() {
       </section>
 
       <CtaBand />
-      <ScrollReveal />
     </>
   );
 }

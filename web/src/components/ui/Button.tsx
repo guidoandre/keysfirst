@@ -19,8 +19,9 @@ export interface ButtonLook {
 export const HIT_AREA =
   "relative after:absolute after:top-1/2 after:left-1/2 after:h-[max(100%,2.75rem)] after:w-[max(100%,2.75rem)] after:-translate-x-1/2 after:-translate-y-1/2";
 
+// Hover eases in (the primary's Highlighter bar draws left to right); a press lands in 80 ms (design system §5, §8).
 const BASE =
-  "inline-flex items-center justify-center gap-2 rounded-md text-center font-semibold leading-tight transition-[background-color,color,border-color] duration-150 ease-out active:translate-y-px disabled:cursor-not-allowed disabled:active:translate-y-0";
+  "inline-flex items-center justify-center gap-2 rounded-md text-center font-semibold leading-tight transition-[background-color,background-size,color,border-color,translate] duration-200 ease-out active:translate-y-px active:duration-75 disabled:cursor-not-allowed disabled:active:translate-y-0";
 const SIZES: Record<ButtonSize, string> = {
   // 40 px tall (header only); HIT_AREA pads the tap area to 44 px.
   sm: `min-h-(--btn-h-sm) px-4 py-1.5 text-[0.9375rem] ${HIT_AREA}`,
@@ -28,9 +29,8 @@ const SIZES: Record<ButtonSize, string> = {
   lg: "min-h-(--btn-h-lg) px-6 py-3 text-lg",
 };
 const VARIANTS: Record<Exclude<ButtonVariant, "quiet">, string> = {
-  // Hover: a 4 px Highlighter bar inside the bottom edge (design system §5).
-  primary:
-    "bg-inverse text-fg-inverse hover:[background-image:linear-gradient(to_top,var(--k-marker)_4px,transparent_4px)] disabled:bg-subtle disabled:text-fg-subtle disabled:[background-image:none]",
+  // Hover: a 4 px Highlighter bar draws in along the bottom edge (.btn-draw in globals.css; design system §5).
+  primary: "btn-draw bg-inverse text-fg-inverse disabled:bg-subtle disabled:text-fg-subtle disabled:[background-image:none]",
   secondary: "border-2 border-fg bg-canvas text-fg hover:bg-subtle disabled:border-rule disabled:bg-canvas disabled:text-fg-subtle",
   danger: "border-2 border-danger bg-canvas text-danger hover:bg-danger-soft disabled:border-rule disabled:text-fg-subtle",
 };

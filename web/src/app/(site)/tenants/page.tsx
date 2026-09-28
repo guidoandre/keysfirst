@@ -34,13 +34,15 @@ export default function TenantsPage() {
   return (
     <>
       <section className="mx-auto max-w-page px-4 pt-10 pb-14 sm:px-6 lg:px-10 lg:pt-16">
-        <p className="label text-fg-muted">For tenants</p>
-        <h1 className="mt-3 max-w-3xl font-display text-title font-bold">Pay the deposit before you arrive, without trusting a stranger.</h1>
-        <p className="mt-5 max-w-2xl text-lead text-fg-muted">
+        <p className="label enter text-fg-muted">For tenants</p>
+        <h1 className="enter mt-3 max-w-3xl font-display text-title font-bold [--enter-delay:60ms]">
+          Pay the deposit before you arrive, without trusting a stranger.
+        </h1>
+        <p className="enter mt-5 max-w-2xl text-lead text-fg-muted [--enter-delay:130ms]">
           Your deposit waits in a lock until you&apos;re standing in the room with the keys. Your landlord is paid when you confirm the handover at
           the door. If that never happens, you can take it back after the deadline.
         </p>
-        <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+        <div className="enter mt-8 flex flex-col gap-4 sm:flex-row sm:items-center [--enter-delay:200ms]">
           <AskLandlord />
           <ButtonLink href="/start" prefetch={false} variant="quiet">
             Get started
@@ -52,16 +54,16 @@ export default function TenantsPage() {
         <div className="mx-auto grid max-w-page gap-10 px-4 py-14 sm:px-6 lg:grid-cols-2 lg:px-10 lg:py-20">
           <div>
             <SectionHeader id="your-steps" eyebrow="How it works for you" title="Four steps, and the money never goes to a stranger." />
-            <div className="mt-8">
+            <div data-reveal="" className="mt-8">
               <StepList steps={STEPS} />
             </div>
           </div>
-          <div className="space-y-4">
+          <div data-reveal="" className="space-y-4">
             <h3 className="label text-fg-muted">What you need</h3>
             <ul className="grid gap-3">
               {NEEDS.map((need) => (
                 <li key={need.href}>
-                  <Link href={need.href} prefetch={isAppRoute(need.href) ? false : undefined} className="block rounded-md border-[1.5px] border-rule bg-canvas p-4 hover:border-fg">
+                  <Link href={need.href} prefetch={isAppRoute(need.href) ? false : undefined} className="card-link block rounded-md border-[1.5px] border-rule bg-canvas p-4">
                     <span className="font-display text-card font-bold">{need.title}</span>
                     <span className="mt-1 block text-body text-fg-muted">{need.text}</span>
                   </Link>

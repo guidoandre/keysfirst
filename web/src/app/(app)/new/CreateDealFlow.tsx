@@ -123,7 +123,7 @@ export function CreateDealFlow() {
       <p className="label text-fg-muted">Create a deposit link · Step {step} of 3</p>
       <div aria-hidden="true" className="mt-3 grid grid-cols-3 gap-1.5">
         {([1, 2, 3] as Step[]).map((n) => (
-          <span key={n} className={cx("h-1.5 rounded-full", n <= step ? "bg-inverse" : "bg-rule")} />
+          <span key={n} className={cx("h-1.5 rounded-full transition-colors duration-300 ease-out", n <= step ? "bg-inverse" : "bg-rule")} />
         ))}
       </div>
       <h1 ref={heading} tabIndex={-1} className="mt-6 font-display text-title font-bold">
@@ -131,138 +131,141 @@ export function CreateDealFlow() {
       </h1>
 
       <form onSubmit={submit} noValidate className="mt-6 space-y-6">
-        {step === 1 && (
-          <>
-            <p className="text-body text-fg-muted">
-              For landlords. Your tenant pays into a lock; you receive the money when they scan your code at the key handover.
-            </p>
-            <TextField
-              id="title"
-              label="Room"
-              hint="Your tenant sees this, for example “Room in Vallendar, 14 m²”."
-              counter={`${Math.max(remaining, 0)} left`}
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              error={shown("title")}
-              autoComplete="off"
-            />
-            <TextField
-              id="amount"
-              label="Deposit in euros"
-              hint="The exact amount your tenant pays into the lock."
-              inputMode="decimal"
-              placeholder="600"
-              value={amount}
-              onChange={(event) => setAmount(event.target.value)}
-              error={shown("amount")}
-              autoComplete="off"
-            />
-            <Callout tone="neutral">
-              Just trying Keysfirst?{" "}
-              <button type="button" onClick={fillDemoValues} className="font-semibold underline underline-offset-2">
-                Use demo values
-              </button>{" "}
-              (Room in Vallendar, €600.00, move-in now, 5-minute window).
-            </Callout>
-          </>
-        )}
-
-        {step === 2 && (
-          <>
-            <TextField
-              id="move-in"
-              type="datetime-local"
-              label="Move-in"
-              hint="When your tenant gets the keys, in your time zone."
-              value={moveInText}
-              onChange={(event) => setMoveInText(event.target.value)}
-              error={shown("moveIn")}
-              trailing={
-                <Button variant="secondary" onClick={() => setMoveInText(toLocalInputValue(new Date()))}>
-                  Now
-                </Button>
-              }
-            />
-            <Segmented
-              name="window"
-              legend="Latest handover (after move-in)"
-              value={windowChoice}
-              onChange={setWindowChoice}
-              disabled={demo}
-              options={WINDOW_CHOICES.map((choice) => ({
-                value: choice.value,
-                label: choice.label,
-                hint: choice.value === DEFAULT_WINDOW ? "Recommended" : undefined,
-              }))}
-            />
-            <label className="flex cursor-pointer items-start gap-3 rounded-md border-[1.5px] border-dashed border-field p-4">
-              <input
-                type="checkbox"
-                checked={demo}
-                onChange={(event) => setDemo(event.target.checked)}
-                className="mt-1 size-5 shrink-0 accent-fg"
+        {/* Keyed by step: each step's content rises in as the flow moves on (design system §8) */}
+        <div key={step} className="step-in space-y-6">
+          {step === 1 && (
+            <>
+              <p className="text-body text-fg-muted">
+                For landlords. Your tenant pays into a lock; you receive the money when they scan your code at the key handover.
+              </p>
+              <TextField
+                id="title"
+                label="Room"
+                hint="Your tenant sees this, for example “Room in Vallendar, 14 m²”."
+                counter={`${Math.max(remaining, 0)} left`}
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                error={shown("title")}
+                autoComplete="off"
               />
-              <span>
-                <span className="font-semibold">Demo: 5-minute window</span>{" "}
-                <span className="ml-1 rounded-sm bg-accent px-1.5 py-0.5 text-xs font-semibold">For trying it out</span>
-                <span className="mt-1 block text-sm text-fg-muted">
-                  The deposit goes back to your tenant 5 minutes after move-in if there&apos;s no handover. Not for a real room.
+              <TextField
+                id="amount"
+                label="Deposit in euros"
+                hint="The exact amount your tenant pays into the lock."
+                inputMode="decimal"
+                placeholder="600"
+                value={amount}
+                onChange={(event) => setAmount(event.target.value)}
+                error={shown("amount")}
+                autoComplete="off"
+              />
+              <Callout tone="neutral">
+                Just trying Keysfirst?{" "}
+                <button type="button" onClick={fillDemoValues} className="font-semibold underline underline-offset-2">
+                  Use demo values
+                </button>{" "}
+                (Room in Vallendar, €600.00, move-in now, 5-minute window).
+              </Callout>
+            </>
+          )}
+
+          {step === 2 && (
+            <>
+              <TextField
+                id="move-in"
+                type="datetime-local"
+                label="Move-in"
+                hint="When your tenant gets the keys, in your time zone."
+                value={moveInText}
+                onChange={(event) => setMoveInText(event.target.value)}
+                error={shown("moveIn")}
+                trailing={
+                  <Button variant="secondary" onClick={() => setMoveInText(toLocalInputValue(new Date()))}>
+                    Now
+                  </Button>
+                }
+              />
+              <Segmented
+                name="window"
+                legend="Latest handover (after move-in)"
+                value={windowChoice}
+                onChange={setWindowChoice}
+                disabled={demo}
+                options={WINDOW_CHOICES.map((choice) => ({
+                  value: choice.value,
+                  label: choice.label,
+                  hint: choice.value === DEFAULT_WINDOW ? "Recommended" : undefined,
+                }))}
+              />
+              <label className="flex cursor-pointer items-start gap-3 rounded-md border-[1.5px] border-dashed border-field p-4">
+                <input
+                  type="checkbox"
+                  checked={demo}
+                  onChange={(event) => setDemo(event.target.checked)}
+                  className="mt-1 size-5 shrink-0 accent-fg"
+                />
+                <span>
+                  <span className="font-semibold">Demo: 5-minute window</span>{" "}
+                  <span className="ml-1 rounded-sm bg-accent px-1.5 py-0.5 text-xs font-semibold">For trying it out</span>
+                  <span className="mt-1 block text-sm text-fg-muted">
+                    The deposit goes back to your tenant 5 minutes after move-in if there&apos;s no handover. Not for a real room.
+                  </span>
                 </span>
-              </span>
-            </label>
-            {handover && (
-              <Callout tone="info" title="Handover window">
-                From {formatShortDateTime(handover.opens)} (24 hours before move-in) until {formatShortDateTime(handover.deadline)}. If
-                there&apos;s no handover by then, the deposit goes back to your tenant.
-              </Callout>
-            )}
-          </>
-        )}
+              </label>
+              {handover && (
+                <Callout tone="info" title="Handover window">
+                  From {formatShortDateTime(handover.opens)} (24 hours before move-in) until {formatShortDateTime(handover.deadline)}. If
+                  there&apos;s no handover by then, the deposit goes back to your tenant.
+                </Callout>
+              )}
+            </>
+          )}
 
-        {step === 3 && (
-          <>
-            {values && handover ? (
-              <Timetable
-                title="How your deal runs"
-                aside={values.title}
-                footer="Creating the link costs a tiny network fee in test SOL."
-                rows={[
-                  {
-                    key: "pay",
-                    time: `By ${formatShortDateTime(handover.deadline)}`,
-                    title: `Your tenant pays ${formatEur(values.amount)} into the lock`,
-                    detail: "The exact amount, from their own wallet.",
-                    state: "now",
-                  },
-                  {
-                    key: "handover",
-                    time: formatShortDateTime(handover.opens),
-                    title: "Key handover",
-                    detail: `Until ${formatShortDateTime(handover.deadline)}. Your tenant scans your code and the money goes to you.`,
-                    state: "next",
-                  },
-                  {
-                    key: "back",
-                    time: formatShortDateTime(handover.deadline),
-                    title: "No handover by then?",
-                    detail: "The deposit goes back to your tenant.",
-                    state: "later",
-                  },
-                ]}
-              />
-            ) : (
-              <Callout tone="danger" role="alert" title="Something needs fixing">
-                {Object.values(errors).join(" ")} Use Back to correct it.
-              </Callout>
-            )}
-            {error && (
-              <Callout tone="danger" role="alert">
-                {error}
-              </Callout>
-            )}
-            {needsTestFunds(error) && <TestFundsButton />}
-          </>
-        )}
+          {step === 3 && (
+            <>
+              {values && handover ? (
+                <Timetable
+                  title="How your deal runs"
+                  aside={values.title}
+                  footer="Creating the link costs a tiny network fee in test SOL."
+                  rows={[
+                    {
+                      key: "pay",
+                      time: `By ${formatShortDateTime(handover.deadline)}`,
+                      title: `Your tenant pays ${formatEur(values.amount)} into the lock`,
+                      detail: "The exact amount, from their own wallet.",
+                      state: "now",
+                    },
+                    {
+                      key: "handover",
+                      time: formatShortDateTime(handover.opens),
+                      title: "Key handover",
+                      detail: `Until ${formatShortDateTime(handover.deadline)}. Your tenant scans your code and the money goes to you.`,
+                      state: "next",
+                    },
+                    {
+                      key: "back",
+                      time: formatShortDateTime(handover.deadline),
+                      title: "No handover by then?",
+                      detail: "The deposit goes back to your tenant.",
+                      state: "later",
+                    },
+                  ]}
+                />
+              ) : (
+                <Callout tone="danger" role="alert" title="Something needs fixing">
+                  {Object.values(errors).join(" ")} Use Back to correct it.
+                </Callout>
+              )}
+              {error && (
+                <Callout tone="danger" role="alert">
+                  {error}
+                </Callout>
+              )}
+              {needsTestFunds(error) && <TestFundsButton />}
+            </>
+          )}
+        </div>
 
         <div className="flex flex-col-reverse gap-3 border-t border-rule pt-6 sm:flex-row sm:items-start sm:justify-between">
           {step > 1 ? (

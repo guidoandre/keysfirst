@@ -44,7 +44,7 @@ export function DealView(p: DealViewProps) {
   });
 
   return (
-    <div className="mx-auto max-w-app space-y-5 px-4 py-6 sm:py-10">
+    <div className="enter-stack mx-auto max-w-app space-y-5 px-4 py-6 sm:py-10">
       {p.created && role === "landlord" && data.status === "open" && (
         <Callout tone="success" role="status" title="Your deposit link is ready">
           Send it to your tenant. This page shows it as soon as they pay.

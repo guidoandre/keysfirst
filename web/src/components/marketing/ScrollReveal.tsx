@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 // Consecutive blocks that arrive in the same frame (a row of cards) land 80 ms apart, at most 400 ms after the first.
@@ -12,6 +13,8 @@ const MAX_STAGGER_STEPS = 5;
  * JavaScript, with reduced motion, or for anything already on screen, the page renders exactly as it is.
  */
 export function ScrollReveal() {
+  // Mounted once in the marketing layout: look again after every navigation, when the page below has changed.
+  const pathname = usePathname();
   useEffect(() => {
     if (!("IntersectionObserver" in window) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
@@ -44,6 +47,6 @@ export function ScrollReveal() {
         el.style.removeProperty("--reveal-delay");
       }
     };
-  }, []);
+  }, [pathname]);
   return null;
 }

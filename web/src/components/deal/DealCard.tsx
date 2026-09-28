@@ -18,7 +18,7 @@ export function DealCard({ deal, now }: { deal: DealSummary; now: number }) {
       // role and change every second in the last hour (the countdown), so the countdown is the description instead.
       aria-label={`${deal.title}, ${amount}, ${statusLabel(deal.status, deal.role)}. ${roleLine}. ${next}`}
       aria-describedby={countdownId}
-      className="group block rounded-lg border-[1.5px] border-rule bg-canvas p-4 transition-colors duration-150 hover:border-fg"
+      className="group block rounded-lg border-[1.5px] border-rule bg-canvas p-4 transition-colors duration-200 ease-out hover:border-fg"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -35,7 +35,7 @@ export function DealCard({ deal, now }: { deal: DealSummary; now: number }) {
       </div>
       <p className="mt-3 flex items-center justify-between gap-2 border-t border-rule pt-3 font-semibold">
         {next}
-        <Icon name="arrow-right" size={18} className="shrink-0 transition-transform duration-150 group-hover:translate-x-0.5" />
+        <Icon name="arrow-right" size={18} className="shrink-0 transition-transform duration-200 ease-out group-hover:translate-x-1" />
       </p>
     </Link>
   );

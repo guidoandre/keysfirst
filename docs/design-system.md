@@ -216,7 +216,7 @@ Priority when several apply: disabled > loading > active > focus > hover > defau
 
 | State | Visual | Timing |
 |---|---|---|
-| Hover (pointer only, `@media (hover:hover)`) | Primary: 4 px Highlighter bar inside the bottom edge. Secondary: `bg-subtle`. Links: underline thickens 2 → 3 px | 150 ms ease-out |
+| Hover (pointer only, `@media (hover:hover)`) | The Highlighter draws in, it never just appears. Primary: 4 px bar grows left to right along the bottom edge (`.btn-draw`). Nav and footer links: a marker stroke draws under the text and stays under the current page (`.link-draw` on the label `<span>`). Secondary, chips, menu rows, icon buttons: `bg-subtle` fades in. Quiet links: underline thickens 2 → 3 px; plain underlined links 1 → 2 px. Link cards: border darkens (`.card-link`); deal cards also nudge their arrow 4 px. Closed FAQ question: chevron nudges 2 px toward the answer | in 200–280 ms, out 180 ms, ease-out |
 | Active | `translate-y-px` | instant |
 | Focus-visible | `--focus-ring` (white gap, ink ring, Highlighter halo) on every focusable element | none |
 | Disabled | `bg-subtle text-fg-subtle border-rule`, `cursor-not-allowed`, plus a reason line underneath ("Available from Wed 30 Sep, 14:00") | none |
@@ -309,7 +309,9 @@ All live in `web/src/components/` (primitives in `components/ui/`). Server compo
 | Status change on the deal page | `StatusChip` flips (`animate-flip`) when the status changes while viewing | 420 ms | instant swap |
 | Released | `ReleasedScreen` swings in (`animate-released`) | 450 ms | instant |
 | Sheets and dialogs | `animate-sheet` (phone) / fade + 8 px rise (desktop); exit 150 ms | 250 ms | instant |
-| Hover and press | colour/underline 150 ms; press `translate-y-px` | 150 ms | colour only |
+| Hover and press | Every `a`, `button`, `summary`, `label` and field eases colour, border, underline, shadow and translate (base layer, zero specificity); hover signatures in §5; press `translate-y-px` lands in 75–80 ms | 180–280 ms in, 180 ms out | instant |
+| App pages (deal, My deals, create, guide, handover) | `.enter-stack`: children rise 8 px, 60 ms apart (4th child onwards at 180 ms); create flow: each step's content rises in (`.step-in`, keyed by step) and the progress bar fills over 300 ms | 320 ms / 280 ms ease-out | none |
+| Marketing pages | Every page's hero rises in reading order like the landing (`.enter`), markers draw once; `ScrollReveal` sits in the `(site)` layout and re-arms after each navigation | as the landing rows above | none |
 | Waiting | pulsing dot (`animate-pulse-dot`), spinner (`animate-spin`) | loops | static dot, static icon |
 
 Only `transform` and `opacity` animate (plus `background-size` for the marker, and the FAQ answer's height). No scroll-jacking, parallax, confetti or looping decoration. Motion never delays an action: buttons work mid-animation. Every landing rule sits inside `@media (prefers-reduced-motion: no-preference)`, and reduced motion also zeroes animation and transition delays.

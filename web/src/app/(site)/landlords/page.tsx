@@ -31,15 +31,15 @@ export default function LandlordsPage() {
   return (
     <>
       <section className="mx-auto max-w-page px-4 pt-10 pb-14 sm:px-6 lg:px-10 lg:pt-16">
-        <p className="label text-fg-muted">For landlords</p>
-        <h1 className="mt-3 max-w-3xl font-display text-title font-bold">
-          Get the deposit at the <span className="marker">door</span>, in seconds.
+        <p className="label enter text-fg-muted">For landlords</p>
+        <h1 className="enter mt-3 max-w-3xl font-display text-title font-bold [--enter-delay:60ms]">
+          Get the deposit at the <span className="marker enter-marker [--enter-delay:560ms]">door</span>, in seconds.
         </h1>
-        <p className="mt-5 max-w-2xl text-lead text-fg-muted">
+        <p className="enter mt-5 max-w-2xl text-lead text-fg-muted [--enter-delay:130ms]">
           Tenants abroad can&apos;t check you out before they arrive. A deposit link shows you&apos;re genuine: they pay into a lock, and you&apos;re
           paid the moment they scan your code at the handover.
         </p>
-        <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+        <div className="enter mt-8 flex flex-col gap-4 sm:flex-row sm:items-center [--enter-delay:200ms]">
           <ButtonLink href="/new" prefetch={false} size="lg">
             Create a deposit link
           </ButtonLink>
@@ -49,8 +49,8 @@ export default function LandlordsPage() {
         </div>
         <ul className="mt-12 grid gap-6 md:grid-cols-3">
           {WHY.map((item) => (
-            <li key={item.title} className="border-t-2 border-fg pt-5">
-              <Icon name={item.icon} size={28} />
+            <li key={item.title} data-reveal="" className="reveal-rule pt-5.5">
+              <Icon name={item.icon} size={28} className="reveal-pop" />
               <h2 className="mt-3 font-display text-card font-bold">{item.title}</h2>
               <p className="mt-2 text-body text-fg-muted">{item.text}</p>
             </li>
@@ -62,11 +62,11 @@ export default function LandlordsPage() {
         <div className="mx-auto grid max-w-page gap-10 px-4 py-14 sm:px-6 lg:grid-cols-2 lg:px-10 lg:py-20">
           <div>
             <SectionHeader id="landlord-steps" eyebrow="How it works for you" title="From link to keys in four steps." />
-            <div className="mt-8">
+            <div data-reveal="" className="mt-8">
               <StepList steps={STEPS} />
             </div>
           </div>
-          <div className="self-start rounded-lg border-2 border-fg bg-canvas p-6">
+          <div data-reveal="" className="self-start rounded-lg border-2 border-fg bg-canvas p-6">
             <h3 className="font-display text-card font-bold">What if the tenant never comes?</h3>
             <p className="mt-3 text-body text-fg-muted">
               Then the deposit goes back to them after the deadline, and you lose the time the room was reserved, not money. That&apos;s the trade:

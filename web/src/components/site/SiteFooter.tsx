@@ -57,9 +57,9 @@ export function SiteFooter() {
                   <Link
                     href={link.href}
                     prefetch={isAppRoute(link.href) ? false : undefined}
-                    className="inline-flex min-h-11 min-w-11 items-center underline-offset-4 hover:underline"
+                    className="inline-flex min-h-11 min-w-11 items-center"
                   >
-                    {link.label}
+                    <span className="link-draw [--draw-h:2px]">{link.label}</span>
                   </Link>
                 </li>
               ))}

@@ -29,7 +29,7 @@ function GuideStep({ id, number, title, children, art }: { id: string; number: n
 
 export default function GetStartedPage() {
   return (
-    <div className="mx-auto max-w-page px-4 py-10 sm:px-6 lg:px-10 lg:py-16">
+    <div className="enter-stack mx-auto max-w-page px-4 py-10 sm:px-6 lg:px-10 lg:py-16">
       <p className="label text-fg-muted">Guide</p>
       <h1 className="mt-3 font-display text-title font-bold">Get started in 5 minutes</h1>
       <p className="mt-4 max-w-2xl text-lead text-fg-muted">

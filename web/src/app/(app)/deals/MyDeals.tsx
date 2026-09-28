@@ -61,7 +61,7 @@ export function DealList({ deals, now }: { deals: DealSummary[]; now: number }) 
               {title} · {items.length}
             </h2>
             {/* grid-cols-1, not the implicit auto column: a long title must truncate inside the card, not widen the page */}
-            <ul className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+            <ul className="enter-stack mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
               {items.map((deal) => (
                 <li key={deal.address}>
                   <DealCard deal={deal} now={now} />
@@ -125,7 +125,7 @@ export function MyDeals() {
 
   return (
     <div className="mx-auto max-w-page px-4 py-8 sm:px-6 sm:py-12 lg:px-10">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+      <div className="step-in flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="label text-fg-muted">Your deposits</p>
           <h1 className="mt-2 font-display text-title font-bold">My deals</h1>

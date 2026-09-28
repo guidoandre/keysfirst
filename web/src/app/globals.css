@@ -128,6 +128,18 @@
   p, li { text-wrap: pretty; }
   ::selection { background: var(--k-marker); color: var(--k-ink); }
   :focus-visible { outline: 2px solid transparent; outline-offset: 2px; box-shadow: var(--focus-ring); }
+  /* Every control eases between its states instead of snapping (design system §5 and §8). Zero specificity: a
+     component that sets its own transition wins. Presses land faster than hovers settle. */
+  :where(a, button, summary, label, input, select, textarea) {
+    transition-property: color, background-color, border-color, text-decoration-color, text-decoration-thickness, box-shadow, opacity, translate;
+    transition-duration: 180ms;
+    transition-timing-function: var(--ease-out);
+  }
+  :where(a, button):active { transition-duration: 80ms; }
+  /* Plain underlined text links thicken on hover */
+  @media (hover: hover) {
+    :where(a.underline):hover { text-decoration-thickness: 2px; }
+  }
   @media (prefers-reduced-motion: reduce) {
     *, ::before, ::after {
       animation-duration: 1ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important;
@@ -170,6 +182,7 @@
 @keyframes reveal-marker { from { background-size: 0% 100%; } }
 @keyframes pop { from { opacity: 0; transform: scale(0.82); } }
 @keyframes rule-draw { from { transform: scaleX(0); } }
+@keyframes rise-in { from { opacity: 0; transform: translateY(8px); } }
 
 @layer components {
   .reveal-rule { position: relative; }
@@ -190,6 +203,47 @@
     [data-reveal="in"] .reveal-pop { animation: pop 560ms var(--ease-settle) calc(var(--reveal-delay, 0ms) + 140ms + var(--pop-step, 0) * 90ms) both; }
     [data-reveal="in"] .reveal-rule::before,
     [data-reveal="in"].reveal-rule::before { animation: rule-draw 900ms var(--ease-settle) var(--reveal-delay, 0ms) both; }
+  }
+
+  /* ── Hover: the Highlighter draws in from the left, it never just appears ──
+     .btn-draw    primary buttons: a 4 px marker bar along the bottom edge
+     .link-draw   nav and footer links: a marker stroke under the text (on the <span> inside the link);
+                  full width on the current page. [--draw-h:2px] for a thinner stroke
+     .card-link   a card that is one link: its border darkens
+     In: 280 ms settle; out: 180 ms. Hover styles only apply to devices that can hover (no sticky taps). */
+  .btn-draw {
+    background-image: linear-gradient(var(--k-marker), var(--k-marker));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 4px;
+  }
+  .link-draw {
+    background-image: linear-gradient(var(--k-marker), var(--k-marker));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% var(--draw-h, 3px);
+    padding-bottom: 3px;
+    transition: background-size 180ms var(--ease-out);
+  }
+  [aria-current="page"] .link-draw { background-size: 100% var(--draw-h, 3px); }
+  .card-link { transition: border-color 180ms var(--ease-out); }
+  @media (hover: hover) {
+    .btn-draw:not(:disabled):hover { background-size: 100% 4px; }
+    a:hover .link-draw { background-size: 100% var(--draw-h, 3px); transition-duration: 280ms; transition-timing-function: var(--ease-settle); }
+    .card-link:hover { border-color: var(--k-ink); }
+    /* A closed FAQ question nudges its chevron toward the answer */
+    .faq-item:not([open]) > summary:hover svg { translate: 0 2px; }
+  }
+
+  /* ── App pages (Operate): quick and short, never a show ──
+     .enter-stack   children rise 8 px on first paint, 60 ms apart, all in place by ~0.5 s
+     .step-in       the create flow's step content, replayed on every step (keyed by step) */
+  @media (prefers-reduced-motion: no-preference) {
+    .enter-stack > * { animation: rise-in 320ms var(--ease-out) both; }
+    .enter-stack > :nth-child(2) { animation-delay: 60ms; }
+    .enter-stack > :nth-child(3) { animation-delay: 120ms; }
+    .enter-stack > :nth-child(n + 4) { animation-delay: 180ms; }
+    .step-in { animation: rise-in 280ms var(--ease-out) both; }
   }
 
   /* FAQ answers slide open where the browser can animate to height: auto; elsewhere they open instantly. */

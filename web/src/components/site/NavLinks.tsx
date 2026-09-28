@@ -33,13 +33,10 @@ export function NavLinks({
               prefetch={item.prefetch}
               onClick={onNavigate}
               aria-current={current ? "page" : undefined}
-              className={cx(
-                "font-semibold decoration-accent decoration-[3px] underline-offset-[6px] hover:underline",
-                orientation === "column" ? "flex min-h-11 items-center rounded-md px-2 text-lg hover:bg-subtle" : HIT_AREA,
-                current && "underline",
-              )}
+              className={cx("font-semibold", orientation === "column" ? "flex min-h-11 items-center rounded-md px-2 text-lg hover:bg-subtle" : HIT_AREA)}
             >
-              {item.label}
+              {/* The Highlighter stroke draws in on hover and stays under the current page (.link-draw) */}
+              <span className="link-draw">{item.label}</span>
             </Link>
           </li>
         );

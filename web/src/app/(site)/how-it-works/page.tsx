@@ -43,11 +43,11 @@ export default function HowItWorksPage() {
   return (
     <>
       <section className="mx-auto max-w-page px-4 pt-10 pb-14 sm:px-6 lg:px-10 lg:pt-16">
-        <p className="label text-fg-muted">How it works and safety</p>
-        <h1 className="mt-3 max-w-3xl font-display text-title font-bold">
-          Two rules and a <span className="marker">clock</span>.
+        <p className="label enter text-fg-muted">How it works and safety</p>
+        <h1 className="enter mt-3 max-w-3xl font-display text-title font-bold [--enter-delay:60ms]">
+          Two rules and a <span className="marker enter-marker [--enter-delay:560ms]">clock</span>.
         </h1>
-        <p className="mt-5 max-w-2xl text-lead text-fg-muted">
+        <p className="enter mt-5 max-w-2xl text-lead text-fg-muted [--enter-delay:130ms]">
           Keysfirst doesn&apos;t decide any deal. A public program on Solana applies the same rules to every deal: only the tenant&apos;s approval at
           the handover pays the landlord. Otherwise the deposit goes back to the tenant: the landlord can return it at any time, and after the deadline
           anyone can.
@@ -55,6 +55,8 @@ export default function HowItWorksPage() {
 
         <div className="mt-10 grid gap-6 lg:grid-cols-[3fr_2fr] lg:items-start">
           <Timetable
+            className="enter [--enter-delay:200ms]"
+            rowsEnterAt={380}
             title="A deal, start to finish"
             rows={[
               { key: "create", time: "Step 1", title: "The landlord creates the deal", detail: "Room, amount, move-in and the latest handover, at most 14 days after move-in.", state: "done" },
@@ -65,11 +67,11 @@ export default function HowItWorksPage() {
             ]}
           />
           <div className="grid gap-4">
-            <div className="rounded-lg bg-released-soft p-5">
+            <div className="enter rounded-lg bg-released-soft p-5 [--enter-delay:300ms]">
               <StatusChip status="released" />
               <p className="mt-3 text-body">When the tenant scans the landlord&apos;s code at the handover and approves in Phantom.</p>
             </div>
-            <div className="rounded-lg bg-returned-soft p-5">
+            <div className="enter rounded-lg bg-returned-soft p-5 [--enter-delay:370ms]">
               <StatusChip status="refunded" />
               <p className="mt-3 text-body">When there&apos;s no handover by the deadline, or the landlord gives the deposit back earlier.</p>
             </div>
@@ -82,7 +84,7 @@ export default function HowItWorksPage() {
           <SectionHeader id="rules" eyebrow="The rules" title="Who can do what, and when." />
           <ol className="mt-8 grid gap-3 md:grid-cols-2">
             {RULES.map((rule, i) => (
-              <li key={rule} className="flex gap-3 rounded-md bg-canvas p-4">
+              <li key={rule} data-reveal="" className="flex gap-3 rounded-md bg-canvas p-4">
                 <span className="font-display text-card font-bold text-fg-subtle tabular-nums">{i + 1}</span>
                 <span className="text-body">{rule}</span>
               </li>
@@ -99,7 +101,7 @@ export default function HowItWorksPage() {
       <section aria-labelledby="no-arbiter" className="bg-subtle">
         <div className="mx-auto grid max-w-page gap-8 px-4 py-14 sm:px-6 lg:grid-cols-2 lg:px-10 lg:py-20">
           <SectionHeader id="no-arbiter" eyebrow="Design choice" title="Why there's no judge in the middle." />
-          <div className="space-y-4 text-body text-fg-muted">
+          <div data-reveal="" className="space-y-4 text-body text-fg-muted">
             <p>
               Software can&apos;t see whether a room exists, and a judge chosen by the landlord could be the scammer&apos;s friend. The only reliable
               witness is the tenant standing in the room.
@@ -117,13 +119,13 @@ export default function HowItWorksPage() {
         <SectionHeader id="limits" eyebrow="Honest limits" title="What Keysfirst doesn't do (yet)." lead="This is a prototype. Here is everything we know it can't protect against." />
         <ul className="mt-8 grid gap-3 md:grid-cols-2">
           {LIMITS.map((limit) => (
-            <li key={limit} className="flex gap-3 rounded-md border-[1.5px] border-rule p-4">
-              <Icon name="alert" size={20} className="mt-0.5 shrink-0 text-fg-muted" />
+            <li key={limit} data-reveal="" className="flex gap-3 rounded-md border-[1.5px] border-rule p-4">
+              <Icon name="alert" size={20} className="reveal-pop mt-0.5 shrink-0 text-fg-muted" />
               <span className="text-body">{limit}</span>
             </li>
           ))}
         </ul>
-        <p className="mt-8 text-sm text-fg-muted">
+        <p data-reveal="" className="mt-8 text-sm text-fg-muted">
           Every step of every deal leaves a public receipt.{" "}
           <a href={explorerAddress(idl.address)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-semibold text-fg underline underline-offset-2">
             See the program on Solana Explorer
