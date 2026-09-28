@@ -15,7 +15,7 @@ export function ErrorView({ error, retry }: { error: Error & { digest?: string }
       <h1 className="mt-3 font-display text-title font-bold">This page hit a problem.</h1>
       <p className="mt-4 text-lead text-fg-muted">Try again. If it keeps happening, reload the page or come back in a minute.</p>
       <Callout className="mt-6" tone="info">
-        Nothing moves without your approval in Phantom, so any deposit is exactly where it was.
+        Nothing moves without your approval in Phantom.
       </Callout>
       <div className="mt-8 flex flex-wrap gap-3">
         <Button onClick={() => retry()}>Try again</Button>

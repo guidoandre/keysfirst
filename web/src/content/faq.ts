@@ -21,7 +21,7 @@ export const FAQ: FaqGroup[] = [
         id: "what-is",
         question: "What is Keysfirst?",
         answer: [
-          "A deposit link for renting a room. The tenant pays the deposit into a lock. The landlord receives it only when the tenant scans the landlord's code at the key handover. If that never happens, the money goes back to the tenant after the deadline.",
+          "A deposit link for renting a room. The tenant pays the deposit into a lock. The landlord receives it only when the tenant confirms the key handover, by scanning the landlord's code at the door or tapping “I have the keys”. If that never happens, the deposit goes back to the tenant: the landlord can return it at any time, and after the deadline anyone can.",
         ],
       },
       {
@@ -86,7 +86,7 @@ export const FAQ: FaqGroup[] = [
         id: "not-as-described",
         question: "What if the room isn't as described?",
         answer: [
-          "Don't scan. Ask the landlord to give the deposit back, which they can do at any time, or wait for the deadline and it returns to you.",
+          "Don't scan. Ask the landlord to give the deposit back, which they can do at any time, or wait for the deadline and take it back.",
         ],
       },
       {

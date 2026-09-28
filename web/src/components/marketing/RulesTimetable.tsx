@@ -11,7 +11,7 @@ export function RulesTimetable() {
       rows={[
         { key: "pay", time: "Today", title: "You pay €600.00 into the lock", detail: "From here it can only go one of two ways.", state: "now" },
         { key: "door", time: "Move-in", title: "You scan the landlord's code at the door", detail: "€600.00 goes to the landlord, in seconds.", state: "next" },
-        { key: "back", time: "Deadline", title: "No handover by then?", detail: "€600.00 comes back to you, automatically.", state: "later" },
+        { key: "back", time: "Deadline", title: "No handover by then?", detail: "Take the €600.00 back with one tap.", state: "later" },
       ]}
     />
   );

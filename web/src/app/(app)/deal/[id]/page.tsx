@@ -9,7 +9,7 @@ import { DealClient } from "./DealClient";
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string }> };
 
 const DESCRIPTION =
-  "Protected by Keysfirst: the landlord gets the deposit only when you scan their QR code at the key handover.";
+  "Protected by Keysfirst: the landlord gets the deposit only when you confirm the key handover.";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;

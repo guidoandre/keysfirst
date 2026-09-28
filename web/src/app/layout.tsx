@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: { default: "Keysfirst · The deposit moves only when the keys do", template: "%s · Keysfirst" },
   description:
-    "A deposit link for renting a room in Germany from abroad. The landlord is paid only when the tenant scans their code at the key handover; otherwise the deposit goes back. Solana devnet prototype with test money.",
+    "A deposit link for renting a room in Germany from abroad. The landlord is paid only when the tenant confirms the key handover; otherwise the deposit goes back. Solana devnet prototype with test money.",
   openGraph: { siteName: "Keysfirst", type: "website" },
   twitter: { card: "summary_large_image" },
 };

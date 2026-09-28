@@ -19,8 +19,8 @@ export const metadata: Metadata = {
 const STEPS: Step[] = [
   { pictogram: "share-link", title: "Ask for a deposit link", text: "Your landlord creates it in a minute and sends it to you." },
   { pictogram: "pay-into-lock", title: "Pay into the lock", text: "From your phone, inside Phantom. The money waits; the landlord can't take it." },
-  { pictogram: "scan-at-door", title: "At the door: check, then scan", text: "Look at the room, take the keys, then scan the landlord's code. Only then are they paid." },
-  { pictogram: "back-to-you", title: "No handover? It comes back", text: "If you never scan, the deposit returns to you after the deadline." },
+  { pictogram: "scan-at-door", title: "At the door: check, then scan", text: "Look at the room, then scan the landlord's code and take the keys. The landlord is paid only then." },
+  { pictogram: "back-to-you", title: "No handover? You take it back", text: "If the handover never happens, you can take the deposit back after the deadline." },
 ];
 
 const NEEDS = [
@@ -37,7 +37,7 @@ export default function TenantsPage() {
         <h1 className="mt-3 max-w-3xl font-display text-title font-bold">Pay the deposit before you arrive, without trusting a stranger.</h1>
         <p className="mt-5 max-w-2xl text-lead text-fg-muted">
           Your deposit waits in a lock until you&apos;re standing in the room with the keys. Your landlord is paid when you scan their code at the
-          door. If that never happens, it comes back to you.
+          door. If that never happens, you can take it back after the deadline.
         </p>
         <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
           <AskLandlord />

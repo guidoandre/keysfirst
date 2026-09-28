@@ -9,7 +9,7 @@ export const alt = "A Keysfirst deposit link";
 export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
 
-const SUBTITLE = "Protected by Keysfirst: the landlord is paid only when the tenant scans at the door.";
+const SUBTITLE = "Protected by Keysfirst: the landlord is paid only when the tenant confirms the key handover.";
 
 /** WhatsApp and Telegram previews of a deal link: amount, room and status. */
 export default async function DealImage({ params }: { params: Promise<{ id: string }> }) {

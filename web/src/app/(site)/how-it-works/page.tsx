@@ -60,8 +60,8 @@ export default function HowItWorksPage() {
               { key: "create", time: "Step 1", title: "The landlord creates the deal", detail: "Room, amount, move-in and the latest handover, at most 14 days after move-in.", state: "done" },
               { key: "pay", time: "Step 2", title: "The tenant pays into the lock", detail: "The exact amount, before the deadline.", state: "done" },
               { key: "window", time: "24 h before move-in", title: "The handover window opens", detail: "From now until the deadline, the tenant can release the deposit.", state: "now" },
-              { key: "door", time: "At the door", title: "The tenant scans the landlord's code", detail: "100% goes to the landlord, in seconds.", state: "next" },
-              { key: "deadline", time: "After the deadline", title: "No handover?", detail: "100% goes back to the tenant. Anyone can trigger it.", state: "later" },
+              { key: "door", time: "At the door", title: "The tenant scans the landlord's code", detail: "The whole deposit goes to the landlord, in seconds.", state: "next" },
+              { key: "deadline", time: "After the deadline", title: "No handover?", detail: "The whole deposit goes back to the tenant. Anyone can trigger it.", state: "later" },
             ]}
           />
           <div className="grid gap-4">

@@ -60,7 +60,9 @@ describe("nextStep", () => {
     expect(nextStep({ status: "funded", role: "tenant", times: t, now: before, amount }).message).toBe(
       "Your deposit is locked. The handover opens Wed 30 Sep, 14:00. At the door, check the room, then scan the landlord's code.",
     );
-    expect(nextStep({ status: "open", role: "visitor", times: t, now: before, amount }).message).toContain("Sun 4 Oct, 14:00");
+    expect(nextStep({ status: "open", role: "visitor", times: t, now: before, amount }).message).toBe(
+      "Pay €600.00 into the lock. The landlord gets it only when you confirm the key handover at the door. If that doesn't happen by Sun 4 Oct, 14:00, you can take it back.",
+    );
     expect(nextStep({ status: "released", role: "landlord", times: t, now: expired, amount, settledAt: moveIn + 420 }).message).toBe(
       "The tenant confirmed the handover on Thu 1 Oct, 14:07. The deposit is in your wallet.",
     );

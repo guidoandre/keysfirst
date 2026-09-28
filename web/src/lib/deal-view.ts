@@ -125,7 +125,7 @@ export function nextStep(o: { status: DealStatus; role: Role; times: DealTimes; 
       return role === "landlord"
         ? { message: "Send the link to your tenant. Once they pay, the deposit stays locked until the key handover.", ...pick(undefined, ["cancel"]) }
         : {
-            message: `Pay ${amount} into the lock. The landlord gets it only when you scan their code at the door. If that doesn't happen by ${deadline}, it comes back to you.`,
+            message: `Pay ${amount} into the lock. The landlord gets it only when you confirm the key handover at the door. If that doesn't happen by ${deadline}, you can take it back.`,
             ...pick("fund", []),
           };
     case "open-too-early":
