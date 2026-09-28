@@ -147,7 +147,7 @@ export function MyDeals() {
         )}
       </div>
       {wallet && (
-        <div className="mb-6">
+        <div className="mt-8">
           <BalanceCard />
         </div>
       )}
