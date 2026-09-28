@@ -14,7 +14,7 @@ export function SectionHeader({
   align?: "left" | "center";
 }) {
   return (
-    <div className={cx("max-w-2xl", align === "center" && "mx-auto text-center")}>
+    <div data-reveal="" className={cx("max-w-2xl", align === "center" && "mx-auto text-center")}>
       {eyebrow && <p className="label text-fg-muted">{eyebrow}</p>}
       <h2 id={id} className="mt-3 scroll-mt-24 font-display text-section font-bold">
         {title}

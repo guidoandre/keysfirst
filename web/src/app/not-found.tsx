@@ -4,7 +4,7 @@ import { ButtonLink } from "@/components/ui/Button";
 
 export const metadata: Metadata = { title: "Page not found" };
 
-/** Also handles every unmatched URL. Rendered inside the root layout (ribbon + footer), so it adds the header itself. */
+/** Also handles every unmatched URL. Rendered inside the root layout (footer only), so it adds the header itself. */
 export default function NotFound() {
   return (
     <>

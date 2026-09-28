@@ -9,7 +9,7 @@ export function FaqList({ entries }: { entries: FaqEntry[] }) {
   return (
     <div className="divide-y divide-rule border-y border-rule">
       {entries.map((entry) => (
-        <details key={entry.id} id={entry.id} className="group scroll-mt-24">
+        <details key={entry.id} id={entry.id} data-reveal="" className="faq-item group scroll-mt-24">
           <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 font-display text-card font-bold [&::-webkit-details-marker]:hidden">
             {entry.question}
             <Icon name="chevron-down" size={22} className="shrink-0 transition-transform duration-150 group-open:rotate-180" />

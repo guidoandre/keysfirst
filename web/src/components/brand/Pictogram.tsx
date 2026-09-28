@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 const INK = "#16181D";
 const MARKER = "#FFE14D";
@@ -94,9 +94,9 @@ const PICTOGRAMS = {
 
 export type PictogramName = keyof typeof PICTOGRAMS;
 
-export function Pictogram({ name, size = 56, className }: { name: PictogramName; size?: number; className?: string }) {
+export function Pictogram({ name, size = 56, className, style }: { name: PictogramName; size?: number; className?: string; style?: CSSProperties }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 56 56" aria-hidden="true" focusable="false" className={className}>
+    <svg width={size} height={size} viewBox="0 0 56 56" aria-hidden="true" focusable="false" className={className} style={style}>
       {PICTOGRAMS[name]}
     </svg>
   );

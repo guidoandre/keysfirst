@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { cx } from "@/lib/cx";
 import { Icon } from "./Icon";
 
@@ -20,6 +20,10 @@ const MARK: Record<RowState, string> = {
   later: "border-2 border-dashed border-field bg-canvas",
 };
 
+// Landing hero: rows flip in one after another, like a departure board.
+const ROW_STAGGER_MS = 90;
+const enterAt = (ms: number) => ({ "--enter-delay": `${ms}ms` }) as CSSProperties;
+
 // The row's state in words for screen readers; sighted users read it from the marker and the Highlighter row.
 const STATE_WORD: Record<RowState, string> = { done: "Done:", now: "Now:", next: "Next:", later: "Later:" };
 
@@ -30,6 +34,7 @@ export function Timetable({
   rows,
   footer,
   headingLevel = "h2",
+  rowsEnterAt,
   className,
 }: {
   title?: ReactNode;
@@ -37,6 +42,8 @@ export function Timetable({
   rows: TimetableRow[];
   footer?: ReactNode;
   headingLevel?: "h2" | "h3" | "p";
+  /** Flip the rows in on first paint, the first one after this many ms (landing hero only; design system §8). */
+  rowsEnterAt?: number;
   className?: string;
 }) {
   const Heading = headingLevel;
@@ -49,14 +56,16 @@ export function Timetable({
         </div>
       )}
       <ol className="divide-y divide-rule">
-        {rows.map((row) => (
+        {rows.map((row, i) => (
           <li
             key={row.key}
             aria-current={row.state === "now" ? "step" : undefined}
             className={cx(
               "grid grid-cols-[1.25rem_1fr] gap-x-3 gap-y-0.5 px-4 py-3.5 sm:grid-cols-[1.25rem_7rem_1fr]",
               row.state === "now" && "bg-accent-soft shadow-[inset_6px_0_0_var(--k-marker)]",
+              rowsEnterAt !== undefined && "enter-row",
             )}
+            style={rowsEnterAt !== undefined ? enterAt(rowsEnterAt + i * ROW_STAGGER_MS) : undefined}
           >
             <span
               className={cx(
@@ -81,7 +90,14 @@ export function Timetable({
           </li>
         ))}
       </ol>
-      {footer && <div className="border-t border-rule px-4 py-2.5 text-xs text-fg-muted">{footer}</div>}
+      {footer && (
+        <div
+          className={cx("border-t border-rule px-4 py-2.5 text-xs text-fg-muted", rowsEnterAt !== undefined && "enter")}
+          style={rowsEnterAt !== undefined ? enterAt(rowsEnterAt + rows.length * ROW_STAGGER_MS) : undefined}
+        >
+          {footer}
+        </div>
+      )}
     </section>
   );
 }

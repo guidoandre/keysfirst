@@ -16,7 +16,7 @@ const LETTING: Step[] = [
 export function AudienceSplit() {
   return (
     <div className="mt-10 grid gap-6 lg:grid-cols-2">
-      <section aria-labelledby="renting" className="rounded-lg border-2 border-fg p-6">
+      <section aria-labelledby="renting" data-reveal="" className="rounded-lg border-2 border-fg p-6">
         <h3 id="renting" className="label text-fg-muted">
           If you&apos;re renting
         </h3>
@@ -28,7 +28,7 @@ export function AudienceSplit() {
           How it protects tenants
         </ButtonLink>
       </section>
-      <section aria-labelledby="letting" className="rounded-lg border-2 border-fg p-6">
+      <section aria-labelledby="letting" data-reveal="" className="rounded-lg border-2 border-fg p-6">
         <h3 id="letting" className="label text-fg-muted">
           If you&apos;re letting
         </h3>

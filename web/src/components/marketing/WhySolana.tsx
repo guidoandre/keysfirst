@@ -29,14 +29,14 @@ export function WhySolana() {
       <SectionHeader id="why-solana" eyebrow="Why Solana" title="Why it runs on Solana." />
       <ul className="mt-10 grid gap-6 md:grid-cols-3">
         {FACTS.map((fact) => (
-          <li key={fact.title} className="border-t-2 border-fg pt-5">
-            <Icon name={fact.icon} size={28} />
+          <li key={fact.title} data-reveal="" className="reveal-rule pt-5.5">
+            <Icon name={fact.icon} size={28} className="reveal-pop" />
             <h3 className="mt-3 font-display text-card font-bold">{fact.title}</h3>
             <p className="mt-2 text-body text-fg-muted">{fact.text}</p>
           </li>
         ))}
       </ul>
-      <p className="mt-8 text-sm text-fg-muted">
+      <p data-reveal="" className="mt-8 text-sm text-fg-muted">
         Every step leaves a public receipt.{" "}
         <a href={explorerAddress(idl.address)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-semibold text-fg underline underline-offset-2">
           See the program on Solana Explorer

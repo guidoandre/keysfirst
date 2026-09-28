@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
-import { DevnetRibbon } from "@/components/site/DevnetRibbon";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { siteUrl } from "@/lib/site";
 import { barlow, barlowCondensed } from "./fonts";
@@ -27,7 +26,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         >
           Skip to content
         </a>
-        <DevnetRibbon />
         {children}
         <SiteFooter />
       </body>

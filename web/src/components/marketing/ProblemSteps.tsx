@@ -10,8 +10,8 @@ export function ProblemSteps() {
   return (
     <ol className="mt-10 grid gap-6 md:grid-cols-3">
       {STEPS.map((step, i) => (
-        <li key={step.title} className="rounded-lg border-[1.5px] border-rule bg-canvas p-5">
-          <Pictogram name={step.pictogram} size={52} />
+        <li key={step.title} data-reveal="" className="rounded-lg border-[1.5px] border-rule bg-canvas p-5">
+          <Pictogram name={step.pictogram} size={52} className="reveal-pop" />
           <p className="mt-4 font-display text-card font-bold">
             <span className="mr-2 text-fg-subtle tabular-nums">{i + 1}</span>
             {step.title}

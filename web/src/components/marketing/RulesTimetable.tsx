@@ -4,7 +4,8 @@ import { Timetable } from "@/components/ui/Timetable";
 export function RulesTimetable() {
   return (
     <Timetable
-      className="animate-rise"
+      className="enter [--enter-delay:160ms]"
+      rowsEnterAt={360}
       title="How your €600.00 moves"
       aside="Example"
       footer="Rules run in a public program on Solana."

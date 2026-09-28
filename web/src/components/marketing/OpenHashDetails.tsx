@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-/** Opens the <details> named in the URL hash, e.g. /faq#devnet from the devnet ribbon, and moves focus to its question. */
+/** Opens the <details> named in the URL hash, e.g. /faq#devnet, and moves focus to its question. */
 export function OpenHashDetails() {
   useEffect(() => {
     const open = (hash: string) => {
@@ -21,7 +21,7 @@ export function OpenHashDetails() {
       }
     };
     const fromLocation = () => open(window.location.hash);
-    // A link to a question on this same page (the ribbon's "What's devnet?" while on /faq) is a client-side
+    // A link to a question on this same page (e.g. a FAQ answer linking to another question) is a client-side
     // navigation that fires no hashchange, so take the hash from the clicked link.
     const fromClick = (event: MouseEvent) => {
       const link = event.target instanceof Element ? event.target.closest("a[href]") : null;

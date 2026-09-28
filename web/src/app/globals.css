@@ -88,6 +88,7 @@
   /* Motion */
   --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
   --ease-in: cubic-bezier(0.5, 0, 0.9, 0.4);
+  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1); /* landing entrances: quick start, long exact stop */
   --animate-rise: rise 200ms var(--ease-out) both;
   --animate-flip: flip 420ms var(--ease-out);
   --animate-marker: marker 600ms var(--ease-out) 150ms both;
@@ -115,7 +116,6 @@
   --btn-h-sm: 2.5rem;     /* 40px: header only; hit area padded to 44px */
   --field-h: 3rem;
   --header-h: 4rem;
-  --ribbon-h: 2rem;
   --qr-size: min(78vw, 56vh, 22rem);
   /* focus: white gap, ink ring (≥3:1 on any surface), Highlighter halo */
   --focus-ring: 0 0 0 2px var(--k-paper), 0 0 0 4px var(--k-ink), 0 0 0 7px var(--k-marker);
@@ -130,8 +130,8 @@
   :focus-visible { outline: 2px solid transparent; outline-offset: 2px; box-shadow: var(--focus-ring); }
   @media (prefers-reduced-motion: reduce) {
     *, ::before, ::after {
-      animation-duration: 1ms !important; animation-iteration-count: 1 !important;
-      transition-duration: 1ms !important; scroll-behavior: auto !important;
+      animation-duration: 1ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important;
+      transition-duration: 1ms !important; transition-delay: 0ms !important; scroll-behavior: auto !important;
     }
   }
 }
@@ -154,4 +154,57 @@
   line-height: 1;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+/* ── Landing motion (design system §8): the page arrives like a departure board, once, and only with motion allowed ──
+   .enter              rises into place on first paint; stagger with [--enter-delay:120ms]
+   .enter-row          a timetable row flipping in like a split-flap board (Timetable rowsEnterAt)
+   .enter-marker       the hero's Highlighter drawing in once the headline has landed (same [--enter-delay])
+   [data-reveal]       rises as it scrolls into view; ScrollReveal sets "pending" (below the fold) → "in"
+     .marker           inside a revealed block, the Highlighter draws in after the block lands
+     .reveal-pop       a pictogram or icon settling in with its block
+     .reveal-rule      a 2 px top rule drawn left to right (::before)
+   Without JavaScript, with reduced motion, or for anything already on screen, nothing is hidden. */
+@keyframes enter { from { opacity: 0; transform: translateY(1rem); } }
+@keyframes board-flip { from { opacity: 0; transform: perspective(700px) rotateX(-75deg); } }
+@keyframes reveal-marker { from { background-size: 0% 100%; } }
+@keyframes pop { from { opacity: 0; transform: scale(0.82); } }
+@keyframes rule-draw { from { transform: scaleX(0); } }
+
+@layer components {
+  .reveal-rule { position: relative; }
+  .reveal-rule::before {
+    content: ""; position: absolute; inset-inline: 0; top: 0; height: 2px;
+    background: var(--k-ink); transform-origin: 0 50%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .enter { animation: enter 640ms var(--ease-settle) var(--enter-delay, 0ms) both; }
+    .enter-row { animation: board-flip 560ms var(--ease-settle) var(--enter-delay, 0ms) both; transform-origin: 50% 0; }
+    .enter-marker { animation: reveal-marker 650ms var(--ease-out) var(--enter-delay, 0ms) both; }
+
+    [data-reveal="pending"] { opacity: 0; transform: translateY(1.25rem); }
+    [data-reveal="pending"] .marker { background-size: 0% 100%; }
+    [data-reveal="in"] { animation: enter 720ms var(--ease-settle) var(--reveal-delay, 0ms) both; }
+    [data-reveal="in"] .marker { animation: reveal-marker 600ms var(--ease-out) calc(var(--reveal-delay, 0ms) + 380ms) both; }
+    [data-reveal="in"] .reveal-pop { animation: pop 560ms var(--ease-settle) calc(var(--reveal-delay, 0ms) + 140ms + var(--pop-step, 0) * 90ms) both; }
+    [data-reveal="in"] .reveal-rule::before,
+    [data-reveal="in"].reveal-rule::before { animation: rule-draw 900ms var(--ease-settle) var(--reveal-delay, 0ms) both; }
+  }
+
+  /* FAQ answers slide open where the browser can animate to height: auto; elsewhere they open instantly. */
+  @supports (interpolate-size: allow-keywords) {
+    @media (prefers-reduced-motion: no-preference) {
+      .faq-item { interpolate-size: allow-keywords; }
+      .faq-item::details-content {
+        height: 0; overflow: clip;
+        transition: height 280ms var(--ease-out), content-visibility 280ms allow-discrete;
+      }
+      .faq-item[open]::details-content { height: auto; }
+    }
+  }
+
+  @media print {
+    [data-reveal] { opacity: 1 !important; transform: none !important; }
+  }
 }

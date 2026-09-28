@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import { Callout } from "@/components/ui/Callout";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
@@ -8,6 +9,7 @@ import { FaqList } from "@/components/marketing/FaqList";
 import { ProblemSteps } from "@/components/marketing/ProblemSteps";
 import { RulesTimetable } from "@/components/marketing/RulesTimetable";
 import { ScenarioGrid } from "@/components/marketing/ScenarioGrid";
+import { ScrollReveal } from "@/components/marketing/ScrollReveal";
 import { SectionHeader } from "@/components/marketing/SectionHeader";
 import { WhySolana } from "@/components/marketing/WhySolana";
 import { faqEntries, LANDING_FAQ_IDS } from "@/content/faq";
@@ -28,38 +30,39 @@ export default function LandingPage() {
   const scenarios = SCENARIOS.filter((s) => LANDING_SCENARIO_IDS.includes(s.id));
   return (
     <>
-      <section className="mx-auto grid max-w-page gap-10 px-4 pt-10 pb-14 sm:px-6 lg:grid-cols-[7fr_5fr] lg:items-center lg:gap-14 lg:px-10 lg:pt-16 lg:pb-24">
+      {/* Hero. On phones the example timetable follows the buttons and the facts close the hero; from lg the timetable
+          sits beside the text and the facts line up under it. Entrance timing: design system §8. */}
+      <section className="mx-auto grid max-w-page gap-y-8 px-4 pt-6 pb-12 sm:px-6 sm:pt-8 lg:grid-cols-[7fr_5fr] lg:gap-x-14 lg:gap-y-10 lg:px-10 lg:pt-12 lg:pb-16">
         <div>
-          <p className="label text-fg-muted">Deposit protection for rooms in Germany</p>
-          <h1 className="mt-4 font-display text-hero font-bold">
-            The deposit moves only when the <span className="marker animate-marker">keys</span> do.
+          <p className="label enter text-fg-muted">Deposit protection for rooms in Germany</p>
+          <h1 className="enter mt-3 font-display text-hero font-bold [--enter-delay:60ms]">
+            The deposit moves only when the <span className="marker enter-marker [--enter-delay:620ms]">keys</span> do.
           </h1>
-          <p className="mt-6 max-w-[36ch] text-lead text-fg-muted">
+          <p className="enter mt-5 max-w-[44ch] text-lead text-fg-muted [--enter-delay:130ms]">
             Keysfirst holds a rental deposit in a lock until the key handover. The tenant scans the landlord&apos;s code at the door and the
             landlord is paid in seconds. No handover? The money goes back to the tenant.
           </p>
-          <div className="mt-8 flex flex-col gap-5 sm:flex-row sm:items-start">
-            <div>
-              <ButtonLink href="/new" prefetch={false} size="lg" fullWidth className="sm:w-auto">
-                Create a deposit link
-              </ButtonLink>
-              <p className="mt-2 text-sm text-fg-subtle">For landlords · free on devnet</p>
-            </div>
+          <div className="enter mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6 [--enter-delay:200ms]">
+            <ButtonLink href="/new" prefetch={false} size="lg" fullWidth className="sm:w-auto">
+              Create a deposit link
+            </ButtonLink>
             {/* Cut rule: if /tenants is cut, link to /how-it-works. */}
-            <ButtonLink href="/tenants" variant="quiet" className="sm:mt-4">
+            <ButtonLink href="/tenants" variant="quiet" className="self-start sm:self-auto">
               I&apos;m renting: how it protects me
             </ButtonLink>
           </div>
-          <ul className="mt-10 grid gap-3 border-t border-rule pt-6 text-sm text-fg-muted sm:grid-cols-3">
-            {FACTS.map((fact) => (
-              <li key={fact} className="flex gap-2">
-                <Icon name="check" size={18} className="mt-0.5 shrink-0 text-fg" />
-                {fact}
-              </li>
-            ))}
-          </ul>
         </div>
-        <RulesTimetable />
+        <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-center">
+          <RulesTimetable />
+        </div>
+        <ul className="grid gap-3 border-t border-rule pt-6 text-sm text-fg-muted sm:grid-cols-3 lg:col-start-1">
+          {FACTS.map((fact, i) => (
+            <li key={fact} className="enter flex gap-2" style={{ "--enter-delay": `${300 + i * 70}ms` } as CSSProperties}>
+              <Icon name="check" size={18} className="mt-0.5 shrink-0 text-fg" />
+              {fact}
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section aria-labelledby="problem" className="bg-subtle">
@@ -72,14 +75,18 @@ export default function LandingPage() {
           />
           <ProblemSteps />
           <div className="mt-8 grid gap-4 lg:grid-cols-2">
-            <Callout tone="neutral" title="Booking platforms protect only their own listings.">
-              Keysfirst works with any listing: a Facebook group, WG-Gesucht, WhatsApp or a friend&apos;s sublet. The money waits until you&apos;re at
-              the door.
-            </Callout>
-            <Callout tone="info" title="German law is on your side.">
-              You don&apos;t have to pay the full deposit before you move in: under §551 BGB you may pay it in three monthly instalments, the first due
-              when the tenancy starts.
-            </Callout>
+            <div data-reveal="">
+              <Callout tone="neutral" title="Booking platforms protect only their own listings." className="h-full">
+                Keysfirst works with any listing: a Facebook group, WG-Gesucht, WhatsApp or a friend&apos;s sublet. The money waits until you&apos;re
+                at the door.
+              </Callout>
+            </div>
+            <div data-reveal="">
+              <Callout tone="info" title="German law is on your side." className="h-full">
+                You don&apos;t have to pay the full deposit before you move in: under §551 BGB you may pay it in three monthly instalments, the first
+                due when the tenancy starts.
+              </Callout>
+            </div>
           </div>
         </div>
       </section>
@@ -87,9 +94,11 @@ export default function LandingPage() {
       <section aria-labelledby="how" className="mx-auto max-w-page px-4 py-14 sm:px-6 lg:px-10 lg:py-24">
         <SectionHeader id="how" eyebrow="How it works" title="Three steps on each side." />
         <AudienceSplit />
-        <ButtonLink href="/how-it-works" variant="quiet" className="mt-8">
-          All the rules, step by step
-        </ButtonLink>
+        <p data-reveal="" className="mt-8">
+          <ButtonLink href="/how-it-works" variant="quiet">
+            All the rules, step by step
+          </ButtonLink>
+        </p>
       </section>
 
       <section aria-labelledby="what-if" className="bg-subtle">
@@ -107,13 +116,16 @@ export default function LandingPage() {
           <div className="mt-8">
             <FaqList entries={faqEntries(LANDING_FAQ_IDS)} />
           </div>
-          <ButtonLink href="/faq" variant="quiet" className="mt-6">
-            All questions
-          </ButtonLink>
+          <p data-reveal="" className="mt-6">
+            <ButtonLink href="/faq" variant="quiet">
+              All questions
+            </ButtonLink>
+          </p>
         </div>
       </section>
 
       <CtaBand />
+      <ScrollReveal />
     </>
   );
 }
