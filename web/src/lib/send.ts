@@ -41,7 +41,7 @@ export function friendlyError(error: unknown): string {
   if (text.includes("AccountNotInitialized")) return "This deal has already been settled. Reload the page to see its status.";
   const programMessage = text.match(/Error Message: ([^"\n\]]+)/);
   if (programMessage) return `${programMessage[1].trim().replace(/\.$/, "")}.`;
-  if (/User rejected/i.test(text)) return "You cancelled the request in your wallet.";
+  if (/User rejected/i.test(text)) return "You cancelled the request.";
   if (/\b429\b|Too many requests|rate limit/i.test(text)) return "Solana devnet is busy right now. Wait a few seconds and try again.";
   // A new deal's accounts and every fee are paid in devnet SOL; the system program logs "insufficient lamports" when it runs out.
   if (/no record of a prior credit|insufficient lamports/i.test(text)) return NEEDS_SOL;

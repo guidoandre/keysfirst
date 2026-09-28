@@ -9,7 +9,7 @@ describe("friendlyError", () => {
     expect(friendlyError(e)).toBe("The handover opens 24 hours before move-in.");
   });
   it("explains common wallet problems", () => {
-    expect(friendlyError(new Error("User rejected the request."))).toBe("You cancelled the request in your wallet.");
+    expect(friendlyError(new Error("User rejected the request."))).toBe("You cancelled the request.");
     expect(friendlyError(new Error("Attempt to debit an account but found no record of a prior credit."))).toMatch(/being topped up/);
     expect(friendlyError(new Error("Program log: Error: insufficient funds"))).toMatch(/balance doesn't cover/);
     expect(friendlyError(new Error("Log in first."))).toBe("Log in first.");

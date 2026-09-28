@@ -76,9 +76,9 @@ export default function PrivacyPage() {
           Privy only to show it in the header, and your public account number.
         </p>
         <p>
-          Legal basis: Art. 6(1)(b) GDPR (providing the service you asked for). Privy processes the data on our behalf under a data processing
-          agreement (Art. 28 GDPR) and is certified under the EU-U.S. Data Privacy Framework, which the EU Commission recognises as adequate
-          protection (Art. 45 GDPR). More: <ExternalLink href="https://www.privy.io/privacy-policy">Privy&apos;s privacy policy</ExternalLink>.
+          Legal basis: Art. 6(1)(b) GDPR (providing the service you asked for). Privy is based in the USA, so your login data is processed
+          there. How Privy protects transfers from the EU is described in{" "}
+          <ExternalLink href="https://www.privy.io/privacy-policy">Privy&apos;s privacy policy</ExternalLink>.
         </p>
       </LegalSection>
 

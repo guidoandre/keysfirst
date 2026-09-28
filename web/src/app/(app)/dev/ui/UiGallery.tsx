@@ -129,7 +129,7 @@ export function UiGallery() {
           <Callout tone="info" title="Info">Use the wallet that paid.</Callout>
           <Callout tone="success" title="Success">Done. View the receipt.</Callout>
           <Callout tone="returned" title="Returned">The deposit went back to the tenant.</Callout>
-          <Callout tone="danger" title="Error" role="alert">You cancelled the request in your wallet.</Callout>
+          <Callout tone="danger" title="Error" role="alert">You cancelled the request.</Callout>
           <Callout tone="neutral">Neutral note.</Callout>
         </div>
       </Block>
