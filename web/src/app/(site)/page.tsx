@@ -1,71 +1,119 @@
-import Link from "next/link";
+import type { Metadata } from "next";
+import { Callout } from "@/components/ui/Callout";
+import { ButtonLink } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
+import { AudienceSplit } from "@/components/marketing/AudienceSplit";
+import { CtaBand } from "@/components/marketing/CtaBand";
+import { FaqList } from "@/components/marketing/FaqList";
+import { ProblemSteps } from "@/components/marketing/ProblemSteps";
+import { RulesTimetable } from "@/components/marketing/RulesTimetable";
+import { ScenarioGrid } from "@/components/marketing/ScenarioGrid";
+import { SectionHeader } from "@/components/marketing/SectionHeader";
+import { WhySolana } from "@/components/marketing/WhySolana";
+import { faqEntries, LANDING_FAQ_IDS } from "@/content/faq";
+import { LANDING_SCENARIO_IDS, SCENARIOS } from "@/content/scenarios";
 
-const STEPS = [
-  ["The landlord creates a deposit link", "…and sends it to you on WhatsApp, WG-Gesucht or wherever you found the room."],
-  ["You pay the deposit into a lock", "Nobody controls it: not the landlord, not you, not us. Only the rules below can move it."],
-  ["At the door, you scan the landlord's QR code", "Check the room first. Scanning pays the landlord instantly, then you get the keys."],
-  ["No handover? The money comes back", "If you never scan, the deposit returns to you automatically after the deadline."],
-];
+export const dynamic = "error";
 
-export default function Home() {
+export const metadata: Metadata = {
+  // The root template doesn't reach the home page, so the title is written out in full.
+  title: { absolute: "Keysfirst · The deposit moves only when the keys do" },
+  description:
+    "Renting a room in Germany from abroad? Keysfirst holds the deposit in a lock until the key handover: the landlord is paid when you scan their code at the door, otherwise it comes back to you.",
+};
+
+const FACTS = ["Works with any listing: WG-Gesucht, Facebook, a friend's sublet", "Money only goes to the tenant or the landlord", "Automatic return after the deadline"];
+
+export default function LandingPage() {
+  const scenarios = SCENARIOS.filter((s) => LANDING_SCENARIO_IDS.includes(s.id));
   return (
-    <div className="space-y-10 pt-4">
-      <section className="space-y-4">
-        <h1 className="text-4xl font-bold leading-tight">The deposit moves only when the keys do.</h1>
-        <p className="text-lg text-stone-700">
-          Renting a room in Germany before you arrive? Keysfirst locks the deposit until the key handover. The landlord
-          is paid the moment you scan their QR code at the door. No handover, no money.
-        </p>
-        <Link href="/new" className="inline-block rounded-xl bg-emerald-700 px-5 py-3 font-semibold text-white">
-          Create a deposit link (landlords)
-        </Link>
+    <>
+      <section className="mx-auto grid max-w-page gap-10 px-4 pt-10 pb-14 sm:px-6 lg:grid-cols-[7fr_5fr] lg:items-center lg:gap-14 lg:px-10 lg:pt-16 lg:pb-24">
+        <div>
+          <p className="label text-fg-muted">Deposit protection for rooms in Germany</p>
+          <h1 className="mt-4 font-display text-hero font-bold">
+            The deposit moves only when the <span className="marker animate-marker">keys</span> do.
+          </h1>
+          <p className="mt-6 max-w-[36ch] text-lead text-fg-muted">
+            Keysfirst holds a rental deposit in a lock until the key handover. The tenant scans the landlord&apos;s code at the door and the
+            landlord is paid in seconds. No handover? The money goes back to the tenant.
+          </p>
+          <div className="mt-8 flex flex-col gap-5 sm:flex-row sm:items-start">
+            <div>
+              <ButtonLink href="/new" size="lg" fullWidth className="sm:w-auto">
+                Create a deposit link
+              </ButtonLink>
+              <p className="mt-2 text-sm text-fg-subtle">For landlords · free on devnet</p>
+            </div>
+            {/* Cut rule: if /tenants is cut, link to /how-it-works. */}
+            <ButtonLink href="/tenants" variant="quiet" className="sm:mt-4">
+              I&apos;m renting: how it protects me
+            </ButtonLink>
+          </div>
+          <ul className="mt-10 grid gap-3 border-t border-rule pt-6 text-sm text-fg-muted sm:grid-cols-3">
+            {FACTS.map((fact) => (
+              <li key={fact} className="flex gap-2">
+                <Icon name="check" size={18} className="mt-0.5 shrink-0 text-fg" />
+                {fact}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <RulesTimetable />
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-xl font-semibold">How it works</h2>
-        <ol className="space-y-3">
-          {STEPS.map(([title, body], i) => (
-            <li key={title} className="flex gap-3 rounded-2xl border border-stone-200 bg-white p-4">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-100 font-semibold text-emerald-800">
-                {i + 1}
-              </span>
-              <div>
-                <p className="font-medium">{title}</p>
-                <p className="text-sm text-stone-600">{body}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
+      <section aria-labelledby="problem" className="bg-subtle">
+        <div className="mx-auto max-w-page px-4 py-14 sm:px-6 lg:px-10 lg:py-24">
+          <SectionHeader
+            id="problem"
+            eyebrow="The problem"
+            title="Fake landlords look for tenants who can't visit."
+            lead="Students often rent a room in Germany before they arrive. That is exactly who the fake-landlord scam targets."
+          />
+          <ProblemSteps />
+          <div className="mt-8 grid gap-4 lg:grid-cols-2">
+            <Callout tone="neutral" title="Booking platforms protect only their own listings.">
+              Keysfirst works with any listing: a Facebook group, WG-Gesucht, WhatsApp or a friend&apos;s sublet. The money waits until you&apos;re at
+              the door.
+            </Callout>
+            <Callout tone="info" title="German law is on your side.">
+              You don&apos;t have to pay the full deposit before you move in: under §551 BGB you may pay it in three monthly instalments, the first due
+              when the tenancy starts.
+            </Callout>
+          </div>
+        </div>
       </section>
 
-      <section className="space-y-3 text-stone-700">
-        <h2 className="text-xl font-semibold text-stone-900">Why this exists</h2>
-        <p>
-          Fake landlords target students who rent from abroad: they post a room, ask for the deposit before any viewing,
-          and disappear. Booking platforms protect only their own listings.
-        </p>
-        <p>
-          German law doesn&apos;t even require the deposit before you move in: under §551(2) BGB the tenant may pay it
-          in three monthly instalments, the first due when the tenancy starts. Keysfirst works for any listing, from a
-          Facebook group to a friend&apos;s sublet. If a &ldquo;landlord&rdquo; refuses to use it, that&apos;s your red flag.
-        </p>
+      <section aria-labelledby="how" className="mx-auto max-w-page px-4 py-14 sm:px-6 lg:px-10 lg:py-24">
+        <SectionHeader id="how" eyebrow="How it works" title="Three steps on each side." />
+        <AudienceSplit />
+        <ButtonLink href="/how-it-works" variant="quiet" className="mt-8">
+          All the rules, step by step
+        </ButtonLink>
       </section>
 
-      <section className="space-y-3 text-stone-700">
-        <h2 className="text-xl font-semibold text-stone-900">Why Solana</h2>
-        <p>
-          Payment is final in about a second and can&apos;t be reversed, so the landlord can safely hand over the keys
-          the moment their screen turns green. The rules live in a public program on Solana: nobody, including
-          Keysfirst, can take the money. It only ever goes to the tenant or the landlord.
-        </p>
+      <section aria-labelledby="what-if" className="bg-subtle">
+        <div className="mx-auto max-w-page px-4 py-14 sm:px-6 lg:px-10 lg:py-24">
+          <SectionHeader id="what-if" eyebrow="What if…" title="The rules answer the hard questions." />
+          <ScenarioGrid scenarios={scenarios} />
+        </div>
       </section>
 
-      <section className="space-y-3 rounded-lg bg-subtle p-5 text-sm">
-        <h2 className="text-lg font-semibold">Try it (test money only)</h2>
-        <p>
-          <Link href="/deals?login=1" className="underline">Log in</Link> with Phantom set to Solana Devnet, then use Get test funds in the wallet menu.
-        </p>
+      <WhySolana />
+
+      <section aria-labelledby="faq" className="bg-subtle">
+        <div className="mx-auto max-w-read px-4 py-14 sm:px-6 lg:py-24">
+          <SectionHeader id="faq" eyebrow="FAQ" title="Questions people ask first." />
+          <div className="mt-8">
+            <FaqList entries={faqEntries(LANDING_FAQ_IDS)} />
+          </div>
+          <ButtonLink href="/faq" variant="quiet" className="mt-6">
+            All questions
+          </ButtonLink>
+        </div>
       </section>
-    </div>
+
+      <CtaBand />
+    </>
   );
 }
