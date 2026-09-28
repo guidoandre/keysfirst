@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
 import { cx } from "@/lib/cx";
 import { Icon } from "./Icon";
+import { PendingLabel } from "./PendingLabel";
 
 export type ButtonVariant = "primary" | "secondary" | "quiet" | "danger";
 export type ButtonSize = "sm" | "md" | "lg";
@@ -72,6 +73,7 @@ export function Button({
   );
 }
 
+/** `prefetch={false}` (a marketing page's link into a wallet page): a spinner shows after the label while that page loads. */
 export function ButtonLink({
   href,
   variant,
@@ -95,7 +97,7 @@ export function ButtonLink({
   }
   return (
     <Link href={href} prefetch={prefetch} className={cls} {...rest}>
-      {children}
+      {prefetch === false ? <PendingLabel centred={variant !== "quiet"}>{children}</PendingLabel> : children}
     </Link>
   );
 }
