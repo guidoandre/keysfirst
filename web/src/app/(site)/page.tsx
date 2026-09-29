@@ -20,10 +20,10 @@ export const metadata: Metadata = {
   // The root template doesn't reach the home page, so the title is written out in full.
   title: { absolute: "Keysfirst · The deposit moves only when the keys do" },
   description:
-    "Renting a room in Germany from abroad? Keysfirst holds the deposit in a lock until the key handover: the landlord is paid when you confirm the handover at the door, otherwise you can take it back after the deadline.",
+    "Renting a room in Europe from abroad? Keysfirst holds the deposit in a lock until the key handover: the landlord is paid when you confirm the handover at the door, otherwise you can take it back after the deadline.",
 };
 
-const FACTS = ["Works with any listing: WG-Gesucht, Facebook, a friend's sublet", "Money only goes to the tenant or the landlord", "After the deadline it can only go back to the tenant"];
+const FACTS = ["Works with any listing: a listing site, Facebook, a friend's sublet", "Money only goes to the tenant or the landlord", "After the deadline it can only go back to the tenant"];
 
 export default function LandingPage() {
   const scenarios = SCENARIOS.filter((s) => LANDING_SCENARIO_IDS.includes(s.id));
@@ -33,7 +33,7 @@ export default function LandingPage() {
           sits beside the text and the facts line up under it. Entrance timing: design system §8. */}
       <section className="mx-auto grid max-w-page gap-y-8 px-4 pt-6 pb-12 sm:px-6 sm:pt-8 lg:grid-cols-[7fr_5fr] lg:gap-x-14 lg:gap-y-10 lg:px-10 lg:pt-12 lg:pb-16">
         <div>
-          <p className="label enter text-fg-muted">Deposit protection for rooms in Germany</p>
+          <p className="label enter text-fg-muted">Deposit protection for rooms in Europe</p>
           <h1 className="enter mt-3 font-display text-hero font-bold [--enter-delay:60ms]">
             The deposit moves only when the <span className="marker enter-marker [--enter-delay:620ms]">keys</span> do.
           </h1>
@@ -70,20 +70,20 @@ export default function LandingPage() {
             id="problem"
             eyebrow="The problem"
             title="Fake landlords look for tenants who can't visit."
-            lead="Students often rent a room in Germany before they arrive. That is exactly who the fake-landlord scam targets."
+            lead="Students often rent a room in another country before they arrive. That is exactly who the fake-landlord scam targets."
           />
           <ProblemSteps />
           <div className="mt-8 grid gap-4 lg:grid-cols-2">
             <div data-reveal="">
               <Callout tone="neutral" title="Booking platforms protect only their own listings." className="h-full">
-                Keysfirst works with any listing: a Facebook group, WG-Gesucht, WhatsApp or a friend&apos;s sublet. The money waits until you&apos;re
+                Keysfirst works with any listing: a Facebook group, a listing site, WhatsApp or a friend&apos;s sublet. The money waits until you&apos;re
                 at the door.
               </Callout>
             </div>
             <div data-reveal="">
-              <Callout tone="info" title="German law is on your side." className="h-full">
-                You don&apos;t have to pay the full deposit before you move in: under §551 BGB you may pay it in three monthly instalments, the first
-                due when the tenancy starts.
+              <Callout tone="info" title="The law caps your deposit." className="h-full">
+                Every country we cover limits the deposit, from one month&apos;s rent to three. Keysfirst won&apos;t let a landlord create a link
+                above the limit.
               </Callout>
             </div>
           </div>

@@ -71,8 +71,8 @@ export default function TenantsPage() {
               ))}
             </ul>
             <Callout tone="info" title="If someone won't use a deposit link, ask why.">
-              An honest landlord is paid the moment you get the keys. And under §551 BGB you don&apos;t have to pay the full deposit before the tenancy
-              starts.
+              An honest landlord is paid the moment you get the keys. And you should never pay more than the law allows: Keysfirst checks the limit
+              when the landlord creates the link.
             </Callout>
           </div>
         </div>

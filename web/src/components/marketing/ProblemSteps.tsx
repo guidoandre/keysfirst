@@ -1,7 +1,7 @@
 import { Pictogram, type PictogramName } from "@/components/brand/Pictogram";
 
 const STEPS: Array<{ pictogram: PictogramName; title: string; text: string }> = [
-  { pictogram: "fake-listing", title: "A room appears online", text: "A nice room at a fair price, in a Facebook group or on WG-Gesucht." },
+  { pictogram: "fake-listing", title: "A room appears online", text: "A nice room at a fair price, in a Facebook group or on a listing site." },
   { pictogram: "landlord", title: "The \"landlord\" is abroad", text: "They can't show you the room, but want the deposit now to \"hold\" it." },
   { pictogram: "pay-into-lock", title: "You pay. They disappear.", text: "The money is gone, and so is the listing." },
 ];

@@ -35,7 +35,7 @@ export default function AboutPage() {
           Why it exists
         </h2>
         <p>
-          International students often rent a room in Germany before they arrive. Fake landlords know this: they post a room, ask for the deposit
+          International students often rent a room abroad before they arrive. Fake landlords know this: they post a room, ask for the deposit
           before any viewing, and disappear. Booking platforms only protect bookings made on their own platform.
         </p>
         <p>Keysfirst turns the key handover into the moment the deposit moves: no keys, no money.</p>
