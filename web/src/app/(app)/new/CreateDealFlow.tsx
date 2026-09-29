@@ -10,9 +10,12 @@ import { Callout } from "@/components/ui/Callout";
 import { TextField } from "@/components/ui/Field";
 import { Segmented } from "@/components/ui/Segmented";
 import { Timetable } from "@/components/ui/Timetable";
+import { CountryLaw } from "@/components/deal/CountryLaw";
 import { LoginButton } from "@/components/wallet/LoginButton";
+import { COUNTRIES, getCountry, type CountryCode } from "@/content/countries";
+import { capHint, housingOf } from "@/lib/country-rules";
 import { cx } from "@/lib/cx";
-import { formatEur, formatShortDateTime, toLocalInputValue } from "@/lib/format";
+import { formatEur, formatShortDateTime, parseEur, toLocalInputValue } from "@/lib/format";
 import { useNow } from "@/lib/hooks";
 import { createDealIx, randomDealId } from "@/lib/instructions";
 import {
@@ -33,8 +36,8 @@ import { friendlyError, needsTopUp, signAndSend } from "@/lib/send";
 
 type Step = 1 | 2 | 3;
 const STEP_TITLES: Record<Step, string> = { 1: "The room", 2: "The handover", 3: "Check and create" };
-const ALL_FIELDS: NewDealField[] = ["title", "amount", "moveIn"];
-const FIELD_ID: Record<NewDealField, string> = { title: "title", amount: "amount", moveIn: "move-in" };
+const ALL_FIELDS: NewDealField[] = ["country", "title", "rent", "amount", "moveIn"];
+const FIELD_ID: Record<NewDealField, string> = { country: "country-DE", title: "title", rent: "rent", amount: "amount", moveIn: "move-in" };
 
 export function CreateDealFlow() {
   const { connection } = useConnection();
@@ -46,6 +49,9 @@ export function CreateDealFlow() {
   const [checked, setChecked] = useState<NewDealField[]>([]);
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
+  const [country, setCountry] = useState<CountryCode | "">("");
+  const [housing, setHousing] = useState("");
+  const [rent, setRent] = useState("");
   const [moveInText, setMoveInText] = useState("");
   const [windowChoice, setWindowChoice] = useState<WindowChoice>(DEFAULT_WINDOW);
   const [demo, setDemo] = useState(false);
@@ -64,11 +70,19 @@ export function CreateDealFlow() {
 
   // datetime-local values have no zone, so Date.parse reads them in the viewer's time zone.
   const moveIn = moveInText ? Math.floor(Date.parse(moveInText) / 1000) : Number.NaN;
-  const form = { title, amount, moveIn, window: windowChoice, demo };
+  const form = { country, housing, title, rent, amount, moveIn, window: windowChoice, demo };
   const { values, errors } = validateNewDeal(form, now);
   const shown = (field: NewDealField) => (checked.includes(field) ? errors[field] : undefined);
   const handover = Number.isFinite(moveIn) ? handoverWindow(moveIn, windowSeconds(form)) : null;
   const remaining = TITLE_MAX_BYTES - titleBytes(title);
+  const selected = getCountry(country);
+  const housingOption = selected ? housingOf(selected, housing) : null;
+  const deposit = selected && housingOption ? capHint(selected, housingOption, parseEur(rent)) : null;
+
+  function chooseCountry(code: CountryCode | "") {
+    setCountry(code);
+    setHousing(getCountry(code)?.housing[0].value ?? "");
+  }
 
   function goNext() {
     if (step === 3) return;
@@ -85,6 +99,9 @@ export function CreateDealFlow() {
 
   function fillDemoValues() {
     setTitle(DEMO_VALUES.title);
+    setCountry(DEMO_VALUES.country);
+    setHousing(DEMO_VALUES.housing);
+    setRent(DEMO_VALUES.rent);
     setAmount(DEMO_VALUES.amount);
     setMoveInText(toLocalInputValue(new Date()));
     setDemo(true);
@@ -140,6 +157,24 @@ export function CreateDealFlow() {
               <p className="text-body text-fg-muted">
                 For landlords. Your tenant pays into a lock; you receive the money when they scan your code at the key handover.
               </p>
+              <Segmented<CountryCode | "">
+                name="country"
+                legend="Country of the room"
+                value={country}
+                onChange={chooseCountry}
+                error={shown("country")}
+                options={COUNTRIES.map((c) => ({ value: c.code, label: c.name.replace(/^the /, "") }))}
+              />
+              {selected && housingOption && selected.housing.length > 1 && (
+                <Segmented
+                  name="housing"
+                  legend={selected.question ?? "Rental type"}
+                  value={housingOption.value}
+                  onChange={setHousing}
+                  options={selected.housing.map((option) => ({ value: option.value, label: option.label }))}
+                />
+              )}
+              {housingOption?.months === 0 && <Callout tone="danger">{housingOption.blocked}</Callout>}
               <TextField
                 id="title"
                 label="Room"
@@ -151,9 +186,20 @@ export function CreateDealFlow() {
                 autoComplete="off"
               />
               <TextField
+                id="rent"
+                label="Monthly rent in euros"
+                hint="The basic rent per month, without heating, water or other running costs. It sets the legal maximum for the deposit."
+                inputMode="decimal"
+                placeholder="300"
+                value={rent}
+                onChange={(event) => setRent(event.target.value)}
+                error={shown("rent")}
+                autoComplete="off"
+              />
+              <TextField
                 id="amount"
                 label="Deposit in euros"
-                hint="The exact amount your tenant pays into the lock."
+                hint={deposit ?? "The exact amount your tenant pays into the lock."}
                 inputMode="decimal"
                 placeholder="600"
                 value={amount}
@@ -166,7 +212,7 @@ export function CreateDealFlow() {
                 <button type="button" onClick={fillDemoValues} className="font-semibold underline underline-offset-2">
                   Use demo values
                 </button>{" "}
-                (Room in Vallendar, €600.00, move-in now, 5-minute window).
+                (Germany, room in Vallendar, €300 rent, €600.00 deposit, move-in now, 5-minute window).
               </Callout>
             </>
           )}
@@ -225,6 +271,7 @@ export function CreateDealFlow() {
 
           {step === 3 && (
             <>
+              {selected && housingOption && <CountryLaw country={selected} housing={housingOption} />}
               {values && handover ? (
                 <Timetable
                   title="How your deal runs"

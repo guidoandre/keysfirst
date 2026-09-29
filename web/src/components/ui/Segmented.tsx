@@ -1,4 +1,5 @@
 import { cx } from "@/lib/cx";
+import { Icon } from "./Icon";
 
 export interface SegmentOption<T extends string> {
   value: T;
@@ -16,6 +17,7 @@ export function Segmented<T extends string>({
   hideLegend = false,
   disabled = false,
   className,
+  error,
 }: {
   name: string;
   legend: string;
@@ -25,9 +27,10 @@ export function Segmented<T extends string>({
   hideLegend?: boolean;
   disabled?: boolean;
   className?: string;
+  error?: string;
 }) {
   return (
-    <fieldset disabled={disabled} className={cx("min-w-0", className)}>
+    <fieldset disabled={disabled} aria-describedby={error ? `${name}-error` : undefined} className={cx("min-w-0", className)}>
       <legend className={cx("mb-2 text-sm font-semibold", hideLegend && "sr-only")}>{legend}</legend>
       <div className="flex flex-wrap gap-2">
         {options.map((option) => {
@@ -59,6 +62,12 @@ export function Segmented<T extends string>({
           );
         })}
       </div>
+      {error && (
+        <p id={`${name}-error`} className="mt-2 flex items-start gap-1.5 text-sm font-semibold text-danger">
+          <Icon name="alert" size={16} className="mt-0.5 shrink-0" />
+          {error}
+        </p>
+      )}
     </fieldset>
   );
 }
