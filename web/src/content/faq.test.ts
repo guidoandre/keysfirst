@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { COUNTRIES, LAW_CHECKED } from "./countries";
-import { FAQ, LANDING_FAQ_IDS, faqEntries } from "./faq";
+import { FAQ } from "./faq";
 
 const entries = FAQ.flatMap((group) => group.entries);
 
@@ -23,9 +23,5 @@ describe("FAQ", () => {
   it("says which countries are covered", () => {
     const answer = entries.find((e) => e.id === "countries")?.answer.join(" ") ?? "";
     for (const name of ["Germany", "the Netherlands", "Ireland", "Spain", "France", "Italy"]) expect(answer).toContain(name);
-  });
-
-  it("still finds every landing FAQ entry", () => {
-    expect(faqEntries(LANDING_FAQ_IDS)).toHaveLength(LANDING_FAQ_IDS.length);
   });
 });

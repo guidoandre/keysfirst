@@ -40,7 +40,7 @@ const COLUMNS = [
 export function SiteFooter() {
   return (
     <footer className="bg-inverse text-fg-inverse">
-      <div className="mx-auto grid max-w-page gap-10 px-4 py-12 sm:px-6 sm:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1fr_1fr] lg:px-10">
+      <div className="mx-auto grid max-w-page gap-10 px-4 py-12 sm:px-6 sm:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1fr_1fr] lg:px-10 wide-page:max-w-wide xl:wide-page:px-16">
         <div className="space-y-3 sm:col-span-3 lg:col-span-1">
           <Logo inverse />
           <p className="max-w-xs text-fg-inverse-muted">The deposit moves only when the keys do.</p>

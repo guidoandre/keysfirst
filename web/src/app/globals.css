@@ -52,6 +52,12 @@
   --text-hero: clamp(2.75rem, 1.55rem + 4.4vw, 4.75rem);
   --text-hero--line-height: 0.94;
   --text-hero--letter-spacing: -0.015em;
+  --text-hero-xl: clamp(3.125rem, min(1.8rem + 5.6vw, 10svh), 6.5rem);   /* 50 → 104 px: the landing headline; also shrinks with a short window */
+  --text-hero-xl--line-height: 0.9;
+  --text-hero-xl--letter-spacing: -0.025em;
+  --text-display: clamp(2.625rem, 1.5rem + 3vw, 4.5rem);  /* 42 → 72 px: the landing page's big section headlines */
+  --text-display--line-height: 0.94;
+  --text-display--letter-spacing: -0.02em;
   --text-title: clamp(2.25rem, 1.75rem + 2vw, 3.5rem);
   --text-title--line-height: 1;
   --text-title--letter-spacing: -0.01em;
@@ -80,6 +86,7 @@
   --container-app: 40rem;    /* deal page, create flow, hand-off */
   --container-read: 42rem;   /* guide, FAQ, long text */
   --container-page: 72rem;   /* marketing pages, dashboard */
+  --container-wide: 90rem;   /* the landing page (hero with the deal demo beside it) */
 
   /* Elevation: borders do most of the work; shadows only for things that float */
   --shadow-pop: 0 18px 40px -20px rgb(22 24 29 / 0.45);
@@ -147,6 +154,10 @@
     }
   }
 }
+
+/* On a page that runs wider than max-w-page (the landing page marks itself with data-wide-page), the site header
+   follows, so the logo lines up with the content: wide-page:max-w-wide */
+@custom-variant wide-page (&:where(body:has([data-wide-page]) *));
 
 /* The Highlighter stroke behind a word: <span class="marker">keys</span> (+ animate-marker to draw it in once) */
 @utility marker {
@@ -244,6 +255,21 @@
     .enter-stack > :nth-child(3) { animation-delay: 120ms; }
     .enter-stack > :nth-child(n + 4) { animation-delay: 180ms; }
     .step-in { animation: rise-in 280ms var(--ease-out) both; }
+  }
+
+  /* ── Landing deal demo: every step change moves, nothing snaps (remounted per step with a React key) ──
+     .demo-stagger   a phone screen's lines rise in one after another, 60 ms apart
+     .demo-in        one element fades and rises in (the caption, a button's new label)
+     .demo-pop       a control that appears settles in from slightly smaller ("No handover?") */
+  @keyframes demo-rise { from { opacity: 0; transform: translateY(6px); } }
+  @keyframes demo-pop { from { opacity: 0; transform: scale(0.9); } }
+  @media (prefers-reduced-motion: no-preference) {
+    .demo-stagger > * { animation: demo-rise 380ms var(--ease-settle) both; }
+    .demo-stagger > :nth-child(2) { animation-delay: 60ms; }
+    .demo-stagger > :nth-child(3) { animation-delay: 120ms; }
+    .demo-stagger > :nth-child(n + 4) { animation-delay: 180ms; }
+    .demo-in { animation: demo-rise 320ms var(--ease-settle) both; }
+    .demo-pop { animation: demo-pop 360ms var(--ease-settle) both; }
   }
 
   /* FAQ answers slide open where the browser can animate to height: auto; elsewhere they open instantly. */

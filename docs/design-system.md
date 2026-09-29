@@ -73,6 +73,12 @@ This block is the top of `web/src/app/globals.css`:
   --text-hero: clamp(2.75rem, 1.55rem + 4.4vw, 4.75rem);
   --text-hero--line-height: 0.94;
   --text-hero--letter-spacing: -0.015em;
+  --text-hero-xl: clamp(3.125rem, min(1.8rem + 5.6vw, 10svh), 6.5rem);   /* 50 → 104 px: the landing headline; also shrinks with a short window */
+  --text-hero-xl--line-height: 0.9;
+  --text-hero-xl--letter-spacing: -0.025em;
+  --text-display: clamp(2.625rem, 1.5rem + 3vw, 4.5rem);  /* 42 → 72 px: the landing page's big section headlines */
+  --text-display--line-height: 0.94;
+  --text-display--letter-spacing: -0.02em;
   --text-title: clamp(2.25rem, 1.75rem + 2vw, 3.5rem);
   --text-title--line-height: 1;
   --text-title--letter-spacing: -0.01em;
@@ -101,6 +107,7 @@ This block is the top of `web/src/app/globals.css`:
   --container-app: 40rem;    /* deal page, create flow, hand-off */
   --container-read: 42rem;   /* guide, FAQ, long text */
   --container-page: 72rem;   /* marketing pages, dashboard */
+  --container-wide: 90rem;   /* the landing page (hero with the deal demo beside it) */
 
   /* Elevation: borders do most of the work; shadows only for things that float */
   --shadow-pop: 0 18px 40px -20px rgb(22 24 29 / 0.45);
@@ -191,7 +198,7 @@ Notes:
 - **Base unit:** 4 px (Tailwind's default spacing scale).
 - **Breakpoints:** Tailwind defaults (`sm` 640, `md` 768, `lg` 1024, `xl` 1280). Design at 375, check at 390, 768, 1280 and 1440.
 - **Gutters:** 16 px phone (`px-4`), 24 px tablet (`sm:px-6`), 40 px desktop (`lg:px-10`).
-- **Widths:** `max-w-page` (72rem) for marketing pages and My deals; `max-w-read` (42rem) for the guide, FAQ and long text; `max-w-app` (40rem) for the deal page, the create flow and the hand-off page (a centred column, like a ticket).
+- **Widths:** `max-w-wide` (90rem, gutters `xl:px-16`) for the landing page only: its hero marks itself `data-wide-page`, and the site header and footer follow with the `wide-page:` variant so the logo lines up; `max-w-page` (72rem) for the other marketing pages and My deals; `max-w-read` (42rem) for the guide, FAQ and long text; `max-w-app` (40rem) for the deal page, the create flow and the hand-off page (a centred column, like a ticket).
 - **Section rhythm:** `py-14 lg:py-24` between marketing sections; more space above a heading than below it (heading → content 24–32 px); cards `p-5 sm:p-6`; stacks inside cards `gap-3`/`gap-4`.
 - **Grid:** 12 columns on desktop marketing pages (hero 7/5; feature rows 6/6 or 4/4/4 when content is equal); single column below `lg`.
 - **Layers (z-index):** content 0 · sticky header 30 · menus/popovers 40 · dialogs and sheets 50 · handover mode 60.
@@ -297,15 +304,17 @@ All live in `web/src/components/` (primitives in `components/ui/`). Server compo
 
 ### Marketing blocks
 
-`SectionHeader` (eyebrow label + H2 + lead), `Hero`, `StepsList` (numbered pictogram steps), `ScenarioGrid` ("What if…" cards: question, one-line answer, "the rule behind it"), `SplitAudience` (renting | letting columns), `WhySolana` (three facts + program link), `CtaBand`, `FaqList`. Their blocks carry `data-reveal`; it does nothing unless the page mounts `ScrollReveal` (only the landing page does, §8).
+`SectionHeader` (eyebrow label + H2 + lead), `StepList` (numbered pictogram steps), `ScenarioGrid` ("What if…" cards: question, one-line answer, "the rule behind it"), `CtaBand`, `FaqList`, `AskLandlord` (WhatsApp or copy the tenant's message; `useLandlordMessage` + `CopyMessageButton` for other layouts).
+
+Landing page only (copy per role and per demo step in `content/landing.ts`): `LandingRoleProvider` + `RoleToggle` ("I'm renting" / "I'm letting" rewrites the hero, the problem band and the closing band), `LandingHero`, `DealDemo` (a scripted €600.00 deal, pure client state: both phones from `sm`, the viewer's in front, a money track, "No handover?" branch; the phones take the window height the rest leaves, keep 276 × 540 proportions and scale their text with `cqi`, so the whole demo fits one screen on phones and laptops), `ProblemBand` (inverse), `WhySolana` (heading, `LockDiagram`, three rules, `NoCryptoNote`, the deploy-key caveat; the header's "Why Solana" lands on `/#why-solana`), `ClosingCta` (Highlighter band, `#ask`). Their blocks carry `data-reveal`; it does nothing unless the page mounts `ScrollReveal` (only the landing page does, §8).
 
 ## 8. Motion rules
 
 | What | Animation | Duration / easing | Reduced motion |
 |---|---|---|---|
 | Page and section content | `animate-rise` on first paint of hero and cards (≤ 3 staggered steps of 60 ms) | 200 ms ease-out | none |
-| Landing hero | `.enter` rises each part in reading order (`[--enter-delay:…]`: label 0, headline 60, lead 130, buttons 200, facts 300 + 70 ms steps); the example timetable rises at 160 ms and its rows flip in like a departure board (`rowsEnterAt`, 90 ms apart) | 640 ms rise / 560 ms flip, `ease-settle` | none |
-| Hero keyword | `marker enter-marker` draws the Highlighter once the headline has landed | 650 ms, 620 ms delay | fully drawn |
+| Landing hero | `.enter` rises each part in reading order (`[--enter-delay:…]`: toggle 0, label 40, headline 80, lead 140, deal demo 180, buttons 200, facts 260 + 70 ms steps) | 640 ms rise, `ease-settle` | none |
+| Landing deal demo | Phones swap front/back (translate + scale 450 ms, opacity 350 ms); each step the phone screen rises in line by line (`.demo-stagger`, 60 ms apart) and the status chip flips when the status changes; the €600.00 tag glides along the track while an ink fill follows it and the place it reached turns ink (700 ms); the caption and the Next label rise in (`.demo-in`), "No handover?" settles in (`.demo-pop`); the role toggle's ink fill slides across (300 ms) | 320–700 ms `ease-settle` | instant |
 | Landing sections | `[data-reveal]` blocks rise as they scroll into view (`ScrollReveal`, one IntersectionObserver); blocks arriving together land 80 ms apart (≤ 400 ms); inside a block, pictograms settle (`.reveal-pop`), "The rule:" Highlighters draw and Why-Solana rules draw left to right (`.reveal-rule`). Only blocks still below the fold are ever hidden, and only once the script runs | 720 ms, `ease-settle` | none: nothing is hidden |
 | Status change on the deal page | `StatusChip` flips (`animate-flip`) when the status changes while viewing | 420 ms | instant swap |
 | Released | `ReleasedScreen` swings in (`animate-released`) | 450 ms | instant |

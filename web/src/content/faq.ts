@@ -224,10 +224,3 @@ export const FAQ: FaqGroup[] = [
     ],
   },
 ];
-
-export const LANDING_FAQ_IDS = ["no-keys", "who-holds", "cost", "real-money"];
-
-export function faqEntries(ids: string[]): FaqEntry[] {
-  const all = FAQ.flatMap((group) => group.entries);
-  return ids.map((id) => all.find((entry) => entry.id === id)).filter((entry): entry is FaqEntry => entry !== undefined);
-}

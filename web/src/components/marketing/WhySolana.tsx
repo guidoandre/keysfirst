@@ -1,7 +1,8 @@
 import { Icon, type IconName } from "@/components/ui/Icon";
 import idl from "@/idl/keysfirst.json";
 import { explorerAddress } from "@/lib/format";
-import { SectionHeader } from "./SectionHeader";
+import { LockDiagram } from "./LockDiagram";
+import { NoCryptoNote } from "./NoCryptoNote";
 
 const FACTS: Array<{ icon: IconName; title: string; text: string }> = [
   {
@@ -23,27 +24,56 @@ const FACTS: Array<{ icon: IconName; title: string; text: string }> = [
   },
 ];
 
+/** Why it's safe: the lock is a program on Solana. The header's "Why Solana" link lands here (/#why-solana). */
 export function WhySolana() {
   return (
-    <section aria-labelledby="why-solana" className="mx-auto max-w-page px-4 py-14 sm:px-6 lg:px-10 lg:py-24">
-      <SectionHeader id="why-solana" eyebrow="Why Solana" title="Why it runs on Solana." />
-      <ul className="mt-10 grid gap-6 md:grid-cols-3">
-        {FACTS.map((fact) => (
-          <li key={fact.title} data-reveal="" className="reveal-rule pt-5.5">
-            <Icon name={fact.icon} size={28} className="reveal-pop" />
-            <h3 className="mt-3 font-display text-card font-bold">{fact.title}</h3>
-            <p className="mt-2 text-body text-fg-muted">{fact.text}</p>
-          </li>
-        ))}
-      </ul>
-      <p data-reveal="" className="mt-8 text-sm text-fg-muted">
-        Every step leaves a public receipt.{" "}
-        <a href={explorerAddress(idl.address)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-semibold text-fg underline underline-offset-2">
-          See the program on Solana Explorer
-          <Icon name="external" size={14} />
-          <span className="sr-only"> (opens in a new tab)</span>
-        </a>
-      </p>
+    <section id="why-solana" aria-labelledby="why-solana-title" className="scroll-mt-(--header-h)">
+      <div className="mx-auto max-w-wide px-4 pt-14 pb-12 sm:px-6 lg:px-10 lg:pt-24 lg:pb-20 xl:px-16">
+        <div data-reveal="" className="grid gap-4 lg:grid-cols-2 lg:items-end lg:gap-16">
+          <div>
+            <p className="label text-fg-muted lg:text-sm">Why it&apos;s safe · Solana</p>
+            <h2 id="why-solana-title" className="mt-3 font-display text-display font-bold lg:mt-4">
+              The lock is a program on <span className="marker">Solana</span>.
+            </h2>
+          </div>
+          <p className="text-[1.0625rem] leading-normal text-fg-muted lg:text-[1.1875rem]">
+            Keysfirst never holds the money. A public program on Solana does, and pays it out only by its published rules. It allows exactly
+            two ways out. Keysfirst has no button to take it.
+          </p>
+        </div>
+
+        <LockDiagram />
+
+        <ul className="mt-10 grid gap-7 md:grid-cols-3 lg:mt-16 lg:gap-10">
+          {FACTS.map((fact) => (
+            <li key={fact.title} data-reveal="" className="reveal-rule pt-4.5 lg:pt-6">
+              <Icon name={fact.icon} size={26} className="reveal-pop lg:size-7.5" />
+              <h3 className="mt-2.5 font-display text-2xl font-bold lg:mt-3">{fact.title}</h3>
+              <p className="mt-1.5 leading-[1.55] text-fg-muted lg:mt-2.5 lg:text-[1.0625rem]">{fact.text}</p>
+            </li>
+          ))}
+        </ul>
+
+        <NoCryptoNote />
+
+        <p data-reveal="" className="mt-6 flex max-w-[56.25rem] gap-2.5 text-sm leading-normal text-fg-muted lg:mt-8">
+          <Icon name="info" size={18} className="mt-px shrink-0 max-sm:hidden" />
+          <span>
+            One honest caveat: on this test network the program can still be updated by its deploy key. Before any real money, that key would
+            be locked or shared between several people.{" "}
+            <a
+              href={explorerAddress(idl.address)}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 font-semibold text-fg underline underline-offset-2"
+            >
+              See the program on Solana Explorer
+              <Icon name="external" size={14} />
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>
+          </span>
+        </p>
+      </div>
     </section>
   );
 }

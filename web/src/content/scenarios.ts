@@ -77,8 +77,6 @@ export const SCENARIOS: Scenario[] = [
   },
 ];
 
-export const LANDING_SCENARIO_IDS = ["fake-landlord", "not-as-described", "cant-travel", "no-show", "scan-early", "wrong-wallet"];
-
 export function scenariosFor(audience: "tenant" | "landlord"): Scenario[] {
   return SCENARIOS.filter((s) => s.audience === audience || s.audience === "both");
 }
