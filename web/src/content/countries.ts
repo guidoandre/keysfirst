@@ -34,7 +34,7 @@ export const COUNTRIES: Country[] = [
     housing: [{ value: "any", label: "Room or flat", months: 3 }],
     law: [
       "A deposit may be at most three months' rent without utilities (§551 BGB). The tenant may pay it in three monthly instalments.",
-      "A landlord can't demand the deposit before the tenancy starts: the first instalment is due when it begins, and a clause that says otherwise doesn't count (§551(4) BGB). Paying early through Keysfirst is the tenant's choice.",
+      "The first instalment is due when the tenancy begins (§551(2) BGB), and a clause that is worse for the tenant doesn't count (§551(4) BGB). So a landlord can't demand the full deposit up front. Paying early through Keysfirst is the tenant's choice.",
       "After the handover the landlord must keep the deposit apart from their own money, normally in a bank account, and the interest belongs to the tenant (§551(3) BGB).",
       "The law sets no return date. Courts give the landlord a reasonable time after the tenancy ends to check for damage and utility bills, usually up to about six months.",
       "Good to know: within two weeks of moving in you must register your address (Anmeldung), and the landlord must give you a written confirmation of your move-in for that.",
@@ -46,7 +46,7 @@ export const COUNTRIES: Country[] = [
     housing: [{ value: "any", label: "Room or flat", months: 2 }],
     law: [
       "A deposit may be at most two months' basic rent, without service charges, for contracts signed since 1 July 2023 (art. 7:261b BW).",
-      "The law doesn't say when the deposit is due. Paying early through Keysfirst is the tenant's choice, never a condition for the room.",
+      "As far as we know, Dutch law doesn't say when the deposit is due. Paying early through Keysfirst is the tenant's choice, never a condition for the room.",
       "After the handover the landlord may deduct only unpaid rent, service charges, damage the tenant caused and energy-label costs, and must send an itemised statement in writing. Landlords don't have to pay interest.",
       "The deposit must come back within 14 days after the tenancy ends, or within 30 days if the landlord deducts something.",
       "Good to know: rents for rooms are limited by the points system (Wet betaalbare huur), and students, also from abroad, may get a temporary contract of up to two years.",
@@ -117,7 +117,7 @@ export const COUNTRIES: Country[] = [
     housing: [{ value: "any", label: "Room or flat", months: 3 }],
     law: [
       "A deposit may be at most three months' rent (art. 11, law 392/1978).",
-      "The law doesn't ban paying before the contract exists, but money paid before it is legally an advance (caparra), not the deposit. Paying early through Keysfirst is the tenant's choice.",
+      "The law doesn't ban paying before the contract exists. Money paid before it is usually treated as an advance (caparra) rather than the deposit, and how that applies to a payment held by a platform isn't settled. Paying early through Keysfirst is the tenant's choice.",
       "After the handover the deposit earns legal interest for the tenant, paid every year (1.60% in 2026). A clause that removes the interest doesn't count.",
       "The landlord returns the deposit when the lease ends and the home is handed back, and can't keep it without showing the damage it covers.",
       "Good to know: the lease must be in writing and the landlord must register it with the tax office (Agenzia delle Entrate) within 30 days. For that a foreign tenant needs an Italian tax code (codice fiscale).",
