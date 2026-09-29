@@ -6,7 +6,7 @@ Keysfirst protects rental deposits for students and young professionals who rent
 
 Nobody needs a wallet app or crypto: you log in with your email or Google, pay by card, and withdraw to your bank. Solana is the backbone: every deal is an on-chain escrow that no one, including Keysfirst, can redirect.
 
-**Live prototype:** https://keysfirst.vercel.app (Solana devnet, Stripe test mode: no real money moves)
+**Live prototype:** https://www.keysfirst.io (Solana devnet, Stripe test mode: no real money moves)
 
 ## Try it in 5 minutes
 
@@ -15,7 +15,7 @@ Nobody needs a wallet app or crypto: you log in with your email or Google, pay b
 3. **At the door:** the landlord taps **Start the handover** and shows a QR code; the tenant scans it with the phone camera and taps **I have the keys**. The landlord is paid in seconds.
 4. **Withdraw:** the landlord opens the account menu and taps **Withdraw to bank** (the bank payout is simulated in the prototype).
 
-A step-by-step guide is at [/start](https://keysfirst.vercel.app/start).
+A step-by-step guide is at [/start](https://www.keysfirst.io/start).
 
 ## How a deal works
 

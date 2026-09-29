@@ -28,10 +28,15 @@ describe("returnOrigin", () => {
   it("trusts a *.vercel.app preview", () => {
     expect(returnOrigin("https://keysfirst-git-euro-atlas-fee2.vercel.app/api/checkout")).toBe("https://keysfirst-git-euro-atlas-fee2.vercel.app");
   });
-  it("trusts keysfirst.vercel.app (production)", () => {
+  it("trusts keysfirst.vercel.app", () => {
     expect(returnOrigin("https://keysfirst.vercel.app/api/checkout")).toBe("https://keysfirst.vercel.app");
   });
+  it("trusts keysfirst.io with and without www (production)", () => {
+    expect(returnOrigin("https://www.keysfirst.io/api/checkout")).toBe("https://www.keysfirst.io");
+    expect(returnOrigin("https://keysfirst.io/api/checkout")).toBe("https://keysfirst.io");
+  });
   it("falls back to production for any other host", () => {
-    expect(returnOrigin("https://evil.example.com/api/checkout")).toBe("https://keysfirst.vercel.app");
+    expect(returnOrigin("https://evil.example.com/api/checkout")).toBe("https://www.keysfirst.io");
+    expect(returnOrigin("https://keysfirst.io.evil.com/api/checkout")).toBe("https://www.keysfirst.io");
   });
 });

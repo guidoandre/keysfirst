@@ -1,4 +1,5 @@
 import { canFund, type DealStatus, type DealTimes } from "./rules";
+import { PRODUCTION_URL } from "./site";
 
 /** Why `account` can't start a card payment for this deal right now; null if it can. Mirrors the program's fund checks. */
 export function checkoutProblem(o: { status: DealStatus; landlord: string; account: string; times: DealTimes; now: number }): string | null {
@@ -8,9 +9,11 @@ export function checkoutProblem(o: { status: DealStatus; landlord: string; accou
   return null;
 }
 
-/** Checkout's success/cancel URLs come back from the Host header, so only trust known hosts (devnet + Vercel); anything else falls back to production. */
+const TRUSTED_HOSTS = ["localhost", "127.0.0.1", "keysfirst.io", "www.keysfirst.io"];
+
+/** Checkout's success/cancel URLs come back from the Host header, so only trust known hosts (dev, our domain, Vercel); anything else falls back to production. */
 export function returnOrigin(requestUrl: string): string {
   const url = new URL(requestUrl);
   const host = url.hostname;
-  return host === "localhost" || host === "127.0.0.1" || host.endsWith(".vercel.app") ? url.origin : "https://keysfirst.vercel.app";
+  return TRUSTED_HOSTS.includes(host) || host.endsWith(".vercel.app") ? url.origin : PRODUCTION_URL;
 }

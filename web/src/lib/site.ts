@@ -1,4 +1,4 @@
-export const PRODUCTION_URL = "https://keysfirst.vercel.app";
+export const PRODUCTION_URL = "https://www.keysfirst.io";
 
 /**
  * The public origin used for metadata and link previews. Comes from the build environment, never from

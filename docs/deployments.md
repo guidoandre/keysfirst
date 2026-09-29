@@ -9,5 +9,5 @@
 | Test EUR mint | `5Me8DGHKU8tbr8Q9sUdHMsvtU7Wy4QsnvFvWedGGnfPE` (Token-2022, 6 decimals, symbol tEUR, no freeze authority) — https://explorer.solana.com/address/5Me8DGHKU8tbr8Q9sUdHMsvtU7Wy4QsnvFvWedGGnfPE?cluster=devnet |
 | Mint transaction | https://explorer.solana.com/tx/2JU3P2c8aw6hMfP11QrW7rxEmG8Mfc2jrELcfGo3q5Q7Kxgb3xFHf2TbtwLFfjcX1ykwrWRfpDpFmA1hWVcEQbZy?cluster=devnet |
 | Faucet wallet (mint authority) | `5s735wKnBWKptwuGp7qSh2YYDNdyUuXhzwafDd2UAZ1b` (funded with 3 devnet SOL; secret only in `web/.keys/` and Vercel env) |
-| Web app | https://keysfirst.vercel.app |
+| Web app | https://www.keysfirst.io (keysfirst.io redirects there; https://keysfirst.vercel.app still serves the same deployment) |
 | RPC (web app) | Helius devnet (free plan), set in Vercel as `NEXT_PUBLIC_RPC_URL` since 2026-09-27; replaces the public `api.devnet.solana.com`, which rate-limits per network |
