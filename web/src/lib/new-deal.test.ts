@@ -3,7 +3,7 @@ import { DEMO_WINDOW_SECONDS, handoverWindow, titleBytes, validateNewDeal, windo
 
 const DAY = 86_400;
 const now = 1_790_000_000;
-const good: NewDealForm = { title: "Room in Vallendar", amount: "600", moveIn: now + DAY, window: "3d", demo: false };
+const good: NewDealForm = { country: "DE", housing: "any", title: "Room in Vallendar", rent: "300", amount: "600", moveIn: now + DAY, window: "3d", demo: false };
 
 describe("validateNewDeal", () => {
   it("accepts a complete deal and computes the deadline", () => {
@@ -29,6 +29,44 @@ describe("validateNewDeal", () => {
 
   it("rejects a deadline that is already in the past", () => {
     expect(validateNewDeal({ ...good, moveIn: now - 5 * DAY }, now).errors.moveIn).toMatch(/already in the past/);
+  });
+
+  it("needs a country", () => {
+    const { values, errors } = validateNewDeal({ ...good, country: "" }, now);
+    expect(errors.country).toMatch(/Choose the country/);
+    expect(values).toBeNull();
+  });
+
+  it("needs a monthly rent in euros", () => {
+    expect(validateNewDeal({ ...good, rent: "" }, now).errors.rent).toMatch(/monthly rent/);
+    expect(validateNewDeal({ ...good, rent: "abc" }, now).values).toBeNull();
+    expect(validateNewDeal({ ...good, rent: "450,50" }, now).errors.rent).toBeUndefined();
+  });
+
+  it("blocks a deposit above the country's legal maximum", () => {
+    expect(validateNewDeal({ ...good, rent: "200", amount: "600" }, now).errors.amount).toBeUndefined(); // 3 × 200, Germany
+    const over = validateNewDeal({ ...good, rent: "200", amount: "600.01" }, now);
+    expect(over.errors.amount).toMatch(/Germany.*€600\.00.*3 months/);
+    expect(over.values).toBeNull();
+  });
+
+  it("applies the rental type's cap", () => {
+    const es = { ...good, country: "ES" as const, rent: "400" };
+    expect(validateNewDeal({ ...es, housing: "long", amount: "401" }, now).errors.amount).toMatch(/1 month/);
+    expect(validateNewDeal({ ...es, housing: "seasonal", amount: "800" }, now).errors.amount).toBeUndefined();
+    expect(validateNewDeal({ ...es, housing: "seasonal", amount: "801" }, now).errors.amount).toMatch(/2 months/);
+    // a rental type left over from another country falls back to that country's first type (Spain: long-term, 1 month)
+    expect(validateNewDeal({ ...es, housing: "mobilite", amount: "401" }, now).errors.amount).toMatch(/1 month/);
+  });
+
+  it("refuses any deposit for a lease type that allows none", () => {
+    const mobilite = { ...good, country: "FR" as const, housing: "mobilite", rent: "500", amount: "1" };
+    expect(validateNewDeal(mobilite, now).errors.amount).toMatch(/bail mobilité/);
+    expect(validateNewDeal(mobilite, now).values).toBeNull();
+  });
+
+  it("keeps the amount error about the format when the amount isn't a number", () => {
+    expect(validateNewDeal({ ...good, amount: "abc" }, now).errors.amount).toMatch(/euros/);
   });
 
   it("uses the 5-minute window in demo mode", () => {
