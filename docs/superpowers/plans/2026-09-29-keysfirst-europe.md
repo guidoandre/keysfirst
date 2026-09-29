@@ -64,7 +64,7 @@
   - `capHint(country: Country, housing: HousingOption, rent: bigint | null): string | null`
   - `capError(country: Country, housing: HousingOption, rent: bigint | null, amount: bigint | null): string | null`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `web/src/lib/country-rules.test.ts`:
 
@@ -195,12 +195,12 @@ describe("COUNTRIES", () => {
 });
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run (PowerShell, in `web/`): `npm test -- country`
 Expected: FAIL, "Failed to resolve import" for `@/content/countries` and `./country-rules`.
 
-- [ ] **Step 3: Write the country data**
+- [x] **Step 3: Write the country data**
 
 Create `web/src/content/countries.ts`:
 
@@ -337,7 +337,7 @@ export function getCountry(code: string): Country | undefined {
 }
 ```
 
-- [ ] **Step 4: Write the rules module**
+- [x] **Step 4: Write the rules module**
 
 Create `web/src/lib/country-rules.ts`:
 
@@ -373,12 +373,12 @@ export function capError(country: Country, housing: HousingOption, rent: bigint 
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run (PowerShell, in `web/`): `npm test -- country`
 Expected: PASS (`country-rules.test.ts` and `countries.test.ts`).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git switch -c europe
@@ -403,7 +403,7 @@ git commit -m "feat(web): country rules for six European countries and the depos
   - `DEMO_VALUES = { country: "DE", housing: "any", title: "Room in Vallendar", rent: "300", amount: "600" }` (typed `as const`).
   - `NewDealValues` is unchanged (country is not stored).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 In `web/src/lib/new-deal.test.ts`, replace the `good` definition and add the new cases. Change line 6 to:
 
@@ -455,12 +455,12 @@ Add inside `describe("validateNewDeal", ...)`, after the "rejects a deadline tha
 
 Also update the import on line 2 to add nothing new (the existing names are enough).
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run (PowerShell, in `web/`): `npm test -- new-deal`
 Expected: FAIL (type errors are not checked by vitest, but the new tests fail: `errors.country`, `errors.rent` and the cap messages are undefined).
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 In `web/src/lib/new-deal.ts`:
 
@@ -546,12 +546,12 @@ export function validateNewDeal(form: NewDealForm, now: number): { values: NewDe
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run (PowerShell, in `web/`): `npm test -- new-deal`
 Expected: PASS, including the six original tests.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add web/src/lib/new-deal.ts web/src/lib/new-deal.test.ts
@@ -573,7 +573,7 @@ git commit -m "feat(web): block a deposit above the country's legal maximum in t
 - Consumes: everything produced by tasks 1 and 2.
 - Produces: `Segmented` accepts `error?: string`; `CountryLaw({ country, housing })`.
 
-- [ ] **Step 1: Add an `error` line to `Segmented`**
+- [x] **Step 1: Add an `error` line to `Segmented`**
 
 In `web/src/components/ui/Segmented.tsx`, add the import after the `cx` import:
 
@@ -596,7 +596,7 @@ Add `error,` to the destructured props and `error?: string;` to the prop types (
       )}
 ```
 
-- [ ] **Step 2: Create the law panel**
+- [x] **Step 2: Create the law panel**
 
 Create `web/src/components/deal/CountryLaw.tsx`:
 
@@ -628,7 +628,7 @@ export function CountryLaw({ country, housing }: { country: Country; housing: Ho
 }
 ```
 
-- [ ] **Step 3: Wire the create flow**
+- [x] **Step 3: Wire the create flow**
 
 In `web/src/app/(app)/new/CreateDealFlow.tsx`:
 
@@ -750,13 +750,13 @@ The button label drops the leading "the" ("the Netherlands" becomes "Netherlands
               {selected && housingOption && <CountryLaw country={selected} housing={housingOption} />}
 ```
 
-- [ ] **Step 4: Type-check, lint and run the unit tests**
+- [x] **Step 4: Type-check, lint and run the unit tests**
 
 Run (PowerShell, in `web/`):
 `npx tsc --noEmit ; npm run lint ; npm test`
 Expected: no type errors, no lint errors, all tests pass.
 
-- [ ] **Step 5: Check the flow in the browser**
+- [x] **Step 5: Check the flow in the browser**
 
 Start the dev server with `preview_start` `{name: "web"}` and open `/new`. Check, reading the page with `read_page` and taking one screenshot at the end:
 1. Step 1 shows the country choices first. Press Next with nothing filled: the first error is "Choose the country where the room is." and focus goes to the first country option.
@@ -767,7 +767,7 @@ Start the dev server with `preview_start` `{name: "web"}` and open `/new`. Check
 6. Step 3 shows "What the law says in Germany" with five bullets, the "General information, not legal advice" line and the FAQ link; with Ireland "Yes, they live there too", the neutral licence note appears below it.
 7. `read_console_messages` shows no errors. Then resize to mobile (`resize_window` preset `mobile`), screenshot step 1, and reset with preset `desktop`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add web/src/components/ui/Segmented.tsx web/src/components/deal/CountryLaw.tsx "web/src/app/(app)/new/CreateDealFlow.tsx"
@@ -787,7 +787,7 @@ git commit -m "feat(web): pick the country, check the deposit cap live and show 
 - Consumes: `COUNTRIES`, `LAW_CHECKED` (task 1).
 - Produces: FAQ entry ids `law-de`, `law-nl`, `law-ie`, `law-es`, `law-fr`, `law-it` (linked from `CountryLaw`) and `countries`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `web/src/content/faq.test.ts`:
 
@@ -824,12 +824,12 @@ describe("FAQ", () => {
 });
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run (PowerShell, in `web/`): `npm test -- faq`
 Expected: FAIL (`law-de` entry and `countries` entry missing).
 
-- [ ] **Step 3: Update `faq.ts`**
+- [x] **Step 3: Update `faq.ts`**
 
 At the top of `web/src/content/faq.ts` add:
 
@@ -917,7 +917,7 @@ Replace the whole `law` group (`id: "law", title: "German law"`, its entries `la
 
 The `regulated` and `data` entries are the ones already in the file, unchanged; the group's old `law`, `choice` and `after-handover` entries are replaced by the ones above.
 
-- [ ] **Step 4: Update the FAQ page description**
+- [x] **Step 4: Update the FAQ page description**
 
 In `web/src/app/(site)/faq/page.tsx`, replace the `description` with:
 
@@ -925,14 +925,14 @@ In `web/src/app/(site)/faq/page.tsx`, replace the `description` with:
   description: "How Keysfirst works, who holds the money, the deposit rules in each country, your account, test money and the prototype.",
 ```
 
-- [ ] **Step 5: Run the tests and check the page**
+- [x] **Step 5: Run the tests and check the page**
 
 Run (PowerShell, in `web/`): `npm test ; npm run lint`
 Expected: all tests pass, no lint errors.
 
 With the dev server from task 3 running, open `/faq#law-ie`: the Ireland entry opens and takes focus; `/faq#law` opens the intro; the group heading reads "Deposit rules by country"; `read_console_messages` shows no errors.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add web/src/content/faq.ts web/src/content/faq.test.ts "web/src/app/(site)/faq/page.tsx"
@@ -953,7 +953,7 @@ git commit -m "feat(web): FAQ with the deposit rules of each country" -m "Co-Aut
 
 Leave alone: the two "Superteam Germany" mentions (about, terms, impressum: they name the challenge), the operator address, the terms' governing-law clause ("German law applies", consumer carve-out) and the privacy policy.
 
-- [ ] **Step 1: Edit each string**
+- [x] **Step 1: Edit each string**
 
 | File | Old | New |
 |---|---|---|
@@ -972,17 +972,17 @@ Leave alone: the two "Superteam Germany" mentions (about, terms, impressum: they
 | `handover/page.tsx` | comment `the handover happens at a door in Germany.`; `const GERMAN_TIME = "Europe/Berlin";`; `(German time)` | comment `the handover happens at a door in Europe; Central European time is shown (Ireland is one hour behind).`; `const CENTRAL_EUROPEAN_TIME = "Europe/Berlin";` (and the use in `at`); `(Central European time)` |
 | `lib/legal.ts` | `export const LEGAL_UPDATED = "28 September 2026";` | `export const LEGAL_UPDATED = "29 September 2026";` |
 
-- [ ] **Step 2: Find anything missed**
+- [x] **Step 2: Find anything missed**
 
 Run: use the Grep tool for `German|Germany|BGB|WG-Gesucht` in `web/src` (excluding tests).
 Expected remaining matches only: the two "Superteam Germany" lines (about, terms, impressum), `legal.ts` `country: "Germany"`, the terms governing-law and product-liability lines, the privacy line about the German state, `countries.ts` (Germany's own rules) and `faq.ts` ("Germany" in the examples, `regulated` entry). Anything else: change it to "Europe" wording.
 
-- [ ] **Step 3: Verify**
+- [x] **Step 3: Verify**
 
 Run (PowerShell, in `web/`): `npx tsc --noEmit ; npm run lint ; npm test ; npm run build`
 Expected: all pass. The build must keep `/`, `/faq`, `/about`, `/tenants`, `/terms` static (`export const dynamic = "error"` would fail the build otherwise). Then with the dev server: `/` hero says "Deposit protection for rooms in Europe", the callout says "The law caps your deposit."; `/tenants` and `/about` read correctly; `read_console_messages` shows no errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add web/src/app/layout.tsx web/src/app/opengraph-image.tsx "web/src/app/(site)/page.tsx" "web/src/app/(site)/about/page.tsx" "web/src/app/(site)/tenants/page.tsx" "web/src/app/(site)/terms/page.tsx" web/src/components/marketing/ProblemSteps.tsx "web/src/app/(app)/deal/[id]/handover/page.tsx" web/src/lib/legal.ts
@@ -997,16 +997,16 @@ git commit -m "docs(web): Europe wording on the marketing pages and the hand-off
 - Modify: `CLAUDE.md` (project root)
 - Modify: `docs/superpowers/plans/2026-09-29-keysfirst-europe.md` (tick the boxes)
 
-- [ ] **Step 1: Full check**
+- [x] **Step 1: Full check**
 
 Run (PowerShell, in `web/`): `npx tsc --noEmit ; npm run lint ; npm test ; npm run build`
 Expected: all pass. Confirm `git status` shows only the pre-existing uncommitted files plus nothing new from this plan.
 
-- [ ] **Step 2: Walk the whole flow once more**
+- [x] **Step 2: Walk the whole flow once more**
 
 With the dev server: on mobile width (`resize_window` `mobile`, reset to `desktop` afterwards) walk `/new` for Netherlands (rent 400: deposit 800 passes, 801 blocked), Italy (rent 500: 1500 passes) and Ireland, and confirm each step 3 shows that country's five points. Take one screenshot of step 3 for the user.
 
-- [ ] **Step 3: Update the project notes**
+- [x] **Step 3: Update the project notes**
 
 In `CLAUDE.md` add one line under the existing notes:
 
@@ -1016,14 +1016,14 @@ In `CLAUDE.md` add one line under the existing notes:
 
 `CLAUDE.md` already has uncommitted edits from earlier work: do not commit it. Tell the user it is edited and left with their other pending changes.
 
-- [ ] **Step 4: Tick the boxes and commit the plan**
+- [x] **Step 4: Tick the boxes and commit the plan**
 
 ```bash
 git add docs/superpowers/plans/2026-09-29-keysfirst-europe.md
 git commit -m "docs: tick the Europe plan" -m "Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"
 ```
 
-- [ ] **Step 5: Report to the user**
+- [x] **Step 5: Report to the user**
 
 What works (country choice, cap check, law step, FAQ, Europe wording), what doesn't (nothing about the country on the deal page; the cap is not enforced on-chain, so someone using the program directly can bypass it; the hand-off page shows Central European time, an hour ahead of Ireland; law text is general information and needs a lawyer's check before a live launch), what's next (deal-page checklists and the landlord's Released list, then merge to `main` after the user has seen the Preview).
 
