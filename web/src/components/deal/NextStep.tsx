@@ -51,6 +51,17 @@ export function NextStep({
       </h2>
       <p className="text-body">{view.message}</p>
 
+      {/* The tenant is about to pay: nudge them to compare the deposit with the rent in their contract (deposit caps differ by country). */}
+      {primary === "fund" && (
+        <Callout tone="neutral" title="Check the amount first">
+          By law a deposit is at most 1 to 3 months&apos; rent, depending on the country. Compare it with the rent in your contract before you pay.{" "}
+          <a href="/faq#law" target="_blank" rel="noreferrer" className="font-semibold underline underline-offset-2">
+            Deposit rules by country
+            <span className="sr-only"> (opens in a new tab)</span>
+          </a>
+        </Callout>
+      )}
+
       {/* Logged out with nothing to tap: the landlord and the tenant only see their buttons once logged in.
           The button opens the Privy login (email or Google; Phantom stays optional). */}
       {!connected && !primary && !settled && <LoginButton label="Log in to see your options" variant="secondary" fullWidth />}
