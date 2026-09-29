@@ -16,7 +16,7 @@ export const monthsLabel = (months: number) => (months === 1 ? "1 month" : `${mo
 /** Live hint under the deposit field; null until the rent is known or when no deposit is allowed. */
 export function capHint(country: Country, housing: HousingOption, rent: bigint | null): string | null {
   if (rent === null || housing.months === 0) return null;
-  return `The most allowed in ${country.name} is ${formatEur(depositCap(rent, housing))} (${monthsLabel(housing.months)} of rent).`;
+  return `The legal deposit in ${country.name} is at most ${formatEur(depositCap(rent, housing))} (${monthsLabel(housing.months)} of rent).`;
 }
 
 /** Why this deposit is illegal for this country and rental type; null if it is fine or not checkable yet. */
@@ -25,5 +25,5 @@ export function capError(country: Country, housing: HousingOption, rent: bigint 
   if (rent === null || amount === null) return null;
   const cap = depositCap(rent, housing);
   if (amount <= cap) return null;
-  return `The most a landlord may ask in ${country.name} is ${formatEur(cap)}: ${monthsLabel(housing.months)} of the monthly rent. Lower the deposit.`;
+  return `The legal deposit in ${country.name} is at most ${formatEur(cap)}: ${monthsLabel(housing.months)} of the monthly rent. Lower the deposit.`;
 }

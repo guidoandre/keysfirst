@@ -37,7 +37,7 @@ export const FAQ: FaqGroup[] = [
         id: "countries",
         question: "Which countries does it cover?",
         answer: [
-          "Germany, the Netherlands, Ireland, Spain, France and Italy. In these countries we checked the deposit rules, and when a landlord creates a link Keysfirst stops a deposit above the legal maximum.",
+          "Germany, the Netherlands, Ireland, Spain, France and Italy. In these countries we checked the deposit rules, and when a landlord creates a link Keysfirst checks the deposit against the rent they enter and the country's legal maximum. Always compare it with the rent in your contract.",
           "Rooms in other countries aren't covered yet.",
         ],
         link: { href: "/faq#law", label: "Deposit rules by country" },

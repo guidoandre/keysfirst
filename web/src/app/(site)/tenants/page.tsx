@@ -71,8 +71,8 @@ export default function TenantsPage() {
               ))}
             </ul>
             <Callout tone="info" title="If someone won't use a deposit link, ask why.">
-              An honest landlord is paid the moment you get the keys. And you should never pay more than the law allows: Keysfirst checks the limit
-              when the landlord creates the link.
+              An honest landlord is paid the moment you get the keys. And a deposit is limited by law: when a landlord creates a link Keysfirst
+              checks it against the rent they enter, so compare it with the rent in your contract.
             </Callout>
           </div>
         </div>

@@ -47,7 +47,7 @@ export const COUNTRIES: Country[] = [
     law: [
       "A deposit may be at most two months' basic rent, without service charges, for contracts signed since 1 July 2023 (art. 7:261b BW).",
       "As far as we know, Dutch law doesn't say when the deposit is due. Paying early through Keysfirst is the tenant's choice, never a condition for the room.",
-      "After the handover the landlord may deduct only unpaid rent, service charges, damage the tenant caused and energy-label costs, and must send an itemised statement in writing. Landlords don't have to pay interest.",
+      "After the handover the landlord may deduct only unpaid rent, service charges, damage the tenant caused and energy-label costs, and must send an itemised statement in writing. As far as we know, landlords don't have to pay interest.",
       "The deposit must come back within 14 days after the tenancy ends, or within 30 days if the landlord deducts something.",
       "Good to know: rents for rooms are limited by the points system (Wet betaalbare huur), and students, also from abroad, may get a temporary contract of up to two years.",
     ],

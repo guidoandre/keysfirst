@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Callout } from "@/components/ui/Callout";
 import { LAW_CHECKED, type Country, type HousingOption } from "@/content/countries";
 
@@ -14,9 +13,15 @@ export function CountryLaw({ country, housing }: { country: Country; housing: Ho
         </ul>
         <p className="mt-2 text-fg-muted">
           General information, not legal advice. Checked {LAW_CHECKED}.{" "}
-          <Link href={`/faq#law-${country.code.toLowerCase()}`} className="font-semibold underline underline-offset-2">
+          <a
+            href={`/faq#law-${country.code.toLowerCase()}`}
+            target="_blank"
+            rel="noreferrer"
+            className="font-semibold underline underline-offset-2"
+          >
             Read it in the FAQ
-          </Link>
+            <span className="sr-only"> (opens in a new tab)</span>
+          </a>
         </p>
       </Callout>
       {housing.note && <Callout tone="neutral">{housing.note}</Callout>}

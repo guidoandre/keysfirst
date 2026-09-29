@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { COUNTRIES } from "./countries";
+import { COUNTRIES, LAW_CHECKED } from "./countries";
 import { FAQ, LANDING_FAQ_IDS, faqEntries } from "./faq";
 
 const entries = FAQ.flatMap((group) => group.entries);
@@ -16,6 +16,7 @@ describe("FAQ", () => {
       expect(entry, country.code).toBeDefined();
       expect(entry!.answer.slice(0, country.law.length)).toEqual(country.law);
       expect(entry!.answer.join(" ")).toMatch(/not legal advice/);
+      expect(entry!.answer.join(" ")).toContain(LAW_CHECKED);
     }
   });
 

@@ -78,7 +78,7 @@ describe("capError", () => {
 describe("capHint", () => {
   it("shows the maximum once the rent is known", () => {
     const de = country("DE");
-    expect(capHint(de, housingOf(de, "any"), eur(300))).toBe("The most allowed in Germany is €900.00 (3 months of rent).");
+    expect(capHint(de, housingOf(de, "any"), eur(300))).toBe("The legal deposit in Germany is at most €900.00 (3 months of rent).");
     expect(capHint(de, housingOf(de, "any"), null)).toBeNull();
   });
 

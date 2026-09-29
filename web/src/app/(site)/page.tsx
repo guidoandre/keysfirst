@@ -82,8 +82,9 @@ export default function LandingPage() {
             </div>
             <div data-reveal="">
               <Callout tone="info" title="The law caps your deposit." className="h-full">
-                Every country we cover limits the deposit, from one month&apos;s rent to three. Keysfirst won&apos;t let a landlord create a link
-                above the limit.
+                Every country we cover limits the deposit by law, usually from one month&apos;s rent to three. When a landlord creates a link,
+                Keysfirst checks the deposit against the rent they enter and their country&apos;s limit. Compare it with the rent in your
+                contract.
               </Callout>
             </div>
           </div>

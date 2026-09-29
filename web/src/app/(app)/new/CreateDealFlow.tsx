@@ -37,7 +37,7 @@ import { friendlyError, needsTopUp, signAndSend } from "@/lib/send";
 type Step = 1 | 2 | 3;
 const STEP_TITLES: Record<Step, string> = { 1: "The room", 2: "The handover", 3: "Check and create" };
 const ALL_FIELDS: NewDealField[] = ["country", "title", "rent", "amount", "moveIn"];
-const FIELD_ID: Record<NewDealField, string> = { country: "country-DE", title: "title", rent: "rent", amount: "amount", moveIn: "move-in" };
+const FIELD_ID: Record<NewDealField, string> = { country: `country-${COUNTRIES[0].code}`, title: "title", rent: "rent", amount: "amount", moveIn: "move-in" };
 
 export function CreateDealFlow() {
   const { connection } = useConnection();
