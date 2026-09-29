@@ -51,7 +51,6 @@ export function Segmented<T extends string>({
                 name={name}
                 value={option.value}
                 checked={selected}
-                aria-invalid={error ? true : undefined}
                 aria-describedby={error ? `${name}-error` : undefined}
                 onChange={() => onChange(option.value)}
                 className="sr-only"
