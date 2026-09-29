@@ -5,5 +5,5 @@ export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
 
 export default function OpenGraphImage() {
-  return ogCard({ title: "The deposit moves only when the keys do.", subtitle: "A deposit link for renting a room in Germany from abroad." });
+  return ogCard({ title: "The deposit moves only when the keys do.", subtitle: "A deposit link for renting a room in Europe from abroad." });
 }

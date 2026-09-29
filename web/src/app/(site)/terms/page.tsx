@@ -44,8 +44,8 @@ export default function TermsPage() {
           ). Keysfirst cannot reverse, stop or redirect a step you confirm.
         </p>
         <p>
-          Rental contracts, deposits and disputes between landlord and tenant are a matter between them under German tenancy law. The
-          information on this site about §551 BGB is general and not legal advice.
+          Rental contracts, deposits and disputes between landlord and tenant are a matter between them under the tenancy law of the
+          country where the room is. The information on this site about deposit rules is general and not legal advice.
         </p>
         <p>
           Fees: the tenant pays a Keysfirst fee on top of the deposit, 3.5% by card or 2% by bank transfer, at least €12, shown before paying.

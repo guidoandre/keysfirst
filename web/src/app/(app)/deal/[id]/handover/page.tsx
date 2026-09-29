@@ -16,9 +16,10 @@ import { withTimeout } from "@/lib/timeout";
 
 export const metadata: Metadata = { title: "Confirm the key handover", robots: { index: false } };
 
-// Rendered on the server, where the clock is UTC; the handover happens at a door in Germany.
-const GERMAN_TIME = "Europe/Berlin";
-const at = (unixSeconds: number) => `${formatShortDateTime(unixSeconds, GERMAN_TIME)} (German time)`;
+// Rendered on the server, where the clock is UTC; the handover happens at a door in Europe; Central European time is shown
+// (Ireland is one hour behind).
+const CENTRAL_EUROPEAN_TIME = "Europe/Berlin";
+const at = (unixSeconds: number) => `${formatShortDateTime(unixSeconds, CENTRAL_EUROPEAN_TIME)} (Central European time)`;
 
 const CHECKLIST = ["You are inside the room.", "You have the keys, or they are in front of you.", "You are logged in with the account that paid the deposit."];
 
