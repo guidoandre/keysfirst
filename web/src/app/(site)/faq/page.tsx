@@ -8,7 +8,7 @@ export const dynamic = "error";
 
 export const metadata: Metadata = {
   title: "Questions and answers",
-  description: "How Keysfirst works, who holds the money, what German law says about deposits, your account, test money and the prototype.",
+  description: "How Keysfirst works, who holds the money, the deposit rules in each country, your account, test money and the prototype.",
 };
 
 export default function FaqPage() {

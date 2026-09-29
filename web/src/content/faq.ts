@@ -1,3 +1,5 @@
+import { COUNTRIES, LAW_CHECKED } from "./countries";
+
 export interface FaqEntry {
   id: string;
   question: string;
@@ -11,7 +13,7 @@ export interface FaqGroup {
   entries: FaqEntry[];
 }
 
-// Legal statements: only what §551 BGB and the privacy policy support, worded as written here. Honest caveats stay in (brand guidelines §8).
+// Legal statements: only what the country entries in countries.ts (checked 29 September 2026) and the privacy policy support, worded as written there. Honest caveats stay in (brand guidelines §8).
 export const FAQ: FaqGroup[] = [
   {
     id: "basics",
@@ -28,8 +30,17 @@ export const FAQ: FaqGroup[] = [
         id: "who-for",
         question: "Who is it for?",
         answer: [
-          "Students and young professionals who rent a room in Germany before they arrive, and landlords, often students subletting their own room, who want a tenant from abroad to trust them.",
+          "Students and young professionals who rent a room in Europe before they arrive, and landlords, often students subletting their own room, who want a tenant from abroad to trust them.",
         ],
+      },
+      {
+        id: "countries",
+        question: "Which countries does it cover?",
+        answer: [
+          "Germany, the Netherlands, Ireland, Spain, France and Italy. In these countries we checked the deposit rules, and when a landlord creates a link Keysfirst stops a deposit above the legal maximum.",
+          "Rooms in other countries aren't covered yet.",
+        ],
+        link: { href: "/faq#law", label: "Deposit rules by country" },
       },
       {
         id: "landlord-paid",
@@ -98,35 +109,40 @@ export const FAQ: FaqGroup[] = [
         id: "contract",
         question: "Does this replace a rental contract?",
         answer: [
-          "No. Keysfirst only protects the moment the deposit changes hands. Your contract, and disputes after you move in (damage, for example), follow normal German tenancy law.",
+          "No. Keysfirst only protects the moment the deposit changes hands. Your contract, and disputes after you move in (damage, for example), follow the tenancy law of the country where the room is.",
         ],
       },
     ],
   },
   {
     id: "law",
-    title: "German law",
+    title: "Deposit rules by country",
     entries: [
       {
         id: "law",
-        question: "What does German law say about deposits?",
+        question: "What does the law say about deposits?",
         answer: [
-          "Under §551 BGB a deposit may be at most three months' rent without utilities, and the tenant may pay it in three monthly instalments, the first due when the tenancy starts. So you don't have to pay the full deposit before you move in.",
+          "Every country we cover limits how much a landlord may ask for, and says what the landlord must do with the deposit afterwards. Open your country below.",
           "This is general information, not legal advice.",
         ],
       },
+      ...COUNTRIES.map((country) => ({
+        id: `law-${country.code.toLowerCase()}`,
+        question: `Renting in ${country.name}`,
+        answer: [...country.law, `General information, not legal advice. Checked ${LAW_CHECKED}.`],
+      })),
       {
         id: "choice",
         question: "Can a landlord make me use Keysfirst?",
         answer: [
-          "No. Under §551 BGB a landlord can't demand the full deposit before the tenancy starts; an agreement that says otherwise doesn't count (§551(4)). Keysfirst is for tenants who choose to pay early without the risk, never a condition for getting the room.",
+          "No. Keysfirst is for tenants who choose to pay early without the risk, never a condition for getting the room. In Germany, for example, a landlord can't demand the full deposit before the tenancy starts (§551(4) BGB), and in France and Spain the deposit is due when the lease is signed.",
         ],
       },
       {
         id: "after-handover",
         question: "What happens to the deposit after the handover?",
         answer: [
-          "It is the landlord's to hold as security, under the usual rules: the landlord must keep it apart from their own money, normally in a deposit account at a bank, and any interest belongs to the tenant (§551(3) BGB). A live version would point landlords to that step when the deposit is released.",
+          "It is the landlord's to hold as security, under the deposit rules of the country: in Germany the landlord must keep it apart from their own money, in Spain lodge it with a regional body, in Italy pay interest on it. Open your country above for the details. A live version would point landlords to these steps when the deposit is released.",
         ],
       },
       {
