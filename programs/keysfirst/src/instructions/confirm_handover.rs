@@ -24,9 +24,9 @@ pub struct ConfirmHandover<'info> {
     )]
     pub deal: Account<'info, Deal>,
 
-    /// Receives the vault's rent back (they paid it at creation).
+    /// CHECK: address pinned by `has_one = landlord`; only receives the vault's rent back (they paid it at creation).
     #[account(mut)]
-    pub landlord: SystemAccount<'info>,
+    pub landlord: UncheckedAccount<'info>,
 
     pub mint: Box<InterfaceAccount<'info, Mint>>,
 

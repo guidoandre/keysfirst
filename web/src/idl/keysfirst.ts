@@ -260,9 +260,6 @@ export type Keysfirst = {
         },
         {
           "name": "landlord",
-          "docs": [
-            "Receives the vault's rent back (they paid it at creation)."
-          ],
           "writable": true,
           "relations": [
             "deal"
@@ -454,7 +451,8 @@ export type Keysfirst = {
         {
           "name": "vault",
           "docs": [
-            "Holds the deposit. Owned by the deal account, so only the program's rules can move it."
+            "Holds the deposit. Owned by the deal account, so only the program's rules can move it.",
+            "init_if_needed: anyone can create a deal's token account in advance, which must not block the deal."
           ],
           "writable": true,
           "pda": {
@@ -780,6 +778,9 @@ export type Keysfirst = {
         },
         {
           "name": "tenant",
+          "docs": [
+            "Not a SystemAccount: an owner check would let a wallet that changed owner block its own refund."
+          ],
           "relations": [
             "deal"
           ]
@@ -787,7 +788,7 @@ export type Keysfirst = {
         {
           "name": "landlord",
           "docs": [
-            "Receives the vault's rent back (they paid it at creation)."
+            "Not a SystemAccount: the landlord could reassign their wallet to another program and block every refund."
           ],
           "writable": true,
           "relations": [

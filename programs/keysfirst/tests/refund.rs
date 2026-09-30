@@ -115,3 +115,21 @@ fn cannot_refund_an_unfunded_deal() {
     assert!(env.run(ix, Who::Landlord).is_err());
     assert_eq!(get_deal(&env, deal).status, DealStatus::Open);
 }
+
+#[test]
+fn a_landlord_who_reassigns_their_wallet_cannot_block_the_refund() {
+    let mut env = setup();
+    let p = DealParams::default();
+    let deal = funded_deal(&mut env, &p);
+    // The landlord hands their wallet to another program (a System Program `assign`).
+    let landlord = env.landlord.pubkey();
+    let mut account = env.svm.get_account(&landlord).unwrap();
+    account.owner = Pubkey::new_unique();
+    env.svm.set_account(landlord, account).unwrap();
+
+    set_time(&mut env.svm, p.deadline + 1);
+    let ix = ix_refund(&env, deal, env.stranger.pubkey());
+    assert_ok(&env.run(ix, Who::Stranger));
+    assert_eq!(get_deal(&env, deal).status, DealStatus::Refunded);
+    assert_eq!(balance(&env, ata(&env, &env.tenant.pubkey())), START_BALANCE);
+}

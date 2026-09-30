@@ -24,11 +24,14 @@ pub struct Refund<'info> {
     )]
     pub deal: Account<'info, Deal>,
 
-    pub tenant: SystemAccount<'info>,
+    /// CHECK: address pinned by `has_one = tenant`; only the owner of the refund's token account.
+    /// Not a SystemAccount: an owner check would let a wallet that changed owner block its own refund.
+    pub tenant: UncheckedAccount<'info>,
 
-    /// Receives the vault's rent back (they paid it at creation).
+    /// CHECK: address pinned by `has_one = landlord`; only receives the vault's rent back (they paid it at creation).
+    /// Not a SystemAccount: the landlord could reassign their wallet to another program and block every refund.
     #[account(mut)]
-    pub landlord: SystemAccount<'info>,
+    pub landlord: UncheckedAccount<'info>,
 
     pub mint: Box<InterfaceAccount<'info, Mint>>,
 

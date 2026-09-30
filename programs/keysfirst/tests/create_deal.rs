@@ -71,3 +71,17 @@ fn rejects_a_deadline_in_the_past() {
     let res = try_create(&mut env, DealParams { move_in: T0 - 3 * DAY, deadline: T0 - DAY, ..Default::default() });
     assert_err(&res, "DeadlinePassed");
 }
+
+#[test]
+fn a_vault_created_in_advance_does_not_block_the_deal() {
+    use anchor_spl::associated_token::spl_associated_token_account::instruction::create_associated_token_account;
+    let mut env = setup();
+    let p = DealParams::default();
+    let deal = deal_pda(&env.landlord.pubkey(), p.deal_id);
+    let ix = create_associated_token_account(&env.stranger.pubkey(), &deal, &env.mint, &env.token_program);
+    assert_ok(&env.run(ix, Who::Stranger));
+    assert!(exists(&env, ata(&env, &deal)));
+
+    create_deal(&mut env, &p);
+    assert_eq!(get_deal(&env, deal).status, DealStatus::Open);
+}

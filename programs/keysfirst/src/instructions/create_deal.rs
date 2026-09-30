@@ -25,8 +25,9 @@ pub struct CreateDeal<'info> {
     pub mint: Box<InterfaceAccount<'info, Mint>>,
 
     /// Holds the deposit. Owned by the deal account, so only the program's rules can move it.
+    /// init_if_needed: anyone can create a deal's token account in advance, which must not block the deal.
     #[account(
-        init,
+        init_if_needed,
         payer = landlord,
         associated_token::mint = mint,
         associated_token::authority = deal,
