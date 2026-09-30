@@ -29,7 +29,7 @@ It must actually work end to end on devnet with Stripe test mode. Only one step 
 | D5 | **Card payment with Stripe Checkout** (hosted page, test mode, card only in the demo). |
 | D6 | **No webhook:** the deal page confirms the payment with the server on return; the server checks Stripe, mints, and records the mint on the Stripe payment so it never mints twice. |
 | D7 | **Withdrawal burns the Test EUR** from the user's account (signed by the user) and shows a demo payout confirmation. |
-| D8 | **Pricing:** the tenant pays a Keysfirst fee on top of the deposit: **3.5% by card, 2% by bank transfer, minimum €12**. Presented as a bank-transfer discount (card surcharges are banned, §270a BGB). Landlords pay nothing. The fee is not refunded when the deposit comes back. Only card is live in the demo; the bank-transfer rate appears in copy as part of the live version. |
+| D8 | **Pricing:** the tenant pays a Keysfirst fee on top of the deposit: **3.5% with a card issued in the EEA, 4.5% with other cards (changed 30 Sep 2026: at 3.5% a non-EEA card lost ~€7.60 on €1,200; §270a BGB covers only EEA consumer cards, and the extra point is below the extra cost, §312a(4) BGB), 2% by bank transfer, minimum €12**. Card payments are held at the 4.5% amount (Checkout `capture_method: manual`) and fulfil captures the amount for the card's issuing country. Presented as a bank-transfer discount (card surcharges are banned, §270a BGB). Landlords pay nothing. The fee is not refunded when the deposit comes back. Only card is live in the demo; the bank-transfer rate appears in copy as part of the live version. |
 
 ## 4. User flows
 

@@ -53,9 +53,11 @@ export default function GetStartedPage() {
 
         <GuideStep id="pay" number={3} title="As the tenant: pay by card">
           <p>
-            Open the link and log in with a different email. Pay the deposit plus the Keysfirst fee (3.5% by card, at least €12). This prototype
-            uses Stripe&apos;s test mode: pay with the card number <strong className="text-fg tabular-nums">4242 4242 4242 4242</strong>, any
-            future date and any three digits. No real money moves.
+            Open the link and log in with a different email. Pay the deposit plus the Keysfirst fee (3.5% with a card issued in Europe,
+            4.5% with other cards, at least €12). This prototype uses Stripe&apos;s test mode: pay with the card number{" "}
+            <strong className="text-fg tabular-nums">4242 4242 4242 4242</strong> (a US test card, 4.5%) or{" "}
+            <strong className="text-fg tabular-nums">4000 0027 6000 0016</strong> (a German test card, 3.5%), any future date and any three
+            digits. No real money moves.
           </p>
           <p>After the payment the deposit locks automatically. The landlord can&apos;t take it.</p>
           <Callout tone="neutral">The landlord can&apos;t pay their own deal: use a second account for the tenant.</Callout>

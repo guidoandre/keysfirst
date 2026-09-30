@@ -60,7 +60,8 @@ export const FAQ: FaqGroup[] = [
         id: "cost",
         question: "What does it cost?",
         answer: [
-          "The tenant pays a Keysfirst fee on top of the deposit: 3.5% when paying by card, or 2% by bank transfer, and at least €12. For a €600 deposit that is €21 by card. Landlords pay nothing.",
+          "The tenant pays a Keysfirst fee on top of the deposit: 3.5% with a card issued in Europe (the EEA), 4.5% with a card issued anywhere else, or 2% by bank transfer, and at least €12. For a €600 deposit that is €21 with a European card and €27 with other cards. Landlords pay nothing.",
+          "Cards from outside Europe cost more than twice as much to accept, so they pay one point more. Your card is held for the higher amount; once we know where it was issued, only the right amount is charged and the rest of the hold is released.",
           "The fee is paid separately, so the deposit itself only ever goes to the tenant or the landlord. It isn't refunded if the deposit comes back. In this prototype every payment, the fee included, uses Stripe's test mode and test money, so no real money is charged. Only card payment is switched on.",
         ],
       },

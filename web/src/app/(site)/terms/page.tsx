@@ -48,7 +48,9 @@ export default function TermsPage() {
           country where the room is. The information on this site about deposit rules is general and not legal advice.
         </p>
         <p>
-          Fees: the tenant pays a Keysfirst fee on top of the deposit, 3.5% by card or 2% by bank transfer, at least €12, shown before paying.
+          Fees: the tenant pays a Keysfirst fee on top of the deposit, shown before paying: 3.5% with a card issued in the European
+          Economic Area, 4.5% with a card issued elsewhere, or 2% by bank transfer, at least €12. A card payment is first held for the
+          4.5% amount; a card issued in the EEA is then charged only the 3.5% amount and the rest of the hold is released.
           The fee is not refunded if the deposit goes back to the tenant. In this prototype all payments, the fee included, use Stripe&apos;s test
           mode and test money, so no real money is charged: the fee shown is the one Keysfirst would charge. Withdrawals to a bank account are
           simulated.

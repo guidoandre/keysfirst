@@ -117,12 +117,16 @@ export function DealClient({ id, origin, created, paid }: { id: string; origin: 
   const expired = isExpired(times, now);
   const depositUnits = BigInt(data.amount);
   const price = priceBreakdown(toCents(data.amount), "card");
+  const intl = priceBreakdown(price.depositCents, "cardIntl");
   // The tenant-to-be pays by card unless their balance already covers the deposit (spec §4.3).
   const card: CardOffer | null =
     data.status === "open" && role !== "landlord" && !pending && !resumeError && (balance === null || balance < depositUnits)
       ? {
           total: formatEur(fromCents(price.totalCents)),
-          breakdown: `Deposit ${amount} + Keysfirst fee ${formatEur(fromCents(price.feeCents))} (${feePercent("card")}). The fee isn't refunded.`,
+          breakdown:
+            `${formatEur(fromCents(price.totalCents))} with a card issued in Europe: deposit ${amount} + Keysfirst fee ` +
+            `${formatEur(fromCents(price.feeCents))} (${feePercent("card")}). ${formatEur(fromCents(intl.totalCents))} with other cards ` +
+            `(fee ${feePercent("cardIntl")}). Your card is held for the higher amount and charged the right one. The fee isn't refunded.`,
         }
       : null;
 

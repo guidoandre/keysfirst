@@ -1,8 +1,8 @@
 import { Connection, PublicKey } from "@solana/web3.js";
-import { checkoutExpiry, checkoutProblem, returnOrigin, STRIPE_MAX_CENTS } from "@/lib/checkout";
+import { cardHold, checkoutExpiry, checkoutProblem, returnOrigin, STRIPE_MAX_CENTS } from "@/lib/checkout";
 import { SERVER_RPC_URL } from "@/lib/config";
 import { toDealData } from "@/lib/deal-data";
-import { fromCents, toCents } from "@/lib/format";
+import { formatEur, fromCents, toCents } from "@/lib/format";
 import { feePercent, priceBreakdown } from "@/lib/pricing";
 import { fetchDeal, getProgram, type DealAccount } from "@/lib/program";
 import { CARD_UNAVAILABLE, stripeClient } from "@/lib/server/stripe";
@@ -48,14 +48,21 @@ export async function POST(req: Request) {
     return Response.json({ error: "This deposit amount can't be paid by card." }, { status: 409 });
   }
 
-  const price = priceBreakdown(toCents(d.amount), "card");
+  // Held at the international rate; fulfil charges an EEA card the lower one once Stripe knows where it was issued.
+  const price = cardHold(toCents(d.amount));
+  const eea = priceBreakdown(price.depositCents, "card");
   if (price.totalCents > STRIPE_MAX_CENTS) {
     return Response.json({ error: "This deposit is too large to pay by card. Pay it from your balance instead." }, { status: 409 });
   }
   const origin = returnOrigin(req.url);
   // Everything fulfil needs is decided here, on the server, from the on-chain deal. Mint exactly what was
   // charged (derived from the cents actually billed), not the deal's raw base-unit amount.
-  const metadata = { deal: deal.toBase58(), account: account.toBase58(), amount: fromCents(price.depositCents).toString() };
+  const metadata = {
+    deal: deal.toBase58(),
+    account: account.toBase58(),
+    amount: fromCents(price.depositCents).toString(),
+    deposit_cents: String(price.depositCents),
+  };
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -74,12 +81,21 @@ export async function POST(req: Request) {
           price_data: {
             currency: "eur",
             unit_amount: price.feeCents,
-            product_data: { name: `Keysfirst fee (${feePercent("card")})`, description: "Not refunded if the deposit comes back to you." },
+            product_data: {
+              name: `Keysfirst fee (${feePercent("cardIntl")}, or ${feePercent("card")} with a card issued in Europe)`,
+              description: "Not refunded if the deposit comes back to you.",
+            },
           },
         },
       ],
       metadata,
-      payment_intent_data: { metadata },
+      // Hold now, charge once the card's issuing country is known (fulfil). Never more than this hold.
+      payment_intent_data: { metadata, capture_method: "manual" },
+      custom_text: {
+        submit: {
+          message: `A card issued in Europe (EEA) is charged ${formatEur(fromCents(eea.totalCents))}: the ${formatEur(fromCents(price.totalCents - eea.totalCents))} difference is released at once. Other cards are charged the amount shown.`,
+        },
+      },
       expires_at: checkoutExpiry(d.deadline, now),
       success_url: `${origin}/deal/${deal.toBase58()}?paid={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/deal/${deal.toBase58()}`,
