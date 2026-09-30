@@ -79,14 +79,25 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection id="law" title="6. Law">
+      <LegalSection id="ownership" title="6. Ownership">
+        <p>
+          The Keysfirst name, logo, design, text, images, video and software are the work of {OPERATOR.name} and are protected by copyright.
+          You may use the site as described in these terms, but you may not copy, reuse or build on any of it without written permission.
+        </p>
+        <p>
+          The source code is public so the project can be reviewed, but it is not open source: its licence allows viewing and evaluating it,
+          nothing more.
+        </p>
+      </LegalSection>
+
+      <LegalSection id="law" title="7. Law">
         <p>
           German law applies. If you use Keysfirst as a consumer living in another country, you keep the protection of the mandatory rules of
           that country.
         </p>
       </LegalSection>
 
-      <LegalSection id="contact" title="7. Contact and changes">
+      <LegalSection id="contact" title="8. Contact and changes">
         <p>
           Questions: <MailLink email={OPERATOR.email} />. These terms may change as the prototype changes; the date at the top shows the latest
           version. See also the{" "}

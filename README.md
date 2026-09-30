@@ -96,3 +96,9 @@ docs/                 Specs, plans, brand and design system
 - A live version needs a regulatory check (BaFin: payment services, MiCA for e-money tokens) and a licensed partner for card and bank payments.
 
 Design documents: [product](docs/superpowers/specs/2026-09-27-keysfirst-design.md) · [redesign](docs/superpowers/specs/2026-09-28-keysfirst-redesign-design.md) · [euro experience](docs/superpowers/specs/2026-09-28-keysfirst-euro-experience-design.md)
+
+## Licence
+
+Copyright © 2026 Guido Andreini. All rights reserved.
+
+This repository is public so the project can be reviewed; it is **not open source**. You may view the code and run it privately to evaluate the project. Copying, reusing or building on it, or using the Keysfirst name or logo, needs written permission. Full terms: [LICENSE](LICENSE). Requests: info@keysfirst.io

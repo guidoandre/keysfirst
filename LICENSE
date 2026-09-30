@@ -1,0 +1,50 @@
+Keysfirst
+Copyright (c) 2026 Guido Andreini. All rights reserved.
+
+This repository is public so that the project can be reviewed. It is NOT open
+source, and no open-source licence applies to it.
+
+"The Work" means everything in this repository and its history: source code,
+the Solana program, documentation, specifications, designs, text, images,
+video, and the Keysfirst name and logo.
+
+1. Permission to evaluate
+
+   You may view the Work and, on your own devices, build and run it privately
+   for the sole purpose of evaluating the project, including by the organisers
+   and judges of Superteam Germany's "Build an MVP with Solana at WHU" bounty
+   and the WHU Hackathon 2026.
+
+2. Everything else is reserved
+
+   Without prior written permission from the copyright holder, you may not:
+
+   a) copy, reproduce, modify, translate, adapt or create works based on the
+      Work or any substantial part of it;
+   b) publish, distribute, sublicense, sell, rent or otherwise make the Work
+      or any part of it available to others;
+   c) use the Work or any part of it in any product, service, competition
+      entry or business, whether commercial or not;
+   d) use the name "Keysfirst", its logo or its visual identity, or anything
+      confusingly similar, in any way.
+
+   Forking this repository on GitHub, where GitHub's Terms of Service allow
+   it, does not grant any of these rights.
+
+3. Third-party components
+
+   Libraries and tools referenced in package.json, Cargo.toml and their lock
+   files remain under their own licences. This licence covers only the
+   copyright holder's own work.
+
+4. No warranty
+
+   The Work is provided "as is", without warranty of any kind. To the extent
+   permitted by law, the copyright holder is not liable for any damage
+   arising from its use.
+
+5. Law
+
+   This licence is governed by the laws of the Federal Republic of Germany.
+
+Permission requests: info@keysfirst.io

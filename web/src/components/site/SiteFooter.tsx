@@ -5,6 +5,7 @@ import { Icon } from "@/components/ui/Icon";
 import idl from "@/idl/keysfirst.json";
 import { cx } from "@/lib/cx";
 import { explorerAddress } from "@/lib/format";
+import { OPERATOR } from "@/lib/legal";
 import { isAppRoute } from "@/lib/site";
 
 // Cut rule: remove links to pages that were cut (About, For tenants, For landlords).
@@ -77,6 +78,7 @@ export function SiteFooter() {
       </div>
       <p className="border-t border-white/15 px-4 py-5 text-center text-sm text-fg-inverse-muted">
         Keysfirst is a student prototype on Solana devnet, not a bank, payment or escrow service. Test money only; nothing here has real value. Not legal advice.
+        <br />© 2026 {OPERATOR.name}. All rights reserved.
       </p>
     </footer>
   );
