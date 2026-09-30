@@ -7,7 +7,7 @@ export const dynamic = "error";
 
 export const metadata: Metadata = {
   title: "Terms of use",
-  description: "Keysfirst is a free student prototype on Solana's test network. What that means for you.",
+  description: "Keysfirst is a student prototype on Solana's test network that handles only test money. What that means for you.",
 };
 
 const LINK = "font-semibold underline underline-offset-2";
@@ -23,7 +23,7 @@ export default function TermsPage() {
     <LegalPage
       label="Terms"
       title="Terms of use"
-      lead="Keysfirst is a free prototype built for a student competition. By using it you accept these terms."
+      lead="Keysfirst is a prototype built for a student competition. It handles only test money, so no real money is ever charged. By using it you accept these terms."
     >
       <LegalSection id="prototype" title="1. A prototype, not a live service">
         <p>
@@ -49,8 +49,9 @@ export default function TermsPage() {
         </p>
         <p>
           Fees: the tenant pays a Keysfirst fee on top of the deposit, 3.5% by card or 2% by bank transfer, at least €12, shown before paying.
-          The fee is not refunded if the deposit goes back to the tenant. In this prototype all payments use Stripe&apos;s test mode and test
-          money; withdrawals to a bank account are simulated.
+          The fee is not refunded if the deposit goes back to the tenant. In this prototype all payments, the fee included, use Stripe&apos;s test
+          mode and test money, so no real money is charged: the fee shown is the one Keysfirst would charge. Withdrawals to a bank account are
+          simulated.
         </p>
       </LegalSection>
 
@@ -65,14 +66,14 @@ export default function TermsPage() {
 
       <LegalSection id="availability" title="4. Availability">
         <p>
-          The prototype is provided as it is, free of charge, with no promise that it works without errors or stays online. It may be changed,
+          The prototype is provided as it is and charges no real money, with no promise that it works without errors or stays online. It may be changed,
           reset or shut down at any time without notice. The program on Solana can still be updated by its developer while it is a prototype.
         </p>
       </LegalSection>
 
       <LegalSection id="liability" title="5. Liability">
         <p>
-          Because Keysfirst is free, its developer is liable only for intent and gross negligence. This limit does not apply to injury to life,
+          Because Keysfirst is a free prototype that handles only test money, its developer is liable only for intent and gross negligence. This limit does not apply to injury to life,
           body or health, to claims under the German Product Liability Act (Produkthaftungsgesetz), or to defects that were fraudulently
           concealed; in those cases the law applies in full.
         </p>

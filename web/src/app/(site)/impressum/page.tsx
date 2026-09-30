@@ -31,8 +31,9 @@ export default function ImpressumPage() {
       <LegalSection id="what" title="What this site is">
         <p>
           Keysfirst is a non-commercial prototype built by a student for Superteam Germany&apos;s &ldquo;Build an MVP with Solana at WHU&rdquo;
-          challenge. It is not a registered business, it charges nothing and it runs only on Solana&apos;s test network with test money that has no
-          value. It is not a bank, a payment service or an escrow agent. See the <Link href="/terms" className="font-semibold underline underline-offset-2">terms of use</Link>.
+          challenge. It is not a registered business, and it runs only on Solana&apos;s test network with test money that has no value. Payments
+          use Stripe&apos;s test mode, so no real money is ever charged; the fee shown is the one Keysfirst would charge in a live version. It is
+          not a bank, a payment service or an escrow agent. See the <Link href="/terms" className="font-semibold underline underline-offset-2">terms of use</Link>.
         </p>
       </LegalSection>
 

@@ -61,7 +61,7 @@ export const FAQ: FaqGroup[] = [
         question: "What does it cost?",
         answer: [
           "The tenant pays a Keysfirst fee on top of the deposit: 3.5% when paying by card, or 2% by bank transfer, and at least €12. For a €600 deposit that is €21 by card. Landlords pay nothing.",
-          "The fee is paid separately, so the deposit itself only ever goes to the tenant or the landlord. It isn't refunded if the deposit comes back. In this prototype every payment uses Stripe's test mode and test money, and only card payment is switched on.",
+          "The fee is paid separately, so the deposit itself only ever goes to the tenant or the landlord. It isn't refunded if the deposit comes back. In this prototype every payment, the fee included, uses Stripe's test mode and test money, so no real money is charged. Only card payment is switched on.",
         ],
       },
     ],
@@ -103,7 +103,9 @@ export const FAQ: FaqGroup[] = [
       {
         id: "no-show",
         question: "What if the tenant doesn't show up?",
-        answer: ["The deposit goes back to the tenant after the deadline. The landlord loses the time the room was reserved, not money."],
+        answer: [
+          "After the deadline the tenant can take the deposit back. Anyone can trigger that return. The landlord loses the time the room was reserved, not money.",
+        ],
       },
       {
         id: "contract",
@@ -135,7 +137,7 @@ export const FAQ: FaqGroup[] = [
         id: "choice",
         question: "Can a landlord make me use Keysfirst?",
         answer: [
-          "No. Keysfirst is for tenants who choose to pay early without the risk, never a condition for getting the room. In Germany, for example, a landlord can't demand the full deposit before the tenancy starts (§551(4) BGB), and in France and Spain the deposit is due when the lease is signed.",
+          "No. Keysfirst is for tenants who choose to pay early without the risk, never a condition for getting the room. In Germany, for example, a landlord can't demand the full deposit before the tenancy starts (§551(2) and (4) BGB), and in France and Spain the deposit is due when the lease is signed.",
         ],
       },
       {
@@ -150,7 +152,7 @@ export const FAQ: FaqGroup[] = [
         question: "Is Keysfirst a bank or a payment service?",
         answer: [
           "No. Keysfirst never holds the money: the program on Solana does, and pays it out only by its published rules. This prototype also moves only test money with no value.",
-          "Before a live version with real euros, the program's update key would be removed, so nobody, Keysfirst included, could ever change the rules or reach a deposit. We would also ask BaFin, Germany's financial regulator, to confirm whether the model needs a licence under German payment services law (ZAG) or the EU's crypto rules (MiCA), and work with a licensed partner if it does.",
+          "On this test network the program can still be updated by its deploy key. Before a live version with real euros, that key would be locked or shared between several people, so Keysfirst couldn't change the rules alone. We would also ask BaFin, Germany's financial regulator, to confirm whether the model needs a licence under German payment services law (ZAG) or the EU's crypto rules (MiCA), and work with a licensed partner if it does.",
         ],
       },
       {

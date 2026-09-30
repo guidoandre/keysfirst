@@ -73,7 +73,9 @@ export default function PrivacyPage() {
           You log in with your email address or Google, or with your own Solana wallet such as Phantom. Login is provided by Privy (Privy, Inc.,
           USA), which receives your email address or the account you log in with, creates your Solana wallet and keeps its keys protected.
           Keysfirst never sees your keys, and the site only signs the steps you confirm with a button. Keysfirst receives your email address from
-          Privy only to show it in the header, and your public account number.
+          Privy only to show it in the header, and your public account number. If you log in with Google, Google also processes that login and
+          passes your email address to Privy, under{" "}
+          <ExternalLink href="https://policies.google.com/privacy">Google&apos;s privacy policy</ExternalLink>.
         </p>
         <p>
           Legal basis: Art. 6(1)(b) GDPR (providing the service you asked for). Privy is based in the USA, so your login data is processed
@@ -99,7 +101,8 @@ export default function PrivacyPage() {
           To show deals and send the payments you approve, your browser talks directly to a Solana access service (an &ldquo;RPC
           provider&rdquo;): Helius Labs, Inc., USA. Helius receives your IP address, your wallet address and the requests your browser makes.
           Legal basis: providing the service you use (Art. 6(1)(b) GDPR). More:{" "}
-          <ExternalLink href="https://www.helius.dev/privacy-policy">Helius&apos;s privacy policy</ExternalLink>.
+          <ExternalLink href="https://www.helius.dev/privacy-policy">Helius&apos;s privacy policy</ExternalLink>. If Helius isn&apos;t set up, the
+          Solana Foundation&apos;s public devnet endpoint (api.devnet.solana.com) may be used instead and receives the same data.
         </p>
         <p>
           When you log in, pay by card or approve the handover by scanning the landlord&apos;s code, your account number is sent to our server so

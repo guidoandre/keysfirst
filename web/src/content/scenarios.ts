@@ -38,7 +38,7 @@ export const SCENARIOS: Scenario[] = [
   {
     id: "no-show",
     question: "What if the tenant never shows up?",
-    answer: "The deposit goes back to them after the deadline. You lose the time the room was reserved, not money.",
+    answer: "After the deadline they can take the deposit back. You lose the time the room was reserved, not money.",
     rule: "After the deadline, anyone can send the deposit back to the tenant; nobody has to decide.",
     audience: "landlord",
     pictogram: "deadline",

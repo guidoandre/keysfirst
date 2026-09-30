@@ -1,12 +1,27 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { Sheet } from "@/components/ui/Sheet";
 import { NavLinks, type NavItem } from "./NavLinks";
 
+/** Tailwind's `lg`: from here the header shows the links itself and hides the menu button. */
+const DESKTOP = "(min-width: 64rem)";
+
 export function MobileMenu({ items, footer }: { items: NavItem[]; footer?: ReactNode }) {
   const [open, setOpen] = useState(false);
+
+  // Close the menu if the window grows to desktop width while it's open (rotated tablet, resized window).
+  useEffect(() => {
+    if (!open) return;
+    const desktop = window.matchMedia(DESKTOP);
+    const close = (event: MediaQueryListEvent) => {
+      if (event.matches) setOpen(false);
+    };
+    desktop.addEventListener("change", close);
+    return () => desktop.removeEventListener("change", close);
+  }, [open]);
+
   return (
     <>
       <button

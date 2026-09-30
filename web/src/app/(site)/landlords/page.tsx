@@ -69,7 +69,7 @@ export default function LandlordsPage() {
           <div data-reveal="" className="self-start rounded-lg border-2 border-fg bg-canvas p-6">
             <h3 className="font-display text-card font-bold">What if the tenant never comes?</h3>
             <p className="mt-3 text-body text-fg-muted">
-              Then the deposit goes back to them after the deadline, and you lose the time the room was reserved, not money. That&apos;s the trade:
+              Then they can take the deposit back after the deadline, and you lose the time the room was reserved, not money. That&apos;s the trade:
               the tenant carries the bigger risk (paying a stranger), so the default protects them.
             </p>
           </div>

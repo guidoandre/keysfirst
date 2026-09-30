@@ -18,7 +18,7 @@ interface Link {
 export const HERO: Record<LandingRole, { eyebrow: string; lead: string; primary: Link; secondary: Link }> = {
   tenant: {
     eyebrow: "Renting a room in Europe from abroad",
-    lead: "Pay the deposit before you arrive without trusting a stranger. It goes to the landlord only when you scan their code at the door, and comes back to you if you never do.",
+    lead: "Pay the deposit before you arrive without trusting a stranger. It goes to the landlord only when you scan their code at the door. If you never do, you can take it back after the deadline.",
     primary: { label: "Ask your landlord for a deposit link", href: "#ask" },
     secondary: { label: "How it protects me", href: "/tenants" },
   },
@@ -87,7 +87,7 @@ export const DEMO_STEPS: Array<{ status: DealStatus; money: MoneyAt; caption: st
   { status: "funded", money: "lock", caption: `${AMOUNT} is in the lock. Neither side can take it.`, next: "Go to the handover" },
   { status: "funded", money: "lock", caption: "Still in the lock until the tenant approves at the door.", next: "Approve: I have the keys" },
   { status: "released", money: "landlord", caption: `${AMOUNT} is with the landlord. The keys change hands.`, next: "Replay the deal" },
-  { status: "refunded", money: "tenant", caption: `The deadline passed. ${AMOUNT} is back with the tenant.`, next: "Replay the deal" },
+  { status: "refunded", money: "tenant", caption: `The deadline passed, so the tenant took ${AMOUNT} back.`, next: "Replay the deal" },
 ];
 
 export const DEADLINE_STEP = 4;
@@ -112,10 +112,10 @@ export interface PhoneScreen {
 export const PHONE: Record<LandingRole, PhoneScreen[]> = {
   tenant: [
     { body: "Your landlord sent this link. They aren't paid until you have the keys.", button: `Pay ${eur(price.totalCents)} by card` },
-    { body: "Locked until you scan your landlord's code at the door.", meta: "Handover from Wed 30 Sep" },
+    { body: "Locked until you scan your landlord's code at the door.", meta: "Handover from 24 h before move-in" },
     { body: "Check the room first. Approve only with the keys in your hand.", button: "I have the keys" },
     { body: "Paid to your landlord. Take the keys.", meta: "Receipt on Solana Explorer", explorer: true },
-    { body: "No handover by the deadline. It's back with you.", meta: "Receipt on Solana Explorer", explorer: true },
+    { body: "No handover by the deadline, so you took it back.", meta: "Receipt on Solana Explorer", explorer: true },
   ],
   landlord: [
     { body: "Share this link with your tenant.", button: "Share on WhatsApp" },
