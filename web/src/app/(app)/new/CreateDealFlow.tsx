@@ -22,6 +22,7 @@ import {
   DEFAULT_WINDOW,
   DEMO_VALUES,
   handoverWindow,
+  paymentOpensAt,
   STEP_FIELDS,
   TITLE_MAX_BYTES,
   titleBytes,
@@ -31,12 +32,14 @@ import {
   type NewDealField,
   type WindowChoice,
 } from "@/lib/new-deal";
-import { getProgram } from "@/lib/program";
+import { dealAddress, fetchDeal, getProgram } from "@/lib/program";
 import { friendlyError, needsTopUp, signAndSend } from "@/lib/send";
 
 type Step = 1 | 2 | 3;
 const STEP_TITLES: Record<Step, string> = { 1: "The room", 2: "The handover", 3: "Check and create" };
 const ALL_FIELDS: NewDealField[] = ["country", "title", "rent", "amount", "moveIn"];
+/** The form so far, kept for this tab: logging in with Google leaves the page and comes back to an empty form otherwise. */
+const DRAFT_KEY = "keysfirst:new-deal";
 const FIELD_ID: Record<NewDealField, string> = { country: `country-${COUNTRIES[0].code}`, title: "title", rent: "rent", amount: "amount", moveIn: "move-in" };
 
 export function CreateDealFlow() {
@@ -58,7 +61,43 @@ export function CreateDealFlow() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const heading = useRef<HTMLHeadingElement>(null);
+  /** The id of the deal last sent, per form content: a retry after an unclear failure reuses it, so it never creates a second deal. */
+  const sent = useRef<{ key: string; dealId: BN } | null>(null);
   const shownStep = useRef(step);
+  /** False until the saved draft has been read, so the empty first render doesn't overwrite it. */
+  const draftRead = useRef(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        const draft = JSON.parse(sessionStorage.getItem(DRAFT_KEY) ?? "null");
+        if (draft && typeof draft === "object") {
+          setTitle(String(draft.title ?? ""));
+          setAmount(String(draft.amount ?? ""));
+          setCountry(getCountry(draft.country) ? draft.country : "");
+          setHousing(String(draft.housing ?? ""));
+          setRent(String(draft.rent ?? ""));
+          setMoveInText(String(draft.moveInText ?? ""));
+          if (WINDOW_CHOICES.some((choice) => choice.value === draft.windowChoice)) setWindowChoice(draft.windowChoice);
+          setDemo(draft.demo === true);
+          if (draft.step === 2 || draft.step === 3) setStep(draft.step);
+        }
+      } catch {
+        // Storage blocked or an unreadable draft: start empty.
+      }
+      draftRead.current = true;
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!draftRead.current) return;
+    try {
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ title, amount, country, housing, rent, moveInText, windowChoice, demo, step }));
+    } catch {
+      // Storage blocked: the form just isn't kept.
+    }
+  }, [title, amount, country, housing, rent, moveInText, windowChoice, demo, step]);
 
   // After Next, Back or "Use demo values", start keyboard and screen-reader users at the new step's heading
   // (the button they pressed is gone or far below). Not on the first render.
@@ -78,6 +117,10 @@ export function CreateDealFlow() {
   const selected = getCountry(country);
   const housingOption = selected ? housingOf(selected, housing) : null;
   const deposit = selected && housingOption ? capHint(selected, housingOption, parseEur(rent)) : null;
+  // The tenant can only pay once the deposit would be locked for at most 180 days (program rule).
+  const payFrom = handover && paymentOpensAt(handover.deadline) > now ? paymentOpensAt(handover.deadline) : null;
+  // A past move-in is allowed (only the deadline must be ahead), but the handover is then open from the start.
+  const moveInPassed = !demo && Number.isFinite(moveIn) && now > 0 && moveIn < now - 5 * 60;
 
   function chooseCountry(code: CountryCode | "") {
     setCountry(code);
@@ -119,15 +162,29 @@ export function CreateDealFlow() {
     if (!values || !wallet.publicKey) return;
     setBusy(true);
     setError(null);
+    const key = JSON.stringify([wallet.publicKey.toBase58(), values.title, values.amount.toString(), values.moveIn, values.deadline]);
+    if (sent.current?.key !== key) sent.current = { key, dealId: randomDealId() };
+    const { dealId } = sent.current;
     try {
+      // A retry of the same form: if the earlier attempt landed after all, open that deal instead of creating another.
+      const earlier = dealAddress(wallet.publicKey, dealId);
+      if (await fetchDeal(program, earlier).catch(() => null)) {
+        router.push(`/deal/${earlier.toBase58()}?created=1`);
+        return;
+      }
       const { ix, address } = await createDealIx(program, wallet.publicKey, {
-        dealId: randomDealId(),
+        dealId,
         amount: new BN(values.amount.toString()),
         moveIn: new BN(values.moveIn),
         deadline: new BN(values.deadline),
         title: values.title,
       });
       await signAndSend(connection, wallet, [ix]);
+      try {
+        sessionStorage.removeItem(DRAFT_KEY);
+      } catch {
+        // Storage blocked: nothing was kept.
+      }
       router.push(`/deal/${address.toBase58()}?created=1`);
     } catch (e) {
       const message = friendlyError(e);
@@ -256,14 +313,23 @@ export function CreateDealFlow() {
                   <span className="font-semibold">Demo: 5-minute window</span>{" "}
                   <span className="ml-1 rounded-sm bg-accent px-1.5 py-0.5 text-xs font-semibold">For trying it out</span>
                   <span className="mt-1 block text-sm text-fg-muted">
-                    The deposit goes back to your tenant 5 minutes after move-in if there&apos;s no handover. Not for a real room.
+                    Without a handover, your tenant can take the deposit back 5 minutes after move-in. Not for a real room.
                   </span>
                 </span>
               </label>
+              {moveInPassed && (
+                <Callout tone="neutral">That move-in is in the past, so the handover can happen as soon as your tenant has paid. Check the date.</Callout>
+              )}
+              {payFrom && (
+                <Callout tone="neutral">
+                  Your tenant can pay from {formatShortDateTime(payFrom)}, not earlier: a deposit is locked for at most 180 days. You can
+                  share the link now.
+                </Callout>
+              )}
               {handover && (
                 <Callout tone="info" title="Handover window">
                   From {formatShortDateTime(handover.opens)} (24 hours before move-in) until {formatShortDateTime(handover.deadline)}. If
-                  there&apos;s no handover by then, the deposit goes back to your tenant.
+                  there&apos;s no handover by then, your tenant can take the deposit back.
                 </Callout>
               )}
             </>
@@ -280,10 +346,14 @@ export function CreateDealFlow() {
                   rows={[
                     {
                       key: "pay",
-                      time: `By ${formatShortDateTime(handover.deadline)}`,
+                      time: payFrom
+                        ? `${formatShortDateTime(payFrom)} to ${formatShortDateTime(handover.deadline)}`
+                        : `By ${formatShortDateTime(handover.deadline)}`,
                       title: `Your tenant pays ${formatEur(values.amount)} into the lock`,
-                      detail: "The exact amount, by card.",
-                      state: "now",
+                      detail: payFrom
+                        ? "The exact amount, by card or from their balance. Not earlier: a deposit is locked for at most 180 days."
+                        : "The exact amount, by card or from their balance.",
+                      state: payFrom ? "later" : "now",
                     },
                     {
                       key: "handover",
@@ -296,7 +366,7 @@ export function CreateDealFlow() {
                       key: "back",
                       time: formatShortDateTime(handover.deadline),
                       title: "No handover by then?",
-                      detail: "The deposit goes back to your tenant.",
+                      detail: "Your tenant can take the deposit back.",
                       state: "later",
                     },
                   ]}
@@ -323,10 +393,14 @@ export function CreateDealFlow() {
           ) : (
             <span />
           )}
+          {/* Different keys: React must not reuse the Next button as Create, or a double click on Next would create the deal
+              without showing the review. */}
           {step < 3 ? (
-            <Button type="submit">Next</Button>
+            <Button key="next" type="submit">
+              Next
+            </Button>
           ) : wallet.publicKey ? (
-            <Button type="submit" size="lg" loading={busy} loadingText="Creating your link…" disabled={!values}>
+            <Button key="create" type="submit" size="lg" loading={busy} loadingText="Creating your link…" disabled={!values}>
               Create deposit link
             </Button>
           ) : (

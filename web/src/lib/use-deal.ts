@@ -4,7 +4,7 @@ import { useConnection } from "./connection";
 import { PublicKey } from "@solana/web3.js";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { acceptPoll, type PollAnswer } from "./deal-poll";
-import { dealSignatures, getProgram, type DealAccount } from "./program";
+import { dealSignatures, fetchDeal, getProgram, type DealAccount } from "./program";
 import { statusOf, timelineTransactionCount } from "./rules";
 
 export interface DealState {
@@ -46,7 +46,7 @@ export function useDeal(id: string): DealState {
   const refresh = useCallback(async () => {
     if (!address) return;
     const seq = ++requested.current;
-    const data = await program.account.deal.fetchNullable(address);
+    const data = await fetchDeal(program, address);
     const status = data ? statusOf(data.status) : null;
     // Polls overlap and a lagging RPC node can answer with an older state: never show the deal going backwards.
     if (!acceptPoll({ seq, status }, shown.current)) return;

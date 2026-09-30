@@ -130,6 +130,8 @@
 
 @layer base {
   html { color-scheme: light; -webkit-text-size-adjust: 100%; }
+  /* An open modal (sheet, menu, handover mode) holds the page still behind it, iOS included */
+  html:has(dialog[open]) { overflow: hidden; }
   body { background: var(--color-canvas); color: var(--color-fg); font-family: var(--font-sans); }
   h1, h2, h3, h4 { font-family: var(--font-display); text-wrap: balance; }
   p, li { text-wrap: pretty; }

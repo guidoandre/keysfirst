@@ -138,7 +138,7 @@ describe("labels", () => {
     expect(confirmCopy("refund", "landlord", amount)?.title).toBe("Give the deposit back?");
     expect(confirmCopy("refund", "landlord", amount)?.body).toBe("€600.00 goes back to your tenant and the deal ends.");
     expect(confirmCopy("refund", "tenant", amount)).toBeNull();
-    expect(confirmCopy("fund", "visitor", amount)).toBeNull();
+    expect(confirmCopy("fund", "visitor", amount)?.body).toMatch(/leaves your balance/);
   });
 
   it("skips the landlord's refund confirmation once the deadline has passed", () => {

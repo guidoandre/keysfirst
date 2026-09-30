@@ -247,6 +247,15 @@ export function confirmCopy(action: Action, role: Role, amount: string, expired 
       danger: false,
     };
   }
+  if (action === "fund") {
+    // Embedded accounts sign without a wallet pop-up: this is the only moment to stop before the money is locked.
+    return {
+      title: "Lock the deposit?",
+      body: `${amount} leaves your balance and stays locked until you confirm the key handover or the deadline passes. Before that, only the landlord can give it back.`,
+      confirm: "Lock it",
+      danger: false,
+    };
+  }
   if (action === "cancel") {
     return { title: "Cancel this deal?", body: "The link stops working. Nobody has paid, so no money moves.", confirm: "Cancel the deal", danger: true };
   }

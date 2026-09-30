@@ -78,7 +78,8 @@ export function CardResume({
   alreadyYours: boolean;
   onReady: () => void;
   onDone: (message: string) => void;
-  onCancelled: () => void;
+  /** The session needs no more work; `message` explains why when the tenant should know (e.g. an unknown payment). */
+  onCancelled: (message?: string) => void;
   onError: (message: string) => void;
 }) {
   const { connection } = useConnection();
@@ -98,6 +99,13 @@ export function CardResume({
         // Not paid (e.g. the tenant went back from Stripe's page): forget it quietly.
         forget(dealId, session);
         cancelledPayment();
+        return;
+      }
+      if (res.status === 404) {
+        // Stripe doesn't know this session: it can never be paid out, so free the card button.
+        forget(dealId, session);
+        stripPaid();
+        cancelledPayment(res.body.error ?? "We can't find this card payment. Start the payment again.");
         return;
       }
       if (!res.ok) {

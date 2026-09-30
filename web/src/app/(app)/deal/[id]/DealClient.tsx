@@ -18,7 +18,7 @@ import { formatEur, fromCents, toCents } from "@/lib/format";
 import { useNow } from "@/lib/hooks";
 import { cancelDealIx, confirmHandoverIx, fundIx, refundIx } from "@/lib/instructions";
 import { feePercent, priceBreakdown } from "@/lib/pricing";
-import { getProgram } from "@/lib/program";
+import { fetchDeal, getProgram } from "@/lib/program";
 import { isExpired, roleOf, statusOf, type Action, type DealStatus, type DealTimes } from "@/lib/rules";
 import { friendlyError, needsTopUp, signAndSend } from "@/lib/send";
 import { useDeal } from "@/lib/use-deal";
@@ -159,7 +159,8 @@ export function DealClient({ id, origin, created, paid }: { id: string; origin: 
     try {
       // A page that sat in the background (e.g. while the tenant scanned the QR) can show a button
       // the deal no longer allows; check the live status before asking the wallet to sign.
-      const live = await program.account.deal.fetch(address);
+      const live = await fetchDeal(program, address);
+      if (!live) throw new Error("Deal not found.");
       const liveStatus = statusOf(live.status);
       if (liveStatus !== REQUIRED_STATUS[action]) {
         await refresh();
@@ -173,7 +174,8 @@ export function DealClient({ id, origin, created, paid }: { id: string; origin: 
         cancel: () => cancelDealIx(program, address, live),
       };
       setSignature(await signAndSend(connection, wallet, [await build[action]()]));
-      await refresh();
+      // Done: a failed read afterwards must not show "try again" next to the receipt (the 2-second poll catches up).
+      await refresh().catch(() => undefined);
     } catch (e) {
       const message = friendlyError(e);
       if (needsTopUp(message)) void topUp();
@@ -237,7 +239,10 @@ export function DealClient({ id, origin, created, paid }: { id: string; origin: 
                 setPending(null);
                 setCardDone(message);
               }}
-              onCancelled={() => setPending(null)}
+              onCancelled={(message) => {
+                setPending(null);
+                if (message) setError(message);
+              }}
               onError={setResumeError}
             />
           )}

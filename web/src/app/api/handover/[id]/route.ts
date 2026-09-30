@@ -1,9 +1,10 @@
 import { Connection, PublicKey, Transaction } from "@solana/web3.js";
-import { RPC_URL } from "@/lib/config";
+import { SERVER_RPC_URL } from "@/lib/config";
 import { formatEur } from "@/lib/format";
 import { confirmHandoverIx } from "@/lib/instructions";
-import { getProgram } from "@/lib/program";
+import { fetchDeal, getProgram, type DealAccount } from "@/lib/program";
 import { handoverProblem, statusOf } from "@/lib/rules";
+import { withTimeout } from "@/lib/timeout";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -39,9 +40,14 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return fail("Invalid request.");
   }
 
-  const connection = new Connection(RPC_URL, "confirmed");
+  const connection = new Connection(SERVER_RPC_URL, "confirmed");
   const program = getProgram(connection);
-  const data = await program.account.deal.fetchNullable(deal);
+  let data: DealAccount | null;
+  try {
+    data = await withTimeout(fetchDeal(program, deal), 8_000);
+  } catch {
+    return fail("Solana devnet is busy right now. Wait a few seconds and scan again.", 503);
+  }
   if (!data) return fail("Deal not found.", 404);
 
   const problem = handoverProblem(
@@ -53,10 +59,15 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   );
   if (problem) return fail(problem);
 
-  const ix = await confirmHandoverIx(program, deal, data);
-  const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("confirmed");
-  const tx = new Transaction({ feePayer: account, blockhash, lastValidBlockHeight }).add(ix);
-  const transaction = tx.serialize({ requireAllSignatures: false, verifySignatures: false }).toString("base64");
+  let transaction: string;
+  try {
+    const ix = await confirmHandoverIx(program, deal, data);
+    const { blockhash, lastValidBlockHeight } = await withTimeout(connection.getLatestBlockhash("confirmed"), 8_000);
+    const tx = new Transaction({ feePayer: account, blockhash, lastValidBlockHeight }).add(ix);
+    transaction = tx.serialize({ requireAllSignatures: false, verifySignatures: false }).toString("base64");
+  } catch {
+    return fail("Solana devnet is busy right now. Wait a few seconds and scan again.", 503);
+  }
   return Response.json(
     {
       transaction,

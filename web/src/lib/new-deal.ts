@@ -1,7 +1,7 @@
 import { getCountry, type CountryCode } from "@/content/countries";
 import { capError, housingOf } from "./country-rules";
-import { parseEur } from "./format";
-import { HANDOVER_OPENS_BEFORE_MOVE_IN, MAX_HANDOVER_WINDOW } from "./rules";
+import { formatEur, parseEur } from "./format";
+import { HANDOVER_OPENS_BEFORE_MOVE_IN, MAX_HANDOVER_WINDOW, MAX_LOCK_DURATION } from "./rules";
 
 export const WINDOW_CHOICES = [
   { value: "1d", label: "1 day", seconds: 86_400 },
@@ -15,6 +15,8 @@ export const DEFAULT_WINDOW: WindowChoice = "3d";
 export const DEMO_WINDOW_SECONDS = 300;
 export const DEMO_VALUES = { country: "DE", housing: "any", title: "Room in Vallendar", rent: "300", amount: "600" } as const;
 export const TITLE_MAX_BYTES = 64;
+/** Largest deposit: deposit + card fee must stay under Stripe's €999,999.99 charge limit. Base units (6 decimals). */
+export const MAX_DEPOSIT = 900_000n * 1_000_000n;
 
 export interface NewDealForm {
   /** Only used to check the deposit against the country's legal maximum: never stored on the deal. */
@@ -67,7 +69,7 @@ export function validateNewDeal(form: NewDealForm, now: number): { values: NewDe
   const title = form.title.trim();
   const bytes = titleBytes(title);
   if (bytes === 0) errors.title = 'Describe the room, for example “Room in Vallendar”.';
-  else if (bytes > TITLE_MAX_BYTES) errors.title = `That's too long: keep it under 64 characters.`;
+  else if (bytes > TITLE_MAX_BYTES) errors.title = `That's too long: shorten it. Up to 64 letters fit; ü, é and emoji take the room of two or more.`;
 
   const rent = parseEur(form.rent);
   if (rent === null) errors.rent = `Enter the monthly rent in euros, without heating and other running costs, for example 450.`;
@@ -75,6 +77,7 @@ export function validateNewDeal(form: NewDealForm, now: number): { values: NewDe
   const amount = parseEur(form.amount);
   const overCap = country ? capError(country, housingOf(country, form.housing), rent, amount) : null;
   if (overCap) errors.amount = overCap;
+  else if (amount !== null && amount > MAX_DEPOSIT) errors.amount = `Keysfirst takes deposits up to ${formatEur(MAX_DEPOSIT)}.`;
   else if (amount === null) errors.amount = `Enter the deposit in euros, for example 600 or 600.50.`;
 
   let deadline = Number.NaN;
@@ -87,4 +90,12 @@ export function validateNewDeal(form: NewDealForm, now: number): { values: NewDe
 
   if (Object.keys(errors).length > 0 || amount === null) return { values: null, errors };
   return { values: { title, amount, moveIn: form.moveIn, deadline }, errors };
+}
+
+/**
+ * When the tenant can start paying: the program only takes a deposit locked for at most 180 days, so for a far-off
+ * deadline payment opens 180 days before it. At or before `now` means straight away.
+ */
+export function paymentOpensAt(deadline: number): number {
+  return deadline - MAX_LOCK_DURATION;
 }

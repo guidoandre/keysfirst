@@ -9,7 +9,8 @@ import { Icon } from "./Icon";
  * the browser traps focus, Esc closes, focus returns to the opener.
  * "sheet": bottom sheet on phones, centred from sm up. "full": covers the screen (handover mode, Released).
  * `onClose` runs only when the viewer closes it (Esc, the backdrop, the close button, or a control that calls it);
- * when the parent sets `open` to false, the parent already knows.
+ * when the parent sets `open` to false, the parent already knows. `dismissible={false}` keeps it open while work that
+ * must not be abandoned is running (e.g. a transaction being sent).
  */
 export function Sheet({
   open,
@@ -18,6 +19,7 @@ export function Sheet({
   children,
   variant = "sheet",
   className,
+  dismissible = true,
 }: {
   open: boolean;
   onClose: () => void;
@@ -25,10 +27,13 @@ export function Sheet({
   children: ReactNode;
   variant?: "sheet" | "full";
   className?: string;
+  dismissible?: boolean;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   /** True from the parent's close until its `close` event (the browser fires it in a later task). */
   const closedByParent = useRef(false);
+  /** True when the current press started on the backdrop: a drag that ends there (e.g. selecting text) isn't a click on it. */
+  const pressedOnBackdrop = useRef(false);
   const titleId = useId();
 
   useEffect(() => {
@@ -49,9 +54,14 @@ export function Sheet({
     onClose();
   }
 
+  function close() {
+    if (dismissible) onClose();
+  }
+
   function closeOnBackdrop(event: MouseEvent<HTMLDialogElement>) {
     // A click on the <dialog> element itself (not its content) is a click on the backdrop.
-    if (event.target === event.currentTarget) onClose();
+    if (event.target === event.currentTarget && pressedOnBackdrop.current) close();
+    pressedOnBackdrop.current = false;
   }
 
   return (
@@ -59,6 +69,13 @@ export function Sheet({
       ref={ref}
       aria-labelledby={titleId}
       onClose={handleClose}
+      onCancel={(event) => {
+        // Esc: the browser would close the dialog itself.
+        if (!dismissible) event.preventDefault();
+      }}
+      onPointerDown={(event) => {
+        pressedOnBackdrop.current = event.target === event.currentTarget;
+      }}
       onClick={variant === "sheet" ? closeOnBackdrop : undefined}
       className={cx(
         "p-0 text-fg",
@@ -77,7 +94,8 @@ export function Sheet({
               </h2>
               <button
                 type="button"
-                onClick={onClose}
+                onClick={close}
+                disabled={!dismissible}
                 aria-label="Close"
                 className="-mr-2 grid size-11 shrink-0 place-items-center rounded-md hover:bg-subtle"
               >

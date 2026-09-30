@@ -21,6 +21,7 @@ export function NextStep({
   amount,
   connected,
   settled,
+  paid = false,
   busy,
   error,
   signature,
@@ -35,6 +36,8 @@ export function NextStep({
   connected: boolean;
   /** True once the deal is released, returned or cancelled: nobody has anything left to do. */
   settled: boolean;
+  /** True while the deposit is locked: a visitor then is someone other than the landlord and the tenant. */
+  paid?: boolean;
   busy: Action | null;
   error: string | null;
   signature: string | null;
@@ -65,6 +68,14 @@ export function NextStep({
       {/* Logged out with nothing to tap: the landlord and the tenant only see their buttons once logged in.
           The button opens the Privy login (email or Google; Phantom stays optional). */}
       {!connected && !primary && !settled && <LoginButton label="Log in to see your options" variant="secondary" fullWidth />}
+
+      {/* Logged in, but not as this deal's landlord or tenant (e.g. email today, Google when paying): say so instead of a dead end. */}
+      {connected && role === "visitor" && paid && !primary && (
+        <p className="text-sm text-fg-muted">
+          This account isn&apos;t part of this deal. If you&apos;re its landlord or tenant, log out from the account menu and log in the
+          way you did when you created or paid it.
+        </p>
+      )}
 
       {primary &&
         (connected ? (

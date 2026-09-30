@@ -4,22 +4,20 @@ import Link from "next/link";
 import { buttonClass } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
 import { Icon } from "@/components/ui/Icon";
-import { RPC_URL } from "@/lib/config";
+import { SERVER_RPC_URL } from "@/lib/config";
 import { cx } from "@/lib/cx";
 import { toDealData } from "@/lib/deal-data";
 import type { DealData } from "@/lib/deal-view";
-import { formatEur, formatShortDateTime } from "@/lib/format";
+import { formatDoorTime, formatEur } from "@/lib/format";
 import { getOrigin } from "@/lib/origin";
-import { getProgram } from "@/lib/program";
+import { fetchDeal, getProgram } from "@/lib/program";
 import { handoverOpensAt } from "@/lib/rules";
 import { withTimeout } from "@/lib/timeout";
 
 export const metadata: Metadata = { title: "Confirm the key handover", robots: { index: false } };
 
-// Rendered on the server, where the clock is UTC; the handover happens at a door in Europe; Central European time is shown
-// (Ireland is one hour behind).
-const CENTRAL_EUROPEAN_TIME = "Europe/Berlin";
-const at = (unixSeconds: number) => `${formatShortDateTime(unixSeconds, CENTRAL_EUROPEAN_TIME)} (Central European time)`;
+// Rendered on the server, where the clock is UTC.
+const at = formatDoorTime;
 
 const CHECKLIST = ["You are inside the room.", "You have the keys, or they are in front of you.", "You are logged in with the account that paid the deposit."];
 
@@ -37,7 +35,7 @@ async function loadDeal(address: PublicKey): Promise<{ data: DealData | null | u
   const now = Math.floor(Date.now() / 1000);
   try {
     // A hanging RPC would otherwise leave the tenant waiting at the door instead of reaching the checklist fallback below.
-    const deal = await withTimeout(getProgram(new Connection(RPC_URL, "confirmed")).account.deal.fetchNullable(address), 3_000);
+    const deal = await withTimeout(fetchDeal(getProgram(new Connection(SERVER_RPC_URL, "confirmed")), address), 3_000);
     return { data: deal ? toDealData(deal) : null, now };
   } catch {
     return { data: undefined, now };
@@ -49,7 +47,7 @@ function blocker(d: DealData, now: number): string | null {
   switch (d.status) {
     case "funded":
       if (now < handoverOpensAt(d)) return `The handover opens ${at(handoverOpensAt(d))}. Come back then, standing in the room.`;
-      if (now > d.deadline) return "The handover deadline has passed, so the deposit goes back to you.";
+      if (now > d.deadline) return "The handover deadline has passed: you can take the deposit back on the deal page.";
       return null;
     case "open":
       return "Nobody has paid this deposit yet, so there is nothing to release.";

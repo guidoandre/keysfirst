@@ -78,6 +78,13 @@ export function formatShortDateTime(unixSeconds: number, timeZone?: string): str
   return `${part("weekday")} ${Number(part("day"))} ${MONTHS[Number(part("month")) - 1]}, ${part("hour")}:${part("minute")}`;
 }
 
+// Server-rendered times (clock in UTC) name the handover's time zone: it happens at a door in Europe, so
+// Central European time is shown (Ireland is one hour behind).
+const CENTRAL_EUROPEAN_TIME = "Europe/Berlin";
+/** "Wed 30 Sep, 14:00 (Central European time)", the same wherever the code runs. */
+export const formatDoorTime = (unixSeconds: number) =>
+  `${formatShortDateTime(unixSeconds, CENTRAL_EUROPEAN_TIME)} (Central European time)`;
+
 /** "7xKpQ2…3mQe" -> "7xKp…3mQe" */
 export function shortAddress(address: string): string {
   return address.length > 10 ? `${address.slice(0, 4)}…${address.slice(-4)}` : address;

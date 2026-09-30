@@ -61,6 +61,7 @@ export function DealView(p: DealViewProps) {
         amount={amount}
         connected={p.connected}
         settled={data.status !== "open" && data.status !== "funded"}
+        paid={data.status === "funded"}
         busy={p.busy}
         error={p.error}
         signature={p.signature}

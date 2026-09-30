@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, type FormEvent } from "react";
+import { useEffect, useId, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
 import { TextField } from "@/components/ui/Field";
@@ -26,6 +26,13 @@ export function WithdrawSheet({ open, onClose }: { open: boolean; onClose: () =>
   // Two instances live on a page (account menu + balance card): field ids must be unique.
   const idBase = useId();
 
+  // "Leave empty to withdraw everything" must use today's balance, not the one read when the page loaded.
+  useEffect(() => {
+    if (!open) return;
+    const timer = setTimeout(() => void refreshBalance(), 0);
+    return () => clearTimeout(timer);
+  }, [open, refreshBalance]);
+
   const available = balance ?? 0n;
   // Empty amount means "everything".
   const amount = amountText.trim() === "" ? available : parseEur(amountText);
@@ -37,6 +44,7 @@ export function WithdrawSheet({ open, onClose }: { open: boolean; onClose: () =>
   const valid = !errors.amount && !errors.name && !errors.iban;
 
   function close() {
+    if (busy) return; // the withdrawal is being sent: its outcome must be seen
     setDone(null);
     setError(null);
     setChecked(false);
@@ -55,7 +63,7 @@ export function WithdrawSheet({ open, onClose }: { open: boolean; onClose: () =>
       setAmountText("");
       await refreshBalance();
     } catch (e) {
-      const message = friendlyError(e);
+      const message = friendlyError(e, "withdraw");
       if (needsTopUp(message)) void topUp();
       setError(message);
     } finally {
@@ -64,7 +72,7 @@ export function WithdrawSheet({ open, onClose }: { open: boolean; onClose: () =>
   }
 
   return (
-    <Sheet open={open} onClose={close} title="Withdraw to bank">
+    <Sheet open={open} onClose={close} title="Withdraw to bank" dismissible={!busy}>
       {done ? (
         <div className="space-y-4">
           <Callout tone="success" role="status" title={`${done.amount} is on its way`}>
@@ -83,7 +91,8 @@ export function WithdrawSheet({ open, onClose }: { open: boolean; onClose: () =>
             id={`${idBase}-amount`}
             label="Amount in €"
             inputMode="decimal"
-            placeholder={formatEur(available).replace("€", "")}
+            // Plain digits: the format the field accepts ("1234.56", not "1,234.56").
+            placeholder={(Number(available / 10_000n) / 100).toFixed(2)}
             hint="Leave empty to withdraw everything."
             value={amountText}
             onChange={(e) => setAmountText(e.target.value)}

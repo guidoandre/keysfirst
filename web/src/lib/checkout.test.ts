@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkoutProblem, returnOrigin } from "./checkout";
+import { checkoutExpiry, checkoutProblem, returnOrigin } from "./checkout";
 
 const now = 1_800_000_000;
 const times = { moveIn: now + 3 * 86_400, deadline: now + 4 * 86_400 };
@@ -25,7 +25,8 @@ describe("returnOrigin", () => {
   it("trusts localhost (dev)", () => {
     expect(returnOrigin("http://localhost:3000/api/checkout")).toBe("http://localhost:3000");
   });
-  it("trusts a *.vercel.app preview", () => {
+  it("trusts our own *.vercel.app previews only", () => {
+    expect(returnOrigin("https://someone-else.vercel.app/api/checkout")).toBe("https://www.keysfirst.io");
     expect(returnOrigin("https://keysfirst-git-euro-atlas-fee2.vercel.app/api/checkout")).toBe("https://keysfirst-git-euro-atlas-fee2.vercel.app");
   });
   it("trusts keysfirst.vercel.app", () => {
@@ -38,5 +39,17 @@ describe("returnOrigin", () => {
   it("falls back to production for any other host", () => {
     expect(returnOrigin("https://evil.example.com/api/checkout")).toBe("https://www.keysfirst.io");
     expect(returnOrigin("https://keysfirst.io.evil.com/api/checkout")).toBe("https://www.keysfirst.io");
+  });
+});
+
+describe("checkoutExpiry", () => {
+  it("closes the card page at the deal's deadline", () => {
+    expect(checkoutExpiry(now + 3 * 3_600, now)).toBe(now + 3 * 3_600);
+  });
+  it("keeps Stripe's 30-minute minimum for a close deadline", () => {
+    expect(checkoutExpiry(now + 5 * 60, now)).toBe(now + 31 * 60);
+  });
+  it("keeps Stripe's 24-hour maximum for a far deadline", () => {
+    expect(checkoutExpiry(now + 10 * 86_400, now)).toBe(now + 86_400 - 60);
   });
 });

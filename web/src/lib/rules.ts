@@ -1,4 +1,4 @@
-import { formatDateTime } from "./format";
+import { formatDoorTime } from "./format";
 
 // Mirrors programs/keysfirst/src/constants.rs. Keep in sync.
 export const HANDOVER_OPENS_BEFORE_MOVE_IN = 24 * 60 * 60;
@@ -61,8 +61,8 @@ export function handoverProblem(
 ): string | null {
   if (status !== "funded") return "There is no locked deposit to release for this deal.";
   if (account !== tenant) return "Only the tenant who paid the deposit can confirm the handover. Switch Phantom to that wallet.";
-  if (now < handoverOpensAt(d)) return `The handover opens on ${formatDateTime(handoverOpensAt(d))}.`;
-  if (now > d.deadline) return "The handover deadline has passed, so the deposit goes back to the tenant.";
+  if (now < handoverOpensAt(d)) return `The handover opens on ${formatDoorTime(handoverOpensAt(d))}.`;
+  if (now > d.deadline) return "The handover deadline has passed: the deposit can now be taken back to the tenant on the deal page.";
   return null;
 }
 

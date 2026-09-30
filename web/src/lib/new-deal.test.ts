@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEMO_WINDOW_SECONDS, handoverWindow, titleBytes, validateNewDeal, windowSeconds, type NewDealForm } from "./new-deal";
+import { DEMO_WINDOW_SECONDS, handoverWindow, paymentOpensAt, titleBytes, validateNewDeal, windowSeconds, type NewDealForm } from "./new-deal";
 
 const DAY = 86_400;
 const now = 1_790_000_000;
@@ -77,5 +77,18 @@ describe("validateNewDeal", () => {
 
   it("describes the handover window", () => {
     expect(handoverWindow(now, 3 * DAY)).toEqual({ opens: now - DAY, deadline: now + 3 * DAY });
+  });
+});
+
+describe("deposit limits", () => {
+  it("caps the deposit below Stripe's largest card charge", () => {
+    expect(validateNewDeal({ ...good, rent: "9999999", amount: "900000" }, now).errors.amount).toBeUndefined();
+    expect(validateNewDeal({ ...good, rent: "9999999", amount: "900000.01" }, now).errors.amount).toMatch(/up to €900,000\.00/);
+  });
+});
+
+describe("paymentOpensAt", () => {
+  it("opens payment 180 days before the deadline (the program's longest lock)", () => {
+    expect(paymentOpensAt(now + 200 * DAY)).toBe(now + 20 * DAY);
   });
 });

@@ -31,6 +31,28 @@ export function dealAddress(landlord: PublicKey, dealId: BN): PublicKey {
   )[0];
 }
 
+/**
+ * True for a deal Keysfirst itself created in Test EUR. Anchor only checks an account's 8-byte type tag, which is
+ * public: another program can write a lookalike "Funded" deal naming any landlord. Only the program can create an
+ * account at the deal's own address, and a deal in another token would be shown in € without being euros.
+ */
+export function isGenuineDeal(address: PublicKey, data: DealAccount): boolean {
+  return dealAddress(data.landlord, data.dealId).equals(address) && data.mint.equals(MINT);
+}
+
+/** Reads a deal: null when nothing, something that isn't a deal, or a lookalike lives at this address. Network errors throw. */
+export async function fetchDeal(program: Program<Keysfirst>, address: PublicKey): Promise<DealAccount | null> {
+  const info = await program.provider.connection.getAccountInfo(address, "confirmed");
+  if (!info || !info.owner.equals(PROGRAM_ID)) return null;
+  let data: DealAccount;
+  try {
+    data = program.coder.accounts.decode<DealAccount>("deal", info.data);
+  } catch {
+    return null;
+  }
+  return isGenuineDeal(address, data) ? data : null;
+}
+
 export function tokenAccount(owner: PublicKey, mint: PublicKey = MINT): PublicKey {
   return getAssociatedTokenAddressSync(mint, owner, true, TOKEN_PROGRAM_ID);
 }

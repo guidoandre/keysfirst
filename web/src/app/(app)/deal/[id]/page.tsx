@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Connection, PublicKey } from "@solana/web3.js";
-import { RPC_URL } from "@/lib/config";
+import { SERVER_RPC_URL } from "@/lib/config";
 import { formatEur } from "@/lib/format";
 import { getOrigin } from "@/lib/origin";
-import { getProgram } from "@/lib/program";
+import { fetchDeal, getProgram } from "@/lib/program";
 import { withTimeout } from "@/lib/timeout";
 import { DealClient } from "./DealClient";
 
@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   try {
     // A hanging RPC would otherwise hold up the page's head (link-preview bots wait for it).
-    const deal = await withTimeout(getProgram(new Connection(RPC_URL, "confirmed")).account.deal.fetchNullable(new PublicKey(id)), 3_000);
+    const deal = await withTimeout(fetchDeal(getProgram(new Connection(SERVER_RPC_URL, "confirmed")), new PublicKey(id)), 3_000);
     if (!deal) return { title: "Deal not found", robots: { index: false } };
     const title = `${formatEur(deal.amount.toString())} deposit · ${deal.title}`;
     // No openGraph here: an explicit images list would override the deal's opengraph-image file.

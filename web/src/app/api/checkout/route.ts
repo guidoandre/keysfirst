@@ -1,10 +1,10 @@
 import { Connection, PublicKey } from "@solana/web3.js";
-import { checkoutProblem, returnOrigin } from "@/lib/checkout";
-import { RPC_URL } from "@/lib/config";
+import { checkoutExpiry, checkoutProblem, returnOrigin, STRIPE_MAX_CENTS } from "@/lib/checkout";
+import { SERVER_RPC_URL } from "@/lib/config";
 import { toDealData } from "@/lib/deal-data";
 import { fromCents, toCents } from "@/lib/format";
 import { feePercent, priceBreakdown } from "@/lib/pricing";
-import { getProgram, type DealAccount } from "@/lib/program";
+import { fetchDeal, getProgram, type DealAccount } from "@/lib/program";
 import { CARD_UNAVAILABLE, stripeClient } from "@/lib/server/stripe";
 
 export const dynamic = "force-dynamic";
@@ -27,21 +27,20 @@ export async function POST(req: Request) {
 
   let raw: DealAccount | null;
   try {
-    raw = await getProgram(new Connection(RPC_URL, "confirmed")).account.deal.fetchNullable(deal);
-  } catch (err) {
-    // A syntactically valid pubkey that isn't a Keysfirst deal account fails Anchor's decode, not the RPC.
-    const message = err instanceof Error ? err.message : String(err);
-    if (/discriminator|owner/i.test(message)) return Response.json({ error: "We can't find this deal." }, { status: 404 });
+    // null for anything that isn't a genuine Keysfirst deal (another account, a lookalike, another token).
+    raw = await fetchDeal(getProgram(new Connection(SERVER_RPC_URL, "confirmed")), deal);
+  } catch {
     return Response.json({ error: CARD_UNAVAILABLE }, { status: 503 });
   }
   if (!raw) return Response.json({ error: "We can't find this deal." }, { status: 404 });
   const d = toDealData(raw);
+  const now = Math.floor(Date.now() / 1000);
   const problem = checkoutProblem({
     status: d.status,
     landlord: d.landlord,
     account: account.toBase58(),
     times: { moveIn: d.moveIn, deadline: d.deadline },
-    now: Math.floor(Date.now() / 1000),
+    now,
   });
   if (problem) return Response.json({ error: problem }, { status: 409 });
   // Stripe charges whole cents: a deposit with a fraction of a cent could never be locked in full.
@@ -50,6 +49,9 @@ export async function POST(req: Request) {
   }
 
   const price = priceBreakdown(toCents(d.amount), "card");
+  if (price.totalCents > STRIPE_MAX_CENTS) {
+    return Response.json({ error: "This deposit is too large to pay by card. Pay it from your balance instead." }, { status: 409 });
+  }
   const origin = returnOrigin(req.url);
   // Everything fulfil needs is decided here, on the server, from the on-chain deal. Mint exactly what was
   // charged (derived from the cents actually billed), not the deal's raw base-unit amount.
@@ -78,6 +80,7 @@ export async function POST(req: Request) {
       ],
       metadata,
       payment_intent_data: { metadata },
+      expires_at: checkoutExpiry(d.deadline, now),
       success_url: `${origin}/deal/${deal.toBase58()}?paid={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/deal/${deal.toBase58()}`,
     });

@@ -1,17 +1,20 @@
-import { Connection, PublicKey, Transaction } from "@solana/web3.js";
+import { Connection, PublicKey, Transaction, sendAndConfirmTransaction } from "@solana/web3.js";
 import type Stripe from "stripe";
-import { RPC_URL } from "@/lib/config";
-import { faucetKeypair, mintIxs, topUpIx } from "@/lib/server/faucet";
+import { SERVER_RPC_URL } from "@/lib/config";
+import { faucetKeypair, mintIxs, mintOnceIx, topUpIx } from "@/lib/server/faucet";
 import { CARD_UNAVAILABLE, stripeClient } from "@/lib/server/stripe";
+import { withTimeout } from "@/lib/timeout";
 
 export const dynamic = "force-dynamic";
 
 const NOT_PAID = "We haven't received your card payment yet.";
+const NOT_FOUND = "We can't find this card payment. Start the payment again.";
 const MINT_FAILED = "Your payment arrived, but we couldn't prepare the deposit yet. Try again in a minute.";
 
 /**
- * After Stripe's page: checks the payment, mints exactly the deposit to the payer's account once, and records
- * the mint on the payment intent so a retry never mints twice (spec D6). Safe to call again.
+ * After Stripe's page: checks the payment and mints exactly the deposit to the payer's account, at most once per
+ * payment (spec D6). The mint transaction also creates an empty marker account derived from the payment, so a retry
+ * or a second tab can never mint twice: their transaction fails as a whole. Safe to call again.
  */
 export async function POST(req: Request) {
   const stripe = stripeClient();
@@ -29,7 +32,9 @@ export async function POST(req: Request) {
   let session: Stripe.Checkout.Session;
   try {
     session = await stripe.checkout.sessions.retrieve(id, { expand: ["payment_intent"] });
-  } catch {
+  } catch (err) {
+    // A session Stripe doesn't know (another account, a changed key) will never be found: say so for good.
+    if ((err as { code?: string })?.code === "resource_missing") return Response.json({ error: NOT_FOUND }, { status: 404 });
     return Response.json({ error: CARD_UNAVAILABLE }, { status: 503 });
   }
   const intent = session.payment_intent as Stripe.PaymentIntent | null;
@@ -37,53 +42,63 @@ export async function POST(req: Request) {
   if (session.payment_status !== "paid" || !intent || !meta.deal || !meta.account || !meta.amount) {
     return Response.json({ error: NOT_PAID }, { status: 402 });
   }
-  if (intent.metadata.minted) return Response.json({ signature: intent.metadata.minted, deal: meta.deal, account: meta.account });
+  const paid = { deal: meta.deal, account: meta.account };
+  if (intent.metadata.minted) return Response.json({ signature: intent.metadata.minted, ...paid });
 
-  const connection = new Connection(RPC_URL, "confirmed");
-  const tx = new Transaction();
+  const connection = new Connection(SERVER_RPC_URL, "confirmed");
+  const record = async (signature: string) => {
+    await stripe.paymentIntents.update(intent.id, { metadata: { minted: signature } }).catch(() => undefined);
+    return Response.json({ signature, ...paid });
+  };
+
+  let owner: PublicKey;
+  let tx: Transaction;
+  let marker: PublicKey;
   try {
-    const owner = new PublicKey(meta.account);
-    tx.add(...mintIxs(faucet.publicKey, owner, BigInt(meta.amount)));
-    // topUpIx reads the account's balance: a busy RPC must end as MINT_FAILED (nothing sent, nothing recorded).
-    const gas = await topUpIx(connection, faucet.publicKey, owner);
-    if (gas) tx.add(gas);
+    owner = new PublicKey(meta.account);
+    const once = await mintOnceIx(connection, faucet.publicKey, intent.id);
+    marker = once.marker;
+    // Minted by an earlier call whose record didn't reach Stripe (a timeout, a second tab): don't mint again.
+    const earlier = await mintedBy(connection, marker);
+    if (earlier) return await record(earlier);
+    tx = new Transaction().add(once.ix, ...mintIxs(faucet.publicKey, owner, BigInt(meta.amount)));
   } catch {
     return Response.json({ error: MINT_FAILED }, { status: 503 });
   }
-  tx.feePayer = faucet.publicKey;
 
-  // Retry-safe send: if sendRawTransaction/confirmTransaction throws after the transaction was actually
-  // broadcast (timeout, dropped response, etc.), check the network directly before declaring failure — a blind
-  // retry here would submit a second mint for the same payment.
   let signature: string | undefined;
   try {
     const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("confirmed");
+    tx.feePayer = faucet.publicKey;
     tx.recentBlockhash = blockhash;
     tx.sign(faucet);
     signature = await connection.sendRawTransaction(tx.serialize());
     const result = await connection.confirmTransaction({ signature, blockhash, lastValidBlockHeight }, "confirmed");
-    // confirmTransaction resolves normally even when the transaction landed but failed on-chain; that's not success.
-    if (result.value.err) return Response.json({ error: MINT_FAILED }, { status: 503 });
-  } catch {
-    if (!signature) return Response.json({ error: MINT_FAILED }, { status: 503 });
-    try {
-      const { value } = await connection.getSignatureStatuses([signature]);
-      const status = value[0];
-      const landed = status && !status.err && (status.confirmationStatus === "confirmed" || status.confirmationStatus === "finalized");
-      if (!landed) return Response.json({ error: MINT_FAILED }, { status: 503 });
-    } catch {
-      // Can't tell whether it landed: record nothing; a retry checks again (spec §6 known limit).
-      return Response.json({ error: MINT_FAILED }, { status: 503 });
+    // A failed transaction (e.g. the marker already exists because another call minted first) minted nothing.
+    if (result.value.err) {
+      const other = await mintedBy(connection, marker).catch(() => null);
+      return other ? await record(other) : Response.json({ error: MINT_FAILED }, { status: 503 });
     }
-  }
-  if (!signature) return Response.json({ error: MINT_FAILED }, { status: 503 });
-
-  // Known limit (spec §6): two simultaneous FIRST calls (before either recorded `minted`) could both mint;
-  // a webhook fixes this in production.
-  try {
-    await stripe.paymentIntents.update(intent.id, { metadata: { minted: signature } });
   } catch {
-    await stripe.paymentIntents.update(intent.id, { metadata: { minted: signature } }).catch(() => undefined);
+    // Unknown outcome: nothing is recorded. The marker makes the retry safe: it either finds this mint or makes the only one.
+    return Response.json({ error: MINT_FAILED }, { status: 503 });
   }
-  return Response.json({ signature, deal: meta.deal, account: meta.account });
+
+  // Network costs for locking the deposit next: a separate, best-effort transaction, so an empty faucet
+  // can never undo a payment's mint.
+  try {
+    const gas = await withTimeout(topUpIx(connection, faucet.publicKey, owner), 5_000);
+    if (gas) await withTimeout(sendAndConfirmTransaction(connection, new Transaction().add(gas), [faucet], { commitment: "confirmed" }), 15_000);
+  } catch {
+    // The deal page tops up on demand when the lock needs it.
+  }
+  return await record(signature);
+}
+
+/** The successful transaction that created this payment's marker, or null when it hasn't been minted. */
+async function mintedBy(connection: Connection, marker: PublicKey): Promise<string | null> {
+  const info = await connection.getAccountInfo(marker, "confirmed");
+  if (!info) return null;
+  const list = await connection.getSignaturesForAddress(marker, { limit: 10 }, "confirmed");
+  return list.find((s) => !s.err)?.signature ?? "minted";
 }

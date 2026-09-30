@@ -5,7 +5,7 @@ import { useConnection } from "./connection";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { mergeDeals, toSummary, type DealSummary } from "./dashboard";
 import { toDealData } from "./deal-data";
-import { getProgram } from "./program";
+import { getProgram, isGenuineDeal } from "./program";
 import { friendlyError } from "./send";
 
 // Deal account layout: 8-byte discriminator, then landlord (32 bytes), then tenant (32 bytes).
@@ -41,6 +41,7 @@ export function useMyDeals(): { state: MyDealsState; refresh: () => void; wallet
         program.account.deal.all([{ memcmp: { offset: TENANT_OFFSET, bytes: wallet } }]),
       ]);
       const summaries = [...asLandlord, ...asTenant]
+        .filter((item) => isGenuineDeal(item.publicKey, item.account))
         .map((item) => toSummary(item.publicKey.toBase58(), toDealData(item.account), wallet))
         .filter((d): d is DealSummary => d !== null);
       setStored({ status: "ready", deals: mergeDeals(summaries), wallet });

@@ -1,8 +1,8 @@
 import { Connection, PublicKey } from "@solana/web3.js";
-import { RPC_URL } from "@/lib/config";
+import { SERVER_RPC_URL } from "@/lib/config";
 import { formatEur } from "@/lib/format";
 import { OG_CONTENT_TYPE, OG_SIZE, ogCard } from "@/lib/og";
-import { getProgram } from "@/lib/program";
+import { fetchDeal, getProgram } from "@/lib/program";
 import { STATUS_LABEL, statusOf } from "@/lib/rules";
 import { withTimeout } from "@/lib/timeout";
 
@@ -17,7 +17,7 @@ export default async function DealImage({ params }: { params: Promise<{ id: stri
   const { id } = await params;
   try {
     // A hanging RPC would otherwise hang the link preview instead of falling back to the generic card below.
-    const deal = await withTimeout(getProgram(new Connection(RPC_URL, "confirmed")).account.deal.fetchNullable(new PublicKey(id)), 3_000);
+    const deal = await withTimeout(fetchDeal(getProgram(new Connection(SERVER_RPC_URL, "confirmed")), new PublicKey(id)), 3_000);
     if (deal) {
       return ogCard({
         kicker: STATUS_LABEL[statusOf(deal.status)],

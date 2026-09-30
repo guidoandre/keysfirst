@@ -12,4 +12,4 @@ export const OPERATOR = {
 };
 
 /** Shown as "Last updated" on the legal pages. Change it whenever one of them changes. */
-export const LEGAL_UPDATED = "29 September 2026";
+export const LEGAL_UPDATED = "30 September 2026";
