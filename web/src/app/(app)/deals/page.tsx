@@ -3,7 +3,7 @@ import { MyDeals } from "./MyDeals";
 
 export const metadata: Metadata = {
   title: "My deals",
-  description: "Your deposit links as landlord and as tenant, read straight from Solana.",
+  description: "Your deposit links as landlord and as tenant, read straight from their public records.",
   robots: { index: false },
 };
 

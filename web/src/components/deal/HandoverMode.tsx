@@ -26,6 +26,7 @@ export function HandoverMode({
   amount,
   deadline,
   now,
+  offline = false,
 }: {
   open: boolean;
   onClose: () => void;
@@ -35,6 +36,8 @@ export function HandoverMode({
   amount: string;
   deadline: number;
   now: number;
+  /** The last status check failed: the green screen may be late. */
+  offline?: boolean;
 }) {
   useWakeLock(open);
   const url = `${origin}/deal/${dealId}/handover`;
@@ -79,7 +82,7 @@ export function HandoverMode({
           </ol>
           <p role="status" className="inline-flex items-center gap-2 font-semibold">
             <span aria-hidden="true" className="size-2.5 animate-pulse-dot rounded-full bg-accent ring-2 ring-fg" />
-            Waiting for your tenant to approve…
+            {offline ? "Reconnecting… Keep the keys until this screen turns green." : "Waiting for your tenant to approve…"}
           </p>
           <p className="text-sm text-fg-muted tabular-nums">Handover deadline in {formatCountdown(deadline - now)}</p>
         </div>

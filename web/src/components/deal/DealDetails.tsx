@@ -4,11 +4,23 @@ import { cx } from "@/lib/cx";
 import { explorerAddress, formatShortDateTime, shortAddress } from "@/lib/format";
 import { handoverOpensAt, type DealTimes } from "@/lib/rules";
 
+/** "Europe/Rome" -> "Rome"; the zone every time on the page is shown in (the viewer's device). */
+function deviceZone(): string | null {
+  try {
+    const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return zone ? zone.split("/").pop()!.replaceAll("_", " ") : null;
+  } catch {
+    return null;
+  }
+}
+
 export function DealDetails({ id, times }: { id: string; times: DealTimes }) {
+  const zone = deviceZone();
   const rows: Array<[string, string]> = [
     ["Move-in", formatShortDateTime(times.moveIn)],
     ["Handover opens", formatShortDateTime(handoverOpensAt(times))],
     ["Handover deadline", formatShortDateTime(times.deadline)],
+    ...(zone ? ([["Times shown in", `${zone} time (this device)`]] as Array<[string, string]>) : []),
   ];
   return (
     <section aria-labelledby="details-title" className="rounded-lg border-[1.5px] border-rule p-5">
@@ -23,7 +35,7 @@ export function DealDetails({ id, times }: { id: string; times: DealTimes }) {
           </div>
         ))}
         <div className="flex justify-between gap-4 py-2.5">
-          <dt className="text-fg-muted">This deal on Solana</dt>
+          <dt className="text-fg-muted">Public record</dt>
           <dd>
             <a
               href={explorerAddress(id)}
@@ -33,7 +45,7 @@ export function DealDetails({ id, times }: { id: string; times: DealTimes }) {
             >
               {shortAddress(id)}
               <Icon name="external" size={13} />
-              <span className="sr-only"> (opens Solana Explorer in a new tab)</span>
+              <span className="sr-only"> of this deal on Solana Explorer (opens in a new tab)</span>
             </a>
           </dd>
         </div>

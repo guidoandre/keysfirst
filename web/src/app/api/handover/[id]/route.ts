@@ -4,6 +4,7 @@ import { formatEur } from "@/lib/format";
 import { confirmHandoverIx } from "@/lib/instructions";
 import { fetchDeal, getProgram, type DealAccount } from "@/lib/program";
 import { handoverProblem, statusOf } from "@/lib/rules";
+import { clientIp, rateLimiter } from "@/lib/server/limits";
 import { withTimeout } from "@/lib/timeout";
 
 const CORS = {
@@ -13,6 +14,9 @@ const CORS = {
 };
 
 export const dynamic = "force-dynamic";
+
+// Open to any wallet (Solana Pay), so cap how often one IP can make it read devnet: the RPC quota is shared with checkout.
+const perIp = rateLimiter(30, 60_000);
 
 function fail(message: string, status = 400) {
   return Response.json({ message }, { status, headers: CORS });
@@ -31,6 +35,7 @@ export function GET(req: Request) {
 /** Solana Pay step 2: the wallet sends its address and gets the release transaction to sign. */
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  if (!perIp(clientIp(req))) return fail("Too many tries. Wait a minute and scan again.", 429);
   let deal: PublicKey;
   let account: PublicKey;
   try {
@@ -54,7 +59,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     statusOf(data.status),
     data.tenant.toBase58(),
     account.toBase58(),
-    { moveIn: data.moveIn.toNumber(), deadline: data.deadline.toNumber() },
+    { moveIn: Number(data.moveIn.toString()), deadline: Number(data.deadline.toString()) },
     Math.floor(Date.now() / 1000),
   );
   if (problem) return fail(problem);

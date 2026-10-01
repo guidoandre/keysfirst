@@ -72,7 +72,12 @@ describe("formatShortDateTime", () => {
     expect(formatShortDateTime(wed30Sep1400Utc - 2 * 3600, "Europe/Berlin")).toBe("Wed 30 Sep, 14:00");
   });
   it("defaults to the viewer's time zone (UTC in tests)", () => {
-    expect(formatShortDateTime(wed30Sep1400Utc)).toBe("Wed 30 Sep, 14:00");
+    expect(formatShortDateTime(wed30Sep1400Utc, undefined, wed30Sep1400Utc)).toBe("Wed 30 Sep, 14:00");
+  });
+  it("adds the year only when it isn't the current one", () => {
+    const oneYearLater = Date.UTC(2027, 9, 5, 14, 0) / 1000;
+    expect(formatShortDateTime(oneYearLater, "UTC", wed30Sep1400Utc)).toBe("Tue 5 Oct 2027, 14:00");
+    expect(formatShortDateTime(wed30Sep1400Utc, "UTC", oneYearLater)).toBe("Wed 30 Sep 2026, 14:00");
   });
 });
 

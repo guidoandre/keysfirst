@@ -27,6 +27,8 @@ describe("returnOrigin", () => {
   });
   it("trusts our own *.vercel.app previews only", () => {
     expect(returnOrigin("https://someone-else.vercel.app/api/checkout")).toBe("https://www.keysfirst.io");
+    // Anyone can name a Vercel project keysfirst-something: only our team's suffix counts.
+    expect(returnOrigin("https://keysfirst-evil.vercel.app/api/checkout")).toBe("https://www.keysfirst.io");
     expect(returnOrigin("https://keysfirst-git-euro-atlas-fee2.vercel.app/api/checkout")).toBe("https://keysfirst-git-euro-atlas-fee2.vercel.app");
   });
   it("trusts keysfirst.vercel.app", () => {
@@ -43,13 +45,7 @@ describe("returnOrigin", () => {
 });
 
 describe("checkoutExpiry", () => {
-  it("closes the card page at the deal's deadline", () => {
-    expect(checkoutExpiry(now + 3 * 3_600, now)).toBe(now + 3 * 3_600);
-  });
-  it("keeps Stripe's 30-minute minimum for a close deadline", () => {
-    expect(checkoutExpiry(now + 5 * 60, now)).toBe(now + 31 * 60);
-  });
-  it("keeps Stripe's 24-hour maximum for a far deadline", () => {
-    expect(checkoutExpiry(now + 10 * 86_400, now)).toBe(now + 86_400 - 60);
+  it("closes the card page after Stripe's 30-minute minimum, whatever the deadline", () => {
+    expect(checkoutExpiry(now)).toBe(now + 31 * 60);
   });
 });

@@ -31,6 +31,17 @@ describe("validateNewDeal", () => {
     expect(validateNewDeal({ ...good, moveIn: now - 5 * DAY }, now).errors.moveIn).toMatch(/already in the past/);
   });
 
+  it("gives the tenant at least an hour to pay, except in the demo", () => {
+    const late = { ...good, window: "1d" as const, moveIn: now - DAY + 30 * 60 };
+    expect(validateNewDeal(late, now).errors.moveIn).toMatch(/less than an hour/);
+    expect(validateNewDeal({ ...good, moveIn: now - 60, demo: true }, now).errors.moveIn).toBeUndefined();
+  });
+
+  it("refuses a move-in more than a year away (a typo in the year)", () => {
+    expect(validateNewDeal({ ...good, moveIn: now + 400 * DAY }, now).errors.moveIn).toMatch(/Check the year/);
+    expect(validateNewDeal({ ...good, moveIn: now + 300 * DAY }, now).errors.moveIn).toBeUndefined();
+  });
+
   it("needs a country", () => {
     const { values, errors } = validateNewDeal({ ...good, country: "" }, now);
     expect(errors.country).toMatch(/Choose the country/);

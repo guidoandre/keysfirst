@@ -51,6 +51,10 @@ describe("nextStep", () => {
     expect(nextStep({ status: "funded", role: "landlord", times: t, now: before, amount })).toMatchObject({ primary: undefined, secondary: ["refund"] });
     expect(nextStep({ status: "funded", role: "landlord", times: t, now: inWindow, amount })).toMatchObject({ primary: "showQr", secondary: ["refund"] });
     expect(nextStep({ status: "funded", role: "tenant", times: t, now: inWindow, amount })).toMatchObject({ primary: undefined, secondary: ["confirmInApp"] });
+    // Back from the handover page (the tenant scanned the code): releasing becomes the main button.
+    expect(nextStep({ status: "funded", role: "tenant", times: t, now: inWindow, amount, atDoor: true })).toMatchObject({ primary: "confirmInApp", secondary: [] });
+    // atDoor never adds a button the clock doesn't allow.
+    expect(nextStep({ status: "funded", role: "tenant", times: t, now: before, amount, atDoor: true })).toMatchObject({ primary: undefined, secondary: [] });
     expect(nextStep({ status: "funded", role: "tenant", times: t, now: expired, amount }).primary).toBe("refund");
     expect(nextStep({ status: "funded", role: "visitor", times: t, now: expired, amount }).primary).toBe("refund");
     expect(nextStep({ status: "funded", role: "visitor", times: t, now: inWindow, amount })).toMatchObject({ primary: undefined, secondary: [] });
@@ -205,7 +209,7 @@ describe("dealRows", () => {
     const funded = { status: "funded" as const, times, signatures: [], now: inWindow, amount };
     const detail = (rows: ReturnType<typeof dealRows>, key: string) => rows.find((r) => r.key === key)?.detail;
     const asTenant = dealRows({ ...funded, role: "tenant" });
-    expect(detail(asTenant, "handover")).toBe("Until Sun 4 Oct, 14:00. You scan the landlord's code and €600.00 goes to them.");
+    expect(detail(asTenant, "handover")).toBe(`Until Sun 4 Oct, 14:00. You approve (scan the landlord's code or tap "I have the keys") and €600.00 goes to them.`);
     expect(detail(asTenant, "fallback")).toBe("€600.00 goes back to you. Anyone can trigger it.");
     const asLandlord = dealRows({ ...funded, role: "landlord" });
     expect(detail(asLandlord, "handover")).toBe("Until Sun 4 Oct, 14:00. Your tenant scans your code and €600.00 goes to you.");

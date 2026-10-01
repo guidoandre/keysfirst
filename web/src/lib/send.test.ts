@@ -55,9 +55,9 @@ describe("friendlyError", () => {
   });
   it("explains devnet rate limits", () => {
     const e = new Error('429 : {"jsonrpc":"2.0","error":{"code": 429, "message":"Too many requests for a specific RPC call"}}');
-    expect(friendlyError(e)).toMatch(/Solana devnet is busy/);
+    expect(friendlyError(e)).toMatch(/The network is busy/);
   });
   it("falls back to a generic hint", () => {
-    expect(friendlyError("boom")).toBe("Something went wrong. Try again. If you use Phantom, check that it is set to Solana Devnet.");
+    expect(friendlyError("boom")).toBe("Something went wrong. Try again in a few seconds. Using Phantom? Check that it is set to Solana Devnet.");
   });
 });

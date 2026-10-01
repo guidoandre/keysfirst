@@ -69,13 +69,20 @@ export function useDeal(id: string): DealState {
 
   // Poll so the landlord's screen flips to "Released" seconds after the tenant signs.
   // Hidden tabs don't poll; they reload as soon as they are shown again.
+  // One poll at a time: on a slow network, stacking a request every 2 seconds only adds to the rate limit.
   useEffect(() => {
+    let polling = false;
     const load = () => {
-      if (document.hidden) return;
-      refresh().then(
-        () => setLoadError(null),
-        (e: unknown) => setLoadError(e instanceof Error ? e.message : String(e)),
-      );
+      if (document.hidden || polling) return;
+      polling = true;
+      refresh()
+        .then(
+          () => setLoadError(null),
+          (e: unknown) => setLoadError(e instanceof Error ? e.message : String(e)),
+        )
+        .finally(() => {
+          polling = false;
+        });
     };
     const first = setTimeout(load, 0);
     const timer = setInterval(load, 2_000);

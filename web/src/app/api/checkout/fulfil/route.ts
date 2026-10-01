@@ -1,9 +1,9 @@
-import { Connection, PublicKey, Transaction, sendAndConfirmTransaction } from "@solana/web3.js";
+import { Connection, PublicKey, Transaction } from "@solana/web3.js";
 import type Stripe from "stripe";
 import { SERVER_RPC_URL } from "@/lib/config";
-import { faucetKeypair, mintIxs, mintOnceIx, topUpIx } from "@/lib/server/faucet";
+import { faucetKeypair, mintIxs, mintOnceIx } from "@/lib/server/faucet";
+import { isJson } from "@/lib/server/limits";
 import { CARD_UNAVAILABLE, stripeClient } from "@/lib/server/stripe";
-import { withTimeout } from "@/lib/timeout";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +17,7 @@ const MINT_FAILED = "Your payment arrived, but we couldn't prepare the deposit y
  * or a second tab can never mint twice: their transaction fails as a whole. Safe to call again.
  */
 export async function POST(req: Request) {
+  if (!isJson(req)) return Response.json({ error: "Invalid request." }, { status: 415 });
   const stripe = stripeClient();
   const faucet = faucetKeypair();
   if (!stripe || !faucet) return Response.json({ error: CARD_UNAVAILABLE }, { status: 503 });
@@ -80,18 +81,19 @@ export async function POST(req: Request) {
       return other ? await record(other) : Response.json({ error: MINT_FAILED }, { status: 503 });
     }
   } catch {
-    // Unknown outcome: nothing is recorded. The marker makes the retry safe: it either finds this mint or makes the only one.
+    // Usually a second call (a reload, a second tab) whose send was refused because the first one's marker exists:
+    // look for that mint for a few seconds before reporting a failure. If there is none, the outcome is unknown and
+    // nothing is recorded; the marker makes the retry safe: it either finds this mint or makes the only one.
+    for (let i = 0; i < 4; i++) {
+      const other = await mintedBy(connection, marker).catch(() => null);
+      if (other) return await record(other);
+      await new Promise((resolve) => setTimeout(resolve, 1_500));
+    }
     return Response.json({ error: MINT_FAILED }, { status: 503 });
   }
 
-  // Network costs for locking the deposit next: a separate, best-effort transaction, so an empty faucet
-  // can never undo a payment's mint.
-  try {
-    const gas = await withTimeout(topUpIx(connection, faucet.publicKey, owner), 5_000);
-    if (gas) await withTimeout(sendAndConfirmTransaction(connection, new Transaction().add(gas), [faucet], { commitment: "confirmed" }), 15_000);
-  } catch {
-    // The deal page tops up on demand when the lock needs it.
-  }
+  // Network costs for the lock are covered by the deal page (/api/gas, rate-limited) right before it locks, not
+  // here: a free test card would otherwise let anyone collect top-ups from the faucet with fresh accounts.
   return await record(signature);
 }
 

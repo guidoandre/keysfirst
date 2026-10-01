@@ -12,24 +12,25 @@ export function checkoutProblem(o: { status: DealStatus; landlord: string; accou
 /** Stripe's largest single charge in euros: €999,999.99. */
 export const STRIPE_MAX_CENTS = 99_999_999;
 
-// Stripe accepts a Checkout expiry between 30 minutes and 24 hours from now (a minute's margin on both ends).
-const MIN_EXPIRY = 31 * 60;
-const MAX_EXPIRY = 24 * 60 * 60 - 60;
+// Stripe's shortest Checkout expiry is 30 minutes (plus a minute's margin).
+const CHECKOUT_LIFETIME = 31 * 60;
 
 /**
- * When the card page stops taking payments: at the deal's deadline, so nobody pays a deposit (and a non-refundable fee)
- * for a deal that can no longer be paid. Stripe's 30-minute minimum is the only exception, for deadlines closer than that.
+ * When the card page stops taking payments: as soon as Stripe allows. A card page left open for hours (a second tab,
+ * Back from Stripe) could otherwise still be paid after someone else paid the deal or the landlord cancelled it,
+ * leaving the deposit in the payer's balance and the non-refundable fee spent for nothing.
  */
-export function checkoutExpiry(deadline: number, now: number): number {
-  return Math.min(Math.max(deadline, now + MIN_EXPIRY), now + MAX_EXPIRY);
+export function checkoutExpiry(now: number): number {
+  return now + CHECKOUT_LIFETIME;
 }
 
-const TRUSTED_HOSTS = ["localhost", "127.0.0.1", "keysfirst.io", "www.keysfirst.io"];
+const TRUSTED_HOSTS = ["localhost", "127.0.0.1", "keysfirst.io", "www.keysfirst.io", "keysfirst.vercel.app"];
+// Our Vercel team's preview URLs: keysfirst-<hash or git-branch>-atlas-fee2.vercel.app. Only this team can create them.
+const isOurPreview = (host: string) => host.startsWith("keysfirst-") && host.endsWith("-atlas-fee2.vercel.app");
 
 /** Checkout's success/cancel URLs come back from the Host header, so only trust known hosts (dev, our domain, our Vercel URLs); anything else falls back to production. */
 export function returnOrigin(requestUrl: string): string {
   const url = new URL(requestUrl);
   const host = url.hostname;
-  const ours = TRUSTED_HOSTS.includes(host) || (host.startsWith("keysfirst") && host.endsWith(".vercel.app"));
-  return ours ? url.origin : PRODUCTION_URL;
+  return TRUSTED_HOSTS.includes(host) || isOurPreview(host) ? url.origin : PRODUCTION_URL;
 }

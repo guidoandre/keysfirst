@@ -28,6 +28,10 @@ export interface DealViewProps {
   card?: CardOffer | null;
   cardBusy?: boolean;
   onPayByCard?: () => void;
+  /** The tenant came from the handover page: releasing is the main button. */
+  atDoor?: boolean;
+  /** The last status check failed: what's on screen may be a few seconds old. */
+  offline?: boolean;
 }
 
 /** The deal page's layout, from plain data (the dev gallery renders it with sample deals). */
@@ -36,7 +40,7 @@ export function DealView(p: DealViewProps) {
   const times = { moveIn: data.moveIn, deadline: data.deadline };
   const amount = formatEur(data.amount);
   const phase = dealPhase(data.status, times, now);
-  const view = nextStep({ status: data.status, role, times, now, amount, settledAt: data.settledAt });
+  const view = nextStep({ status: data.status, role, times, now, amount, settledAt: data.settledAt, atDoor: p.atDoor });
   const rows = dealRows({
     status: data.status,
     role,
@@ -51,6 +55,11 @@ export function DealView(p: DealViewProps) {
       {p.created && role === "landlord" && data.status === "open" && (
         <Callout tone="success" role="status" title="Your deposit link is ready">
           Send it to your tenant. This page shows it as soon as they pay.
+        </Callout>
+      )}
+      {p.offline && (
+        <Callout tone="neutral" role="status" title="Reconnecting…">
+          We can&apos;t reach the network right now, so this page may be a few seconds behind. It updates by itself.
         </Callout>
       )}
       <DealHero title={data.title} amount={amount} status={data.status} role={role} animate={p.statusChanged} />

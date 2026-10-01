@@ -17,6 +17,10 @@ export const DEMO_VALUES = { country: "DE", housing: "any", title: "Room in Vall
 export const TITLE_MAX_BYTES = 64;
 /** Largest deposit: deposit + card fee must stay under Stripe's €999,999.99 charge limit. Base units (6 decimals). */
 export const MAX_DEPOSIT = 900_000n * 1_000_000n;
+/** Outside the demo, the tenant gets at least an hour to pay. */
+const MIN_TIME_TO_PAY = 60 * 60;
+/** A move-in further ahead than this is refused as a likely typo in the year. */
+const MAX_MOVE_IN_AHEAD = 365 * 86_400;
 
 export interface NewDealForm {
   /** Only used to check the deposit against the country's legal maximum: never stored on the deal. */
@@ -86,6 +90,10 @@ export function validateNewDeal(form: NewDealForm, now: number): { values: NewDe
   } else {
     deadline = form.moveIn + windowSeconds(form);
     if (deadline <= now) errors.moveIn = `That handover deadline is already in the past. Pick a later move-in or a longer window.`;
+    // Outside the demo, a deadline minutes away would expire before the tenant could even open the link.
+    else if (!form.demo && deadline < now + MIN_TIME_TO_PAY) errors.moveIn = `That leaves your tenant less than an hour to pay. Pick a later move-in or a longer window.`;
+    // Almost always a typo in the year (dates on the deal page only show the year when it isn't this one).
+    else if (form.moveIn > now + MAX_MOVE_IN_AHEAD) errors.moveIn = `That move-in is more than a year away. Check the year.`;
   }
 
   if (Object.keys(errors).length > 0 || amount === null) return { values: null, errors };

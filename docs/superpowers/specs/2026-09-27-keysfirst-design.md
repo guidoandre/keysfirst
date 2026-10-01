@@ -87,6 +87,11 @@ A deal stores: landlord, tenant, mint, deal id, amount, move-in time, handover d
 6. Wrong token, wrong accounts or wrong signers are rejected.
 7. Works with both SPL Token (mainnet EURC) and Token-2022 (devnet Test EUR).
 
+Known limits, accepted for the devnet prototype (review of 1 Oct 2026; fix before mainnet with a program upgrade):
+
+- Invariant 5 holds while a deal is Open or Funded. Settling closes the vault, so tokens someone sends to the deal's vault address *after* it settled have no way out. Mainnet fix: a permissionless `sweep` that pays a settled deal's vault to the side the deal settled to and closes it again.
+- `create_deal` only checks that the deadline is in the future, with no upper bound. The app never creates such a deal (move-in at most a year ahead) and reads deal times without `BN.toNumber()`, so a deal created outside the app with an absurd deadline can't break a page. Mainnet fix: bound the deadline (e.g. at most 2 years ahead).
+
 ## 7. Solana features used (visibly)
 
 - Custom Anchor program with a program-controlled vault (PDA-owned token account). Tests with LiteSVM, including clock manipulation.

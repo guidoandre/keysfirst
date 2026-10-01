@@ -62,20 +62,27 @@ export function formatCountdown(seconds: number): string {
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-/** "Wed 30 Sep, 14:00" in the viewer's time zone (or `timeZone`). Built from parts so every browser prints the same. */
-export function formatShortDateTime(unixSeconds: number, timeZone?: string): string {
-  const parts = new Intl.DateTimeFormat("en-GB", {
+/**
+ * "Wed 30 Sep, 14:00" in the viewer's time zone (or `timeZone`), with the year ("Tue 5 Oct 2027, 14:00") when it isn't
+ * the current one, so a typo in the year can't hide. Built from parts so every browser prints the same.
+ */
+export function formatShortDateTime(unixSeconds: number, timeZone?: string, nowSeconds = Date.now() / 1000): string {
+  const format = new Intl.DateTimeFormat("en-GB", {
     timeZone,
     weekday: "short",
     day: "numeric",
     month: "numeric",
+    year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
     hourCycle: "h23",
-  }).formatToParts(new Date(unixSeconds * 1000));
+  });
+  const parts = format.formatToParts(new Date(unixSeconds * 1000));
   const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((p) => p.type === type)?.value ?? "";
+  const thisYear = format.formatToParts(new Date(nowSeconds * 1000)).find((p) => p.type === "year")?.value;
+  const year = part("year") === thisYear ? "" : ` ${part("year")}`;
   // en-GB's CLDR data zero-pads the day when day+month are both requested as "numeric" (e.g. "04/10"); strip it back to a plain number.
-  return `${part("weekday")} ${Number(part("day"))} ${MONTHS[Number(part("month")) - 1]}, ${part("hour")}:${part("minute")}`;
+  return `${part("weekday")} ${Number(part("day"))} ${MONTHS[Number(part("month")) - 1]}${year}, ${part("hour")}:${part("minute")}`;
 }
 
 // Server-rendered times (clock in UTC) name the handover's time zone: it happens at a door in Europe, so

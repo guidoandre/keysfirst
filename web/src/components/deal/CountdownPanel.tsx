@@ -6,7 +6,8 @@ import { formatCountdown, formatShortDateTime } from "@/lib/format";
 export function CountdownPanel({ info, now }: { info: CountdownInfo | null; now: number }) {
   if (!info) return null;
   const left = info.at - now;
-  const future = left > 0;
+  // Expired phases point at a past moment; every other phase switches the moment its countdown reaches zero.
+  const future = left >= 0;
   return (
     <div className="flex items-center justify-between gap-4 rounded-md border-2 border-fg px-4 py-3">
       <div className="flex items-center gap-3">

@@ -23,16 +23,21 @@ export type MyDealsState =
 type Stored = MyDealsState & { wallet: string | null };
 
 /** The connected wallet's deals as landlord and as tenant, read straight from Solana (no database). */
-export function useMyDeals(): { state: MyDealsState; refresh: () => void; wallet: string | null } {
+export function useMyDeals(): { state: MyDealsState; refresh: () => void; refreshing: boolean; wallet: string | null } {
   const { connection } = useConnection();
   const { address: publicKey } = useAccount();
   const program = useMemo(() => getProgram(connection), [connection]);
   const wallet = publicKey?.toBase58() ?? null;
   const [stored, setStored] = useState<Stored>({ status: "idle", wallet: null });
   const lastFetch = useRef(0);
+  // One load at a time: each one is two heavy lookups, and repeated taps on Refresh would hit the rate limit.
+  const loading = useRef(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
-    if (!wallet) return;
+    if (!wallet || loading.current) return;
+    loading.current = true;
+    setRefreshing(true);
     lastFetch.current = Date.now();
     setStored((previous) => (previous.status === "ready" && previous.wallet === wallet ? previous : { status: "loading", wallet }));
     try {
@@ -47,6 +52,9 @@ export function useMyDeals(): { state: MyDealsState; refresh: () => void; wallet
       setStored({ status: "ready", deals: mergeDeals(summaries), wallet });
     } catch (e) {
       setStored({ status: "error", message: friendlyError(e), wallet });
+    } finally {
+      loading.current = false;
+      setRefreshing(false);
     }
   }, [program, wallet]);
 
@@ -64,5 +72,5 @@ export function useMyDeals(): { state: MyDealsState; refresh: () => void; wallet
   }, [load, wallet]);
 
   const state: MyDealsState = !wallet ? { status: "idle" } : stored.wallet === wallet ? stored : { status: "loading" };
-  return { state, refresh: () => void load(), wallet };
+  return { state, refresh: () => void load(), refreshing, wallet };
 }

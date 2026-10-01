@@ -21,8 +21,8 @@ export function DealLoading({ loadError }: { loadError: string | null }) {
       <Skeleton className="h-16" />
       <Skeleton className="h-40" />
       {(slow || loadError) && (
-        <Callout tone="neutral" role="status" title="Still connecting to Solana devnet…">
-          {loadError ? `Retrying. Details: ${loadError}` : "This can take a few seconds on a busy network."}
+        <Callout tone="neutral" role="status" title="Still loading the deal…">
+          {loadError ? "The network is busy. Trying again…" : "This can take a few seconds on a busy network."}
         </Callout>
       )}
       <Skeleton className="h-64" />

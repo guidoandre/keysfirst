@@ -78,10 +78,10 @@ export function friendlyError(error: unknown, context: "deal" | "withdraw" = "de
   const programMessage = text.match(/Error Message: ([^"\n\]]+)/);
   if (programMessage) return `${programMessage[1].trim().replace(/\.$/, "")}.`;
   if (/User rejected/i.test(text)) return "You cancelled the request.";
-  if (/\b429\b|Too many requests|rate limit/i.test(text)) return "Solana devnet is busy right now. Wait a few seconds and try again.";
+  if (/\b429\b|Too many requests|rate limit/i.test(text)) return "The network is busy right now. Wait a few seconds and try again.";
   // A new deal's accounts and every fee are paid in devnet SOL; the runtime reports "insufficient funds for rent/fee"
   // and the system program logs "insufficient lamports" when it runs out.
   if (/no record of a prior credit|insufficient lamports|insufficient funds for (rent|fee)/i.test(text)) return NEEDS_SOL;
   if (/insufficient funds/i.test(text)) return context === "withdraw" ? BALANCE_TOO_LOW : NEEDS_TEST_EUR;
-  return "Something went wrong. Try again. If you use Phantom, check that it is set to Solana Devnet.";
+  return "Something went wrong. Try again in a few seconds. Using Phantom? Check that it is set to Solana Devnet.";
 }

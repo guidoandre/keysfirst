@@ -31,9 +31,22 @@ type WalletAction = Exclude<Action, "showQr">;
 // The status each action needs; checked against the live deal right before the wallet signs.
 const REQUIRED_STATUS: Record<WalletAction, DealStatus> = { fund: "open", confirmInApp: "funded", refund: "funded", cancel: "open" };
 
-export function DealClient({ id, origin, created, paid }: { id: string; origin: string; created: boolean; paid: string | null }) {
+export function DealClient({
+  id,
+  origin,
+  created,
+  atDoor,
+  paid,
+}: {
+  id: string;
+  origin: string;
+  created: boolean;
+  /** Came from the handover page (the tenant scanned the landlord's code). */
+  atDoor: boolean;
+  paid: string | null;
+}) {
   const { connection } = useConnection();
-  const { wallet, topUp, refreshBalance, balance } = useAccount();
+  const { ready, wallet, topUp, refreshBalance, balance } = useAccount();
   const program = useMemo(() => getProgram(connection), [connection]);
   const { address, deal, signatures, loadError, statusChanged, justReleased, refresh } = useDeal(id);
   const now = useNow();
@@ -52,18 +65,35 @@ export function DealClient({ id, origin, created, paid }: { id: string; origin: 
   const [resumeError, setResumeError] = useState<string | null>(null);
   const [resumeKey, setResumeKey] = useState(0);
   const [cardDone, setCardDone] = useState<string | null>(null);
+  const account = wallet.publicKey?.toBase58() ?? null;
 
+  // A card payment this account left half-way: saved in this browser, or (closed tab, another device) found at Stripe.
   useEffect(() => {
-    if (paid) return;
-    const timer = setTimeout(() => {
+    if (paid || !account) return;
+    let cancelled = false;
+    const timer = setTimeout(async () => {
       try {
-        setPending(localStorage.getItem(pendingKey(id)));
+        const saved = localStorage.getItem(pendingKey(id, account));
+        if (saved) {
+          setPending(saved);
+          return;
+        }
       } catch {
-        // Storage blocked: only ?paid= can resume.
+        // Storage blocked: ask Stripe below.
       }
+      const res = await fetch("/api/checkout/pending", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ deal: id, account }),
+      }).catch(() => null);
+      const body = res?.ok ? await res.json().catch(() => null) : null;
+      if (!cancelled && typeof body?.session === "string") setPending((current) => current ?? body.session);
     }, 0);
-    return () => clearTimeout(timer);
-  }, [id, paid]);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [id, paid, account]);
 
   // Back from Stripe through the back/forward cache: the page comes back as it was left (card button spinning,
   // no pending session). Stop the spinner and pick up the session saved before leaving.
@@ -71,8 +101,9 @@ export function DealClient({ id, origin, created, paid }: { id: string; origin: 
     const onShow = (event: PageTransitionEvent) => {
       if (!event.persisted) return;
       setCardBusy(false);
+      if (!account) return;
       try {
-        const saved = localStorage.getItem(pendingKey(id));
+        const saved = localStorage.getItem(pendingKey(id, account));
         if (saved) setPending(saved);
       } catch {
         // Storage blocked: nothing to pick up.
@@ -80,7 +111,7 @@ export function DealClient({ id, origin, created, paid }: { id: string; origin: 
     };
     window.addEventListener("pageshow", onShow);
     return () => window.removeEventListener("pageshow", onShow);
-  }, [id]);
+  }, [id, account]);
 
   // The deal moved on (released, refunded, locked…), possibly by the other side: the balance may have changed too.
   const dealStatus = deal ? statusOf(deal.status) : null;
@@ -93,7 +124,8 @@ export function DealClient({ id, origin, created, paid }: { id: string; origin: 
   if (!address) {
     return <DealMessage title="This isn't a valid deal link">Check that you copied the whole link.</DealMessage>;
   }
-  if (deal === undefined || now === 0) return <DealLoading loadError={loadError} />;
+  // Until the login is restored, the landlord or tenant would be shown the visitor's page (e.g. "Pay €600"): wait for it.
+  if (deal === undefined || now === 0 || !ready) return <DealLoading loadError={deal === undefined ? loadError : null} />;
   if (deal === null) {
     return (
       <DealMessage
@@ -140,7 +172,7 @@ export function DealClient({ id, origin, created, paid }: { id: string; origin: 
       if (!res.ok) throw new Error(body.error);
       try {
         // Never replace a session that is still waiting to be resolved.
-        if (!localStorage.getItem(pendingKey(id))) localStorage.setItem(pendingKey(id), body.session);
+        if (!localStorage.getItem(pendingKey(id, me.toBase58()))) localStorage.setItem(pendingKey(id, me.toBase58()), body.session);
       } catch {
         // Storage blocked: ?paid= on the way back still resumes.
       }
@@ -160,7 +192,10 @@ export function DealClient({ id, origin, created, paid }: { id: string; origin: 
       // A page that sat in the background (e.g. while the tenant scanned the QR) can show a button
       // the deal no longer allows; check the live status before asking the wallet to sign.
       const live = await fetchDeal(program, address);
-      if (!live) throw new Error("Deal not found.");
+      if (!live) {
+        setError("We can't read this deal right now. Wait a few seconds and try again.");
+        return;
+      }
       const liveStatus = statusOf(live.status);
       if (liveStatus !== REQUIRED_STATUS[action]) {
         await refresh();
@@ -233,7 +268,8 @@ export function DealClient({ id, origin, created, paid }: { id: string; origin: 
               alreadyYours={data.status !== "open" && data.tenant === me.toBase58()}
               onReady={() => {
                 setPending(null);
-                void execute("fund");
+                // Network costs for the lock (a no-op when the account already has enough), then lock.
+                void topUp().finally(() => void execute("fund"));
               }}
               onDone={(message) => {
                 setPending(null);
@@ -273,6 +309,8 @@ export function DealClient({ id, origin, created, paid }: { id: string; origin: 
         card={card}
         cardBusy={cardBusy}
         onPayByCard={() => void payByCard()}
+        atDoor={atDoor}
+        offline={loadError !== null}
       />
       {handoverUsed && (
         <HandoverMode
@@ -285,6 +323,7 @@ export function DealClient({ id, origin, created, paid }: { id: string; origin: 
           amount={amount}
           deadline={data.deadline}
           now={now}
+          offline={loadError !== null}
         />
       )}
       <ReleasedScreen

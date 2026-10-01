@@ -1,14 +1,16 @@
 import { Connection, PublicKey } from "@solana/web3.js";
 import type { Metadata } from "next";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { buttonClass } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
 import { Icon } from "@/components/ui/Icon";
+import { LocalTime } from "@/components/ui/LocalTime";
 import { SERVER_RPC_URL } from "@/lib/config";
 import { cx } from "@/lib/cx";
 import { toDealData } from "@/lib/deal-data";
 import type { DealData } from "@/lib/deal-view";
-import { formatDoorTime, formatEur } from "@/lib/format";
+import { formatEur } from "@/lib/format";
 import { getOrigin } from "@/lib/origin";
 import { fetchDeal, getProgram } from "@/lib/program";
 import { handoverOpensAt } from "@/lib/rules";
@@ -16,8 +18,8 @@ import { withTimeout } from "@/lib/timeout";
 
 export const metadata: Metadata = { title: "Confirm the key handover", robots: { index: false } };
 
-// Rendered on the server, where the clock is UTC.
-const at = formatDoorTime;
+// Rendered on the server (clock in UTC); LocalTime switches to the phone's own time zone once the page is live.
+const at = (seconds: number) => <LocalTime at={seconds} />;
 
 const CHECKLIST = ["You are inside the room.", "You have the keys, or they are in front of you.", "You are logged in with the account that paid the deposit."];
 
@@ -42,19 +44,22 @@ async function loadDeal(address: PublicKey): Promise<{ data: DealData | null | u
   }
 }
 
-/** Why this deal can't be released from here right now; null when the tenant may approve. */
-function blocker(d: DealData, now: number): string | null {
+/**
+ * Why this deal can't be released from here right now; null when the tenant may approve. Rendered without knowing who
+ * is reading (no login on the server), so the wording stays neutral where the reader could be anyone.
+ */
+function blocker(d: DealData, now: number): ReactNode {
   switch (d.status) {
     case "funded":
-      if (now < handoverOpensAt(d)) return `The handover opens ${at(handoverOpensAt(d))}. Come back then, standing in the room.`;
-      if (now > d.deadline) return "The handover deadline has passed: you can take the deposit back on the deal page.";
+      if (now < handoverOpensAt(d)) return <>The handover opens {at(handoverOpensAt(d))}. Come back then, standing in the room.</>;
+      if (now > d.deadline) return "The handover deadline has passed: the deposit can now go back to the tenant on the deal page.";
       return null;
     case "open":
       return "Nobody has paid this deposit yet, so there is nothing to release.";
     case "released":
-      return `This deposit was already released to the landlord on ${at(d.settledAt)}.`;
+      return <>This deposit was already released to the landlord on {at(d.settledAt)}.</>;
     case "refunded":
-      return `This deposit already came back to you on ${at(d.settledAt)}.`;
+      return <>This deposit already went back to the tenant on {at(d.settledAt)}.</>;
     case "cancelled":
       return "The landlord cancelled this deal.";
   }
@@ -105,7 +110,8 @@ export default async function HandoverPage({ params }: { params: Promise<{ id: s
               </li>
             ))}
           </ul>
-          <Link href={`/deal/${id}`} className={cx(buttonClass({ size: "lg", fullWidth: true }), "mt-8")}>
+          {/* ?handover=1: the deal page then makes "I have the keys" the main button instead of asking for a scan again. */}
+          <Link href={`/deal/${id}?handover=1`} className={cx(buttonClass({ size: "lg", fullWidth: true }), "mt-8")}>
             Continue
           </Link>
           <p className="mt-3 text-center text-sm text-fg-muted">

@@ -25,6 +25,7 @@ export interface Account {
 }
 
 const AccountContext = createContext<Account | null>(null);
+const PRIVY_PATIENCE_MS = 5_000;
 
 export function AccountProvider({ children }: { children: ReactNode }) {
   const { ready: privyReady, authenticated, user, login, logout } = usePrivy();
@@ -40,7 +41,15 @@ export function AccountProvider({ children }: { children: ReactNode }) {
   const clientType = user?.wallet?.walletClientType;
   const embedded = clientType === "privy" || clientType === "privy-v2";
   const embeddedPending = authenticated && (!primary || (embedded && !connected));
-  const ready = privyReady && (!authenticated || walletsReady) && !embeddedPending;
+  // Privy that never starts (an ad blocker, its servers down) must not leave every page on skeletons: after a few
+  // seconds the pages show as logged out, so a deal can still be read.
+  const [privyStalled, setPrivyStalled] = useState(false);
+  useEffect(() => {
+    if (privyReady) return;
+    const timer = setTimeout(() => setPrivyStalled(true), PRIVY_PATIENCE_MS);
+    return () => clearTimeout(timer);
+  }, [privyReady]);
+  const ready = privyReady ? (!authenticated || walletsReady) && !embeddedPending : privyStalled;
 
   const wallet = useMemo<SigningWallet>(
     () => ({

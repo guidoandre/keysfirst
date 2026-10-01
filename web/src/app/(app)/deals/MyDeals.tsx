@@ -81,7 +81,7 @@ export function MyDeals() {
   const mounted = useMounted();
   const now = useNow();
   const { ready, refreshBalance } = useAccount();
-  const { state, refresh, wallet } = useMyDeals();
+  const { state, refresh, refreshing, wallet } = useMyDeals();
   // A deal released or refunded elsewhere changes the balance: read it fresh whenever this page opens.
   useEffect(() => {
     const timer = setTimeout(() => void refreshBalance(), 0);
@@ -96,7 +96,7 @@ export function MyDeals() {
   } else if (!wallet) {
     content = (
       <EmptyState pictogram="phone-wallet" title="Log in to see your deals" action={<LoginButton variant="primary" size="lg" />}>
-        Your deals are read straight from Solana: the ones you created as a landlord and the ones you paid as a tenant.
+        Your deals come straight from their public records: the ones you created as a landlord and the ones you paid as a tenant.
       </EmptyState>
     );
   } else if (state.status === "error") {
@@ -138,7 +138,7 @@ export function MyDeals() {
         </div>
         {wallet && (
           <div className="flex flex-wrap gap-2">
-            <Button variant="secondary" onClick={refresh} disabled={state.status === "loading"}>
+            <Button variant="secondary" onClick={refresh} disabled={refreshing}>
               <Icon name="refresh" size={18} />
               Refresh
             </Button>

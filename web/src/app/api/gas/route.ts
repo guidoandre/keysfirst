@@ -32,8 +32,9 @@ export async function POST(req: Request) {
   try {
     const ix = await topUpIx(connection, faucet.publicKey, owner);
     if (!ix) return Response.json({ toppedUp: false });
-    // Only real top-ups count towards the limits: a check that finds enough SOL costs nothing.
-    if (!perAccount(key) || !perIp(clientIp(req))) return Response.json({ error: TOO_SOON }, { status: 429 });
+    // Only real top-ups count towards the limits: a check that finds enough SOL costs nothing. The IP is checked
+    // first, so a busy network never uses up (and locks for 2 minutes) an account that got nothing.
+    if (!perIp(clientIp(req)) || !perAccount(key)) return Response.json({ error: TOO_SOON }, { status: 429 });
     const signature = await sendAndConfirmTransaction(connection, new Transaction().add(ix), [faucet], { commitment: "confirmed" });
     return Response.json({ toppedUp: true, signature });
   } catch {

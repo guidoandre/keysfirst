@@ -8,8 +8,11 @@ import { useConnection } from "@/lib/connection";
 import { formatEur } from "@/lib/format";
 import { useAccount } from "./AccountProvider";
 
-/** localStorage key of a card payment that hasn't been locked yet (survives a closed tab). */
-export const pendingKey = (dealId: string) => `keysfirst:card:${dealId}`;
+/**
+ * localStorage key of a card payment that hasn't been locked yet (survives a closed tab). Per account, so a payment
+ * left half-way by one account never blocks another account testing the same deal in this browser.
+ */
+export const pendingKey = (dealId: string, account: string) => `keysfirst:card:${dealId}:${account}`;
 
 type FulfilBody = { error?: string; deal?: string; account?: string; signature?: string };
 type FulfilResult = { ok: boolean; status: number; body: FulfilBody };
@@ -41,10 +44,10 @@ function stripPaid() {
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-/** Drops the deal's saved session, but only if it is this one (a stale ?paid= must not discard a newer session). */
-function forget(dealId: string, session: string) {
+/** Drops the saved session, but only if it is this one (a stale ?paid= must not discard a newer session). */
+function forget(dealId: string, account: string, session: string) {
   try {
-    if (localStorage.getItem(pendingKey(dealId)) === session) localStorage.removeItem(pendingKey(dealId));
+    if (localStorage.getItem(pendingKey(dealId, account)) === session) localStorage.removeItem(pendingKey(dealId, account));
   } catch {
     // Storage blocked: nothing to clean up.
   }
@@ -92,18 +95,19 @@ export function CardResume({
 
   useEffect(() => {
     let cancelled = false;
+    const me = account.toBase58();
     async function run() {
       const res = await fulfil(session);
       if (cancelled) return;
       if (res.status === 402) {
         // Not paid (e.g. the tenant went back from Stripe's page): forget it quietly.
-        forget(dealId, session);
+        forget(dealId, me, session);
         cancelledPayment();
         return;
       }
       if (res.status === 404) {
         // Stripe doesn't know this session: it can never be paid out, so free the card button.
-        forget(dealId, session);
+        forget(dealId, me, session);
         stripPaid();
         cancelledPayment(res.body.error ?? "We can't find this card payment. Start the payment again.");
         return;
@@ -112,18 +116,23 @@ export function CardResume({
         fail(res.body.error ?? "We couldn't confirm your card payment. Check your connection and try again.");
         return;
       }
+      // Both cases can never be finished here: say why once and free the page (a retry would only repeat it).
       if (res.body.deal !== dealId) {
-        forget(dealId, session);
-        fail("This payment belongs to a different deal.");
+        forget(dealId, me, session);
+        stripPaid();
+        cancelledPayment("That card payment belongs to a different deal. Open the deal you paid for to lock it.");
         return;
       }
-      if (res.body.account !== account.toBase58()) {
-        fail("You paid while logged in with another account. Log in with that account to lock your deposit.");
+      if (res.body.account !== me) {
+        stripPaid();
+        cancelledPayment(
+          "That card payment was made with another account, and its deposit is in that account's balance. Log in with it to lock the deposit.",
+        );
         return;
       }
       if (!lock && alreadyYours) {
         // A stale saved session on a deal this account already locked: nothing left to do, clear it quietly.
-        forget(dealId, session);
+        forget(dealId, me, session);
         stripPaid();
         cancelledPayment();
         return;
@@ -146,10 +155,10 @@ export function CardResume({
       }
       await refreshBalance();
       if (cancelled) return;
-      forget(dealId, session);
+      forget(dealId, me, session);
       stripPaid();
       if (lock) ready();
-      else done(`Your ${formatEur(amount)} is in your balance. You can withdraw it to your bank from My deals.`);
+      else done(`Your ${formatEur(amount)} is in your balance. You can withdraw it to your bank from your account menu.`);
     }
     void run();
     return () => {

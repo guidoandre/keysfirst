@@ -123,8 +123,19 @@ export interface NextStepView {
   secondary: Action[];
 }
 
-/** The deal page's next-step matrix (spec §6.4). Only ever offers actions from availableActions(). */
-export function nextStep(o: { status: DealStatus; role: Role; times: DealTimes; now: number; amount: string; settledAt?: number }): NextStepView {
+/**
+ * The deal page's next-step matrix (spec §6.4). Only ever offers actions from availableActions().
+ * `atDoor`: the tenant came from the handover page (they scanned the landlord's code), so releasing is the next step.
+ */
+export function nextStep(o: {
+  status: DealStatus;
+  role: Role;
+  times: DealTimes;
+  now: number;
+  amount: string;
+  settledAt?: number;
+  atDoor?: boolean;
+}): NextStepView {
   const { status, role, times: t, now, amount } = o;
   const allowed = availableActions(status, role, t, now);
   const pick = (primary: Action | undefined, secondary: Action[]) => ({
@@ -169,7 +180,12 @@ export function nextStep(o: { status: DealStatus; role: Role; times: DealTimes; 
         };
       }
       if (role === "tenant") {
-        return { message: "At the door, check the room first. Then scan the landlord's code with your phone camera.", ...pick(undefined, ["confirmInApp"]) };
+        return o.atDoor
+          ? { message: "Checked the room and holding the keys? Release the deposit to the landlord.", ...pick("confirmInApp", []) }
+          : {
+              message: "At the door, check the room first. Then scan the landlord's code, or tap the button below once you have the keys.",
+              ...pick(undefined, ["confirmInApp"]),
+            };
       }
       return { message: `The deposit is locked until the key handover or ${deadline}.`, ...pick(undefined, []) };
     case "funded-expired":
@@ -350,8 +366,8 @@ export function dealRows(o: {
         landlord
           ? `Your tenant scans your code and ${amount} goes to you.`
           : tenant
-            ? `You scan the landlord's code and ${amount} goes to them.`
-            : `The tenant scans the landlord's code and ${amount} goes to the landlord.`
+            ? `You approve (scan the landlord's code or tap "I have the keys") and ${amount} goes to them.`
+            : `The tenant approves at the door and ${amount} goes to the landlord.`
       }`,
       state: status === "open" || expired ? "later" : inWindow ? "now" : "next",
     },
