@@ -1,6 +1,7 @@
 import { formatEur, fromCents } from "@/lib/format";
 import { priceBreakdown } from "@/lib/pricing";
 import type { DealStatus } from "@/lib/rules";
+import { feeLine } from "./fees";
 
 /** Who the landing page speaks to. The toggle in the hero rewrites the page for one of the two. */
 export type LandingRole = "tenant" | "landlord";
@@ -18,13 +19,13 @@ interface Link {
 export const HERO: Record<LandingRole, { eyebrow: string; lead: string; primary: Link; secondary: Link }> = {
   tenant: {
     eyebrow: "Renting a room in Europe from abroad",
-    lead: "Pay the deposit before you arrive without trusting a stranger. It goes to the landlord only when you scan their code at the door. If you never do, you can take it back after the deadline.",
+    lead: "Pay the deposit before you arrive without trusting a stranger. It goes to the landlord only when you approve at the door: scan their code or tap “I have the keys”. If you never do, you can take it back after the deadline.",
     primary: { label: "Ask your landlord for a deposit link", href: "#ask" },
     secondary: { label: "How it protects me", href: "/tenants" },
   },
   landlord: {
     eyebrow: "Letting a room to someone abroad",
-    lead: "Show you are genuine and get paid at the handover, in seconds, with no bank delay and no chargeback. Landlords pay nothing.",
+    lead: "Show you are genuine and get paid at the handover: the deposit reaches your Keysfirst balance in seconds, and your payout can't be charged back. Landlords pay nothing.",
     primary: { label: "Create a deposit link", href: "/new" },
     secondary: { label: "How the handover works", href: "/landlords#landlord-steps" },
   },
@@ -48,7 +49,7 @@ export const PROBLEM: Record<LandingRole, { title: string; lead: string; items: 
     items: [
       { title: "You list a real room", text: "In a Facebook group, on a listing site or as a sublet of your own room." },
       { title: "Your tenant can't check you", text: "They're abroad and can't view the room, so a deposit request looks like the scam." },
-      { title: "Send a deposit link instead", text: "They pay into the lock, and you're paid at the door when they scan your code." },
+      { title: "Send a deposit link instead", text: "They pay into the lock, and you're paid at the door when they approve the handover." },
     ],
   },
 };
@@ -75,7 +76,7 @@ export const DEMO_DEAL = { title: "Room in Leipzig", amount: AMOUNT };
 export const LANDLORD_TERMS = [
   { label: "Your fee", value: eur(0) },
   { label: "When you're paid", value: "At the door, in seconds" },
-  { label: "Chargebacks", value: "None" },
+  { label: "Chargebacks on your payout", value: "None" },
 ];
 
 /** Where the deposit is: the tag on the demo's money track. */
@@ -100,26 +101,25 @@ export const canSkipToDeadline = (step: number) => step === 1 || step === 2;
 
 export const stepLabel = (step: number) => (step === DEADLINE_STEP ? "Deadline." : `Step ${step + 1} of 4.`);
 
-/** What each side's phone shows at each step, kept short. `button` advances the demo; `explorer` adds the external-link icon. */
+/** What each side's phone shows at each step, kept short. `button` advances the demo. */
 export interface PhoneScreen {
   body: string;
   meta?: string;
   button?: string;
   qr?: true;
-  explorer?: true;
 }
 
 export const PHONE: Record<LandingRole, PhoneScreen[]> = {
   tenant: [
-    { body: "Your landlord sent this link. They aren't paid until you have the keys.", button: `Pay ${eur(price.totalCents)} by card` },
-    { body: "Locked until you scan your landlord's code at the door.", meta: "Handover from 24 h before move-in" },
+    { body: "Your landlord sent this link. They aren't paid until you have the keys.", meta: feeLine(price.depositCents), button: `Pay ${eur(price.totalCents)} by card` },
+    { body: "Locked until you approve the handover at the door.", meta: "Handover from 24 h before move-in" },
     { body: "Check the room first. Approve only with the keys in your hand.", button: "I have the keys" },
-    { body: "Paid to your landlord. Take the keys.", meta: "Receipt on Solana Explorer", explorer: true },
-    { body: "No handover by the deadline, so you took it back.", meta: "Receipt on Solana Explorer", explorer: true },
+    { body: "Paid to your landlord. Take the keys.", meta: "Public receipt on Solana" },
+    { body: "No handover by the deadline, so you took it back.", meta: "Public receipt on Solana" },
   ],
   landlord: [
     { body: "Share this link with your tenant.", button: "Share on WhatsApp" },
-    { body: "Your tenant paid into the lock. You're paid when they scan your code.", button: "Start the handover" },
+    { body: "Your tenant paid into the lock. You're paid when they approve at the door.", button: "Start the handover" },
     { body: "Waiting for your tenant to approve…", qr: true, meta: "Show this code at the door" },
     { body: "Released: hand over the keys.", meta: "In your Keysfirst balance" },
     { body: "No handover by the deadline. It went back to your tenant." },

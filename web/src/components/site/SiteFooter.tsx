@@ -77,7 +77,7 @@ export function SiteFooter() {
         ))}
       </div>
       <p className="border-t border-white/15 px-4 py-5 text-center text-sm text-fg-inverse-muted">
-        Keysfirst is a student prototype on Solana devnet, not a bank, payment or escrow service. Test money only; nothing here has real value. Not legal advice.
+        Keysfirst is a student prototype on Solana&apos;s test network (devnet), not a bank, payment or escrow service. Test money only; nothing here has real value. Not legal advice.
         <br />© 2026 {OPERATOR.name}. All rights reserved.
       </p>
     </footer>

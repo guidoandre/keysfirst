@@ -61,9 +61,12 @@ export default function PrivacyPage() {
       <LegalSection id="storage" title="Cookies and browser storage">
         <p>
           Keysfirst itself sets no cookies. Our login provider Privy sets two cookies (&ldquo;privy-token&rdquo;, &ldquo;privy-session&rdquo;) and
-          several local-storage entries starting with &ldquo;privy:&rdquo; to keep you logged in. Keysfirst also uses your browser&apos;s storage
-          to remember an unfinished card payment for a deal (&ldquo;keysfirst:card:…&rdquo;) and that your account&apos;s network costs were
-          covered this session (&ldquo;keysfirst:gas:…&rdquo;). This is strictly necessary for the service you asked for, so it needs no consent
+          several local-storage entries starting with &ldquo;privy:&rdquo; to keep you logged in. Keysfirst also uses your browser&apos;s storage:
+          a card payment in progress is remembered in local storage (&ldquo;keysfirst:card:…&rdquo;) until the deposit is locked, so it survives a
+          closed tab; session storage remembers that your account&apos;s network costs were covered this session (&ldquo;keysfirst:gas:…&rdquo;)
+          and keeps your create-deal draft (room title, amount, rent, country and move-in; &ldquo;keysfirst:new-deal&rdquo;) until the deal is
+          created or the tab closes. The name and IBAN you type for a demo withdrawal are not stored or sent anywhere: they never leave your
+          browser. This is strictly necessary for the service you asked for, so it needs no consent
           (§ 25(2) no. 2 TDDDG). It stays on your device; clearing this site&apos;s data in your browser removes it.
         </p>
       </LegalSection>
@@ -105,8 +108,9 @@ export default function PrivacyPage() {
           Solana Foundation&apos;s public devnet endpoint (api.devnet.solana.com) may be used instead and receives the same data.
         </p>
         <p>
-          When you log in, pay by card or approve the handover by scanning the landlord&apos;s code, your account number is sent to our server so
-          it can cover network costs, prepare your deposit or build the handover request.
+          When you log in, open a deal, pay by card or approve the handover by scanning the landlord&apos;s code, your account number is sent to
+          our server so it can cover network costs, look up a card payment you left half-way for that deal (at Stripe), prepare your deposit
+          or build the handover request.
         </p>
       </LegalSection>
 

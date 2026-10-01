@@ -15,7 +15,7 @@ const LANDLORD_PAGE = "/landlords";
 export function useLandlordMessage(): string {
   const mounted = useMounted();
   const origin = mounted ? window.location.origin : PRODUCTION_URL;
-  return `Hi, could we use Keysfirst for the deposit? You create a deposit link, I pay into it, and you get the money the moment I scan your code at the key handover: ${origin}${LANDLORD_PAGE}`;
+  return `Hi, could we use Keysfirst for the deposit? You create a deposit link, I pay into it, and you get the money the moment I confirm the key handover at the door: ${origin}${LANDLORD_PAGE}`;
 }
 
 /** Copies the message; says "Copied" for 2 s, and tells screen readers. */

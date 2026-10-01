@@ -5,6 +5,7 @@ import { SectionHeader } from "@/components/marketing/SectionHeader";
 import { Icon } from "@/components/ui/Icon";
 import { StatusChip } from "@/components/ui/StatusChip";
 import { Timetable } from "@/components/ui/Timetable";
+import { CARD_FEE_PERCENT, MIN_FEE } from "@/content/fees";
 import { SCENARIOS } from "@/content/scenarios";
 import idl from "@/idl/keysfirst.json";
 import { explorerAddress } from "@/lib/format";
@@ -29,13 +30,13 @@ const RULES = [
 
 // Product spec §10, in plain words. Never soften these.
 const LIMITS = [
-  "Someone pressured into scanning from far away close to move-in can still be tricked. The 24-hour rule and clear messages reduce this risk; they don't remove it.",
-  "At the door the tenant scans first, so a landlord could take the money and keep the keys. That would be theft by a known person at a real address, far rarer than the anonymous online scam.",
+  "Someone pressured into approving from far away close to move-in can still be tricked. The 24-hour rule and clear messages reduce this risk; they don't remove it.",
+  "At the door the tenant approves first, so a landlord could take the money and keep the keys. That would be theft by a known person at a real address, far rarer than the anonymous online scam.",
   "A fake copy of this website isn't covered. A verified domain is on the roadmap.",
   "Keysfirst proves the room exists and the keys work, not that the person may legally rent it out. Landlord verification is on the roadmap.",
   "Disputes after move-in, such as damage, are ordinary tenancy law.",
   "A tenant who doesn't show up gets the deposit back; the landlord loses only the time the room was reserved.",
-  "On devnet the program can still be updated by its deploy key. Before real money it would be frozen or controlled by several people.",
+  "On Solana's test network (devnet) the developer can still update the program with its upgrade key. Before real money that key would be frozen or controlled by several people.",
   "How the service would be regulated hasn't been assessed yet.",
 ];
 
@@ -60,16 +61,16 @@ export default function HowItWorksPage() {
             title="A deal, start to finish"
             rows={[
               { key: "create", time: "Step 1", title: "The landlord creates the deal", detail: "Room, amount, move-in and the latest handover, at most 14 days after move-in.", state: "done" },
-              { key: "pay", time: "Step 2", title: "The tenant pays into the lock", detail: "The exact amount, before the deadline.", state: "done" },
+              { key: "pay", time: "Step 2", title: "The tenant pays into the lock", detail: `The exact deposit, before the deadline. On top, the tenant pays a Keysfirst fee of ${CARD_FEE_PERCENT} by card (at least ${MIN_FEE}), which isn't refunded and stays outside the lock.`, state: "done" },
               { key: "window", time: "24 h before move-in", title: "The handover window opens", detail: "From now until the deadline, the tenant can release the deposit.", state: "now" },
-              { key: "door", time: "At the door", title: "The tenant scans the landlord's code", detail: "The whole deposit goes to the landlord, in seconds.", state: "next" },
+              { key: "door", time: "At the door", title: "The tenant approves the handover", detail: "By scanning the landlord's code or tapping “I have the keys” on their deal page. The whole deposit goes to the landlord, in seconds.", state: "next" },
               { key: "deadline", time: "After the deadline", title: "No handover?", detail: "The whole deposit goes back to the tenant. Anyone can trigger it.", state: "later" },
             ]}
           />
           <div className="grid gap-4">
             <div className="enter rounded-lg bg-released-soft p-5 [--enter-delay:300ms]">
               <StatusChip status="released" />
-              <p className="mt-3 text-body">When the tenant scans the landlord&apos;s code at the handover and taps &ldquo;I have the keys&rdquo;.</p>
+              <p className="mt-3 text-body">When the tenant approves at the handover: by scanning the landlord&apos;s code, or by tapping &ldquo;I have the keys&rdquo; on their deal page.</p>
             </div>
             <div className="enter rounded-lg bg-returned-soft p-5 [--enter-delay:370ms]">
               <StatusChip status="refunded" />

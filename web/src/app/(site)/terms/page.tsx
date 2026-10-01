@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPage, LegalSection, MailLink } from "@/components/site/LegalPage";
+import { BANK_FEE_PERCENT, CARD_FEE_PERCENT, MIN_FEE } from "@/content/fees";
 import { OPERATOR } from "@/lib/legal";
 
 export const dynamic = "error";
@@ -36,22 +37,32 @@ export default function TermsPage() {
 
       <LegalSection id="role" title="2. What Keysfirst is not">
         <p>
-          Keysfirst is not a bank, a payment service, an escrow agent or a party to any rental agreement. It never holds or controls the test
-          money: a public program on Solana holds it and pays it out only by its published rules (see{" "}
+          Keysfirst is not a bank, a payment service, an escrow agent or a party to any rental agreement. Keysfirst can&apos;t take the locked
+          deposit: a public program on Solana holds it and pays it out only by its published rules (see{" "}
           <Link href="/how-it-works" className={LINK}>
             How it works
           </Link>
-          ). Keysfirst cannot reverse, stop or redirect a step you confirm.
+          ). Keysfirst has no button to take the locked money, and cannot reverse, stop or redirect a step you confirm. While this is a
+          prototype the developer can still update the program, which is the upgrade key described in section 4 and in the{" "}
+          <Link href="/how-it-works#limits" className={LINK}>
+            known limits
+          </Link>
+          .
+        </p>
+        <p>
+          Card payments are collected on Keysfirst&apos;s Stripe account before the deposit is locked. In this prototype they run in
+          Stripe&apos;s test mode with test money; a live version would collect them through a licensed payment partner.
         </p>
         <p>
           Rental contracts, deposits and disputes between landlord and tenant are a matter between them under the tenancy law of the
           country where the room is. The information on this site about deposit rules is general and not legal advice.
         </p>
         <p>
-          Fees: the tenant pays a Keysfirst fee on top of the deposit, 3.5% by card or 2% by bank transfer, at least €12, shown before paying.
-          The fee is not refunded if the deposit goes back to the tenant. In this prototype all payments, the fee included, use Stripe&apos;s test
-          mode and test money, so no real money is charged: the fee shown is the one Keysfirst would charge. Withdrawals to a bank account are
-          simulated.
+          Fees: the tenant pays a Keysfirst fee on top of the deposit, {CARD_FEE_PERCENT} by card, at least {MIN_FEE}, shown before paying.
+          The fee is not refunded if the deposit goes back to the tenant. Only card payment is switched on;
+          paying by bank transfer ({BANK_FEE_PERCENT} fee) isn&apos;t available in this prototype. All payments, the fee included, use Stripe&apos;s test mode and test
+          money, so no real money is charged: the fee shown is the one Keysfirst would charge. Withdrawals to a bank account are simulated: the
+          test money leaves your balance, but no real bank transfer happens.
         </p>
       </LegalSection>
 
@@ -67,7 +78,7 @@ export default function TermsPage() {
       <LegalSection id="availability" title="4. Availability">
         <p>
           The prototype is provided as it is and charges no real money, with no promise that it works without errors or stays online. It may be changed,
-          reset or shut down at any time without notice. The program on Solana can still be updated by its developer while it is a prototype.
+          reset or shut down at any time without notice. While it is a prototype, the developer can still update the program on Solana with its upgrade key; before any real money, that key would be locked or shared between several people.
         </p>
       </LegalSection>
 

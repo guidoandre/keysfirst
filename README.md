@@ -4,7 +4,7 @@
 
 Keysfirst protects rental deposits for students and young professionals who rent a room in Germany before they arrive. The tenant pays the deposit into a lock. The landlord receives it only when the tenant confirms the key handover at the door. If the handover never happens, the deposit goes back to the tenant.
 
-Nobody needs a wallet app or crypto: you log in with your email or Google, pay by card, and withdraw to your bank. Solana is the backbone: every deal is an on-chain escrow that no one, including Keysfirst, can redirect.
+Nobody needs a wallet app or crypto: you log in with your email or Google, pay by card, and withdraw to your bank. Solana is the backbone: a public program holds each deposit and pays it out only by its published rules, and Keysfirst has no button to take or redirect it (the one caveat: on devnet the developer still holds the program's upgrade key).
 
 **Live prototype:** https://www.keysfirst.io (Solana devnet, Stripe test mode: no real money moves)
 
@@ -46,7 +46,7 @@ The tenant pays a Keysfirst fee on top of the deposit: **3.5% by card, 2% by ban
 
 ## Tech stack
 
-- **Program:** Anchor 1.2 (Rust), Token-2022 "Test EUR" (6 decimals), 42 LiteSVM tests. Program id `BeRg2HQAhUELdoedXaz8HnKnTt9TeQeD7n94iQxFLcbP` (devnet).
+- **Program:** Anchor 1.2 (Rust), Token-2022 "Test EUR" (6 decimals), 44 LiteSVM tests. Program id `BeRg2HQAhUELdoedXaz8HnKnTt9TeQeD7n94iQxFLcbP` (devnet).
 - **Web:** Next.js 16 (App Router), React 19, Tailwind CSS 4, `@solana/web3.js`, `@anchor-lang/core`, Privy, Stripe, vitest. Deployed on Vercel.
 - **No database:** deals are read straight from Solana, logins live in Privy, payments in Stripe.
 

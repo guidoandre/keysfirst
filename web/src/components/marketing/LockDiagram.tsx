@@ -27,7 +27,7 @@ export function LockDiagram() {
       <Arrow />
       <ul className="flex flex-col gap-2.5 xl:gap-3">
         <Exit chip={<StatusChip status="released" size="sm" />}>
-          <strong>Only</strong> when the tenant approves at the handover, from 24 hours before move-in.
+          <strong>Only</strong> when the tenant approves at the handover, from 24 hours before move-in until the deadline.
         </Exit>
         <Exit chip={<StatusChip status="refunded" size="sm" />}>The landlord can give it back at any time. After the deadline, anyone can.</Exit>
         <Exit

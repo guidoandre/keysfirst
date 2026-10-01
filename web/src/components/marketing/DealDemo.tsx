@@ -3,7 +3,6 @@
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { Icon } from "@/components/ui/Icon";
 import {
   canSkipToDeadline,
   DEADLINE_STEP,
@@ -153,7 +152,6 @@ function Phone({ side, viewer, step, onNext }: { side: LandingRole; viewer: Land
         {screen.meta && (
           <p className="inline-flex items-center gap-1 text-[length:max(0.6875rem,4.7cqi)] text-fg-subtle">
             {screen.meta}
-            {screen.explorer && <Icon name="external" size={13} />}
           </p>
         )}
         {screen.button && (

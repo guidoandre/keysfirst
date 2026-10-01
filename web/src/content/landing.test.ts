@@ -25,5 +25,6 @@ describe("landing demo", () => {
 
   it("charges the tenant the card fee on top of the deposit", () => {
     expect(PHONE.tenant[0].button).toBe("Pay €621.00 by card");
+    expect(PHONE.tenant[0].meta).toBe("€600 deposit + €21 Keysfirst fee (3.5%, not refunded)");
   });
 });

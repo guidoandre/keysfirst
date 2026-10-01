@@ -8,7 +8,7 @@ const FACTS: Array<{ icon: IconName; title: string; text: string }> = [
   {
     icon: "clock",
     title: "Final in seconds",
-    text: "Payment on Solana settles in seconds and can't be charged back, so the landlord can hand over the keys the moment the screen turns green. A bank transfer can take a day.",
+    text: "The landlord's payout on Solana settles in seconds and can't be charged back, so the landlord can hand over the keys the moment the screen turns green. A bank transfer can take a day.",
   },
   {
     icon: "lock",
@@ -18,7 +18,7 @@ const FACTS: Array<{ icon: IconName; title: string; text: string }> = [
   {
     icon: "return",
     // Controller-directed deviation from the brief (honesty ruling): the devnet program can still be
-    // upgraded by its deploy key, so an absolute "nobody controls" claim is out (global constraint).
+    // upgraded with its upgrade key, so an absolute "nobody controls" claim is out (global constraint).
     title: "The clock decides, not a person",
     text: "After the deadline, anyone can send the deposit back to the tenant. No support ticket, no waiting for someone to decide.",
   },
@@ -37,8 +37,8 @@ export function WhySolana() {
             </h2>
           </div>
           <p className="text-[1.0625rem] leading-normal text-fg-muted lg:text-[1.1875rem]">
-            Keysfirst never holds the money. A public program on Solana does, and pays it out only by its published rules. It allows exactly
-            two ways out. Keysfirst has no button to take it.
+            Keysfirst can&apos;t take the locked deposit: a public program on Solana holds it and pays it out only by its published rules. It
+            allows exactly two ways out, and Keysfirst has no button to take it.
           </p>
         </div>
 
@@ -59,7 +59,7 @@ export function WhySolana() {
         <p data-reveal="" className="mt-6 flex max-w-[56.25rem] gap-2.5 text-sm leading-normal text-fg-muted lg:mt-8">
           <Icon name="info" size={18} className="mt-px shrink-0 max-sm:hidden" />
           <span>
-            One honest caveat: on this test network the program can still be updated by its deploy key. Before any real money, that key would
+            One honest caveat: on this test network the developer can still update the program with its upgrade key. Before any real money, that key would
             be locked or shared between several people.{" "}
             <a
               href={explorerAddress(idl.address)}

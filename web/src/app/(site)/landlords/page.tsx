@@ -5,19 +5,24 @@ import { SectionHeader } from "@/components/marketing/SectionHeader";
 import { StepList, type Step } from "@/components/marketing/StepList";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon, type IconName } from "@/components/ui/Icon";
+import { CARD_FEE_PERCENT, MIN_FEE } from "@/content/fees";
 import { scenariosFor } from "@/content/scenarios";
 
 export const dynamic = "error";
 
 export const metadata: Metadata = {
   title: "For landlords",
-  description: "Show tenants abroad you're genuine and get the deposit at the door, in seconds, with no chargeback.",
+  description: "Show tenants abroad you're genuine and get the deposit at the door, in seconds. Your payout can't be charged back. Landlords pay nothing.",
 };
 
 const WHY: Array<{ icon: IconName; title: string; text: string }> = [
   { icon: "key", title: "Trust from the first message", text: "Your tenant can pay before arriving without taking your word for it." },
-  { icon: "clock", title: "Paid at the door", text: "The deposit reaches your Keysfirst balance in seconds, before you hand over the keys, and it can't be charged back." },
-  { icon: "check", title: "Free while it's a prototype", text: "Keysfirst runs on Solana's test network with test money." },
+  { icon: "clock", title: "Paid at the door", text: "The deposit reaches your Keysfirst balance in seconds, before you hand over the keys, and your payout can't be charged back." },
+  {
+    icon: "check",
+    title: "Free for landlords",
+    text: `Landlords pay nothing; the tenant pays a small fee (${CARD_FEE_PERCENT} by card, at least ${MIN_FEE}). This prototype runs on test money.`,
+  },
 ];
 
 const STEPS: Step[] = [
@@ -37,7 +42,7 @@ export default function LandlordsPage() {
         </h1>
         <p className="enter mt-5 max-w-2xl text-lead text-fg-muted [--enter-delay:130ms]">
           Tenants abroad can&apos;t check you out before they arrive. A deposit link shows you&apos;re genuine: they pay into a lock, and you&apos;re
-          paid the moment they scan your code at the handover.
+          paid the moment they approve the handover at the door.
         </p>
         <div className="enter mt-8 flex flex-col gap-4 sm:flex-row sm:items-center [--enter-delay:200ms]">
           <ButtonLink href="/new" prefetch={false} size="lg">

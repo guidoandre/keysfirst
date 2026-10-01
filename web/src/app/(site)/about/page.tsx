@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 const BUILT = [
-  "A program on Solana, written with Anchor, with 42 automated tests including the money rules.",
+  "A program on Solana, written with Anchor, with 44 automated tests including the money rules.",
   "Solana Pay for the code the tenant scans at the handover.",
   "A Next.js web app. Deals are read straight from Solana; there is no database.",
 ];

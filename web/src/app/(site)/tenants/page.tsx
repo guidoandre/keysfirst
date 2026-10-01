@@ -7,6 +7,7 @@ import { SectionHeader } from "@/components/marketing/SectionHeader";
 import { StepList, type Step } from "@/components/marketing/StepList";
 import { ButtonLink } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
+import { CARD_FEE_PERCENT, MIN_FEE } from "@/content/fees";
 import { scenariosFor } from "@/content/scenarios";
 import { isAppRoute } from "@/lib/site";
 
@@ -19,8 +20,16 @@ export const metadata: Metadata = {
 
 const STEPS: Step[] = [
   { pictogram: "share-link", title: "Ask for a deposit link", text: "Your landlord creates it in a minute and sends it to you." },
-  { pictogram: "pay-into-lock", title: "Pay into the lock", text: "By card, from your phone. The money waits; the landlord can't take it." },
-  { pictogram: "scan-at-door", title: "At the door: check, then scan", text: "Look at the room, then scan the landlord's code and take the keys. The landlord is paid only then." },
+  {
+    pictogram: "pay-into-lock",
+    title: "Pay into the lock",
+    text: `By card, from your phone: the deposit plus a Keysfirst fee of ${CARD_FEE_PERCENT} (at least ${MIN_FEE}, not refunded). The deposit waits; the landlord can't take it.`,
+  },
+  {
+    pictogram: "scan-at-door",
+    title: "At the door: check, then approve",
+    text: "Look at the room, then scan the landlord's code or tap “I have the keys” on your deal page, and take the keys. The landlord is paid only then.",
+  },
   { pictogram: "back-to-you", title: "No handover? You take it back", text: "If the handover never happens, you can take the deposit back after the deadline." },
 ];
 

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   // The root template doesn't reach the home page, so the title is written out in full.
   title: { absolute: "Keysfirst · The deposit moves only when the keys do" },
   description:
-    "Renting a room in Europe from abroad? Keysfirst holds the deposit in a lock until the key handover: the landlord is paid when you confirm the handover at the door, otherwise you can take it back after the deadline.",
+    "Renting a room in Europe from abroad? Keysfirst keeps the deposit in a lock until the key handover: the landlord is paid when you confirm the handover at the door, otherwise you can take it back after the deadline.",
 };
 
 /** "I'm renting" / "I'm letting" in the hero rewrites the hero, the problem band and the closing band (LandingRoleProvider). */

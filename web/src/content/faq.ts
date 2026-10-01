@@ -1,4 +1,5 @@
 import { COUNTRIES, LAW_CHECKED } from "./countries";
+import { BANK_FEE_PERCENT, CARD_FEE_PERCENT, eurText, EXAMPLE_PRICE, MIN_FEE } from "./fees";
 
 export interface FaqEntry {
   id: string;
@@ -46,22 +47,22 @@ export const FAQ: FaqGroup[] = [
         id: "landlord-paid",
         question: "How does the landlord get paid?",
         answer: [
-          "At the handover the landlord shows a code on their phone or laptop. The tenant checks the room, scans the code with their phone camera and taps “I have the keys”. The deposit reaches the landlord's Keysfirst balance in seconds and the landlord's screen turns green. From there the landlord withdraws it to their bank.",
+          "At the handover the landlord shows a code on their phone or laptop. The tenant checks the room, scans the code with their phone camera and taps “I have the keys”. The deposit reaches the landlord's Keysfirst balance in seconds and the landlord's screen turns green. From there the landlord can withdraw it from their account menu; in this prototype the bank transfer is simulated.",
         ],
       },
       {
         id: "no-keys",
         question: "What if I never get the keys?",
         answer: [
-          "Then you never scan, and the landlord is never paid. After the handover deadline the deposit goes back to you. Anyone can trigger that return, including you.",
+          "Then you never approve the handover, and the landlord is never paid. After the handover deadline the deposit goes back to you. Anyone can trigger that return, including you.",
         ],
       },
       {
         id: "cost",
         question: "What does it cost?",
         answer: [
-          "The tenant pays a Keysfirst fee on top of the deposit: 3.5% when paying by card, or 2% by bank transfer, and at least €12. For a €600 deposit that is €21 by card. Landlords pay nothing.",
-          "The fee is paid separately, so the deposit itself only ever goes to the tenant or the landlord. It isn't refunded if the deposit comes back. In this prototype every payment, the fee included, uses Stripe's test mode and test money, so no real money is charged. Only card payment is switched on.",
+          `The tenant pays a Keysfirst fee on top of the deposit: ${CARD_FEE_PERCENT} by card, at least ${MIN_FEE}. For a ${eurText(EXAMPLE_PRICE.depositCents)} deposit that is ${eurText(EXAMPLE_PRICE.feeCents)}. Landlords pay nothing.`,
+          `The fee is paid separately, so the deposit itself only ever goes to the tenant or the landlord. It isn't refunded if the deposit comes back. In this prototype every payment, the fee included, uses Stripe's test mode and test money, so no real money is charged. Only card payment is switched on; paying by bank transfer (${BANK_FEE_PERCENT} fee) isn't available in this prototype.`,
         ],
       },
     ],
@@ -75,7 +76,7 @@ export const FAQ: FaqGroup[] = [
         question: "Who holds the money?",
         answer: [
           "A program on Solana holds it in a lock. Its rules allow exactly two ways out: to the landlord when the tenant approves at the handover, or back to the tenant (after the deadline, or earlier if the landlord gives it back). Keysfirst has no button to take it.",
-          "One honest caveat: on this test network the program can still be updated by its deploy key. Before any real money, that key would be locked or shared between several people.",
+          "One honest caveat: on this test network the developer can still update the program with its upgrade key. Before any real money, that key would be locked or shared between several people.",
         ],
         link: { href: "/how-it-works#limits", label: "All known limits" },
       },
@@ -83,21 +84,21 @@ export const FAQ: FaqGroup[] = [
         id: "keys-kept",
         question: "Can the landlord take the money and keep the keys?",
         answer: [
-          "At the door you scan first, so this is possible. It would be theft by a known person at a real address, which is far rarer than an anonymous online scam and easier to act on.",
+          "At the door you approve first, so this is possible. It would be theft by a known person at a real address, which is far rarer than an anonymous online scam and easier to act on.",
         ],
       },
       {
         id: "scan-early",
-        question: "Can someone trick me into scanning early?",
+        question: "Can someone trick me into approving early?",
         answer: [
-          "Scanning pays the landlord, so only scan standing in the room with the keys. The program only accepts the scan from 24 hours before move-in, which blocks \"scan now to reserve the room\" tricks weeks ahead. It can't stop pressure close to move-in, so the rule stays: no keys, no scan.",
+          "Scanning the code or tapping “I have the keys” pays the landlord, so only do it standing in the room with the keys. The program only accepts the approval from 24 hours before move-in until the deadline, which blocks \"scan now to reserve the room\" tricks weeks ahead. It can't stop pressure close to move-in, so the rule stays: no keys, no approval.",
         ],
       },
       {
         id: "not-as-described",
         question: "What if the room isn't as described?",
         answer: [
-          "Don't scan. Ask the landlord to give the deposit back, which they can do at any time, or wait for the deadline and take it back.",
+          "Don't approve the handover. Ask the landlord to give the deposit back, which they can do at any time, or wait for the deadline and take it back.",
         ],
       },
       {
@@ -151,8 +152,8 @@ export const FAQ: FaqGroup[] = [
         id: "regulated",
         question: "Is Keysfirst a bank or a payment service?",
         answer: [
-          "No. Keysfirst never holds the money: the program on Solana does, and pays it out only by its published rules. This prototype also moves only test money with no value.",
-          "On this test network the program can still be updated by its deploy key. Before a live version with real euros, that key would be locked or shared between several people, so Keysfirst couldn't change the rules alone. We would also ask BaFin, Germany's financial regulator, to confirm whether the model needs a licence under German payment services law (ZAG) or the EU's crypto rules (MiCA), and work with a licensed partner if it does.",
+          "No. Keysfirst can't take the locked deposit: a public program on Solana holds it and pays it out only by its published rules. Card payments are collected on Keysfirst's Stripe account before the deposit is locked. In this prototype they run in Stripe's test mode with test money that has no value; a live version would collect them through a licensed payment partner.",
+          "On this test network the developer can still update the program with its upgrade key. Before a live version with real euros, that key would be locked or shared between several people, so Keysfirst couldn't change the rules alone. We would also ask BaFin, Germany's financial regulator, to confirm whether the model needs a licence under German payment services law (ZAG) or the EU's crypto rules (MiCA), and work with a licensed partner if it does.",
         ],
       },
       {
@@ -188,7 +189,7 @@ export const FAQ: FaqGroup[] = [
         id: "withdraw",
         question: "How do I get money out?",
         answer: [
-          "Tap your account in the top corner, then “Withdraw to bank”, and enter your IBAN. In this prototype the money leaves your Keysfirst balance, but the bank transfer itself is a demo.",
+          "Tap your account in the top corner to open your account menu, then “Withdraw to bank”, and enter your IBAN. In this prototype the test money leaves your Keysfirst balance, but no real bank transfer happens.",
         ],
       },
       {
@@ -214,13 +215,13 @@ export const FAQ: FaqGroup[] = [
       {
         id: "real-money",
         question: "Is this real money?",
-        answer: ["No. Everything runs on Solana devnet with test money. Never send real money to anything here."],
+        answer: ["No. Everything runs on Solana's test network (devnet) with test money. Never send real money to anything here."],
       },
       {
         id: "why-solana",
         question: "Why Solana?",
         answer: [
-          "Payments settle in seconds and can't be charged back, so a landlord can hand over the keys the moment the screen turns green. The rules live in a public program, and Solana's clock lets anyone send the deposit back after the deadline.",
+          "The landlord's payout settles in seconds and can't be charged back, so a landlord can hand over the keys the moment the screen turns green. The rules live in a public program, and Solana's clock lets anyone send the deposit back after the deadline.",
         ],
       },
     ],

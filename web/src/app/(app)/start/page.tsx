@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { ScanIllustration } from "@/components/guide/GuideIllustrations";
 import { ButtonLink } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
+import { CARD_FEE_PERCENT, MIN_FEE } from "@/content/fees";
 import { GuideLogin } from "./GuideLogin";
 
 export const dynamic = "error";
@@ -53,7 +54,7 @@ export default function GetStartedPage() {
 
         <GuideStep id="pay" number={3} title="As the tenant: pay by card">
           <p>
-            Open the link and log in with a different email. Pay the deposit plus the Keysfirst fee (3.5% by card, at least €12). This prototype
+            Open the link and log in with a different email. Pay the deposit plus the Keysfirst fee ({CARD_FEE_PERCENT} by card, at least {MIN_FEE}, not refunded). This prototype
             uses Stripe&apos;s test mode: pay with the card number <strong className="text-fg tabular-nums">4242 4242 4242 4242</strong>, any
             future date and any three digits. No real money moves.
           </p>
@@ -70,8 +71,9 @@ export default function GetStartedPage() {
 
         <GuideStep id="withdraw" number={5} title="Withdraw to your bank">
           <p>
-            Money you receive, as the landlord or as a tenant whose deposit came back, shows as your balance. Tap your account in the top corner,
-            then &ldquo;Withdraw to bank&rdquo;. In this prototype the bank transfer is a demo.
+            Money you receive, as the landlord or as a tenant whose deposit came back, shows as your balance. Open your account menu (your account in the
+            top corner), then tap &ldquo;Withdraw to bank&rdquo;. In this prototype the test money leaves your balance, but no real bank transfer
+            happens.
           </p>
         </GuideStep>
       </div>
