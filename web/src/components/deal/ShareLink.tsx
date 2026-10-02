@@ -7,15 +7,15 @@ import { cx } from "@/lib/cx";
 import { emailUrl, whatsappUrl } from "@/lib/format";
 import { useMounted } from "@/lib/hooks";
 
-/** The heading already says "send this link", so the buttons name only the channel (screen readers hear the full action). */
-export function ShareBox({ url, text, subject }: { url: string; text: string; subject: string }) {
+/**
+ * The deposit link and the ways to send it, inside the landlord's "Your next step" (NextStep's `share`). The step's text
+ * already says "send the link", so the buttons name only the channel (screen readers hear the full action).
+ */
+export function ShareLink({ url, text, subject }: { url: string; text: string; subject: string }) {
   const mounted = useMounted();
   const canShare = mounted && typeof navigator.share === "function";
   return (
-    <section aria-labelledby="share-title" className="space-y-4 rounded-lg border-2 border-fg p-5">
-      <h2 id="share-title" className="font-display text-card font-bold">
-        Send this link to your tenant
-      </h2>
+    <div className="space-y-3">
       <CopyField label="Deposit link" value={url} />
       <div className={cx("grid gap-2", canShare ? "sm:grid-cols-3" : "sm:grid-cols-2")}>
         <ButtonLink href={whatsappUrl(`${text} ${url}`)} external variant="secondary" fullWidth>
@@ -38,6 +38,6 @@ export function ShareBox({ url, text, subject }: { url: string; text: string; su
           </Button>
         )}
       </div>
-    </section>
+    </div>
   );
 }

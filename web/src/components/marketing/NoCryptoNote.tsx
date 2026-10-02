@@ -1,7 +1,7 @@
 const STEPS = [
   { title: "Log in with email or Google", text: "Your account is set up for you. No wallet app to install." },
   { title: "Pay by card", text: "Keysfirst covers the network costs." },
-  { title: "Withdraw to your bank", text: "The landlord moves the money out with an IBAN. In this prototype the bank payout is simulated." },
+  { title: "Withdraw to your bank", text: "Money you receive goes out to your bank with an IBAN. In this prototype the bank payout is simulated." },
 ];
 
 /** "Do I need crypto?" Low-key on purpose: it answers the question under the Solana section and never moves into the hero. */

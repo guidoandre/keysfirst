@@ -43,7 +43,7 @@ export default function TermsPage() {
             How it works
           </Link>
           ). Keysfirst has no button to take the locked money, and cannot reverse, stop or redirect a step you confirm. While this is a
-          prototype the developer can still update the program, which is the upgrade key described in section 4 and in the{" "}
+          prototype the developer can still update the program with the upgrade key described in section 4 and in the{" "}
           <Link href="/how-it-works#limits" className={LINK}>
             known limits
           </Link>

@@ -61,6 +61,9 @@ describe("chargedSummary", () => {
     expect(chargedSummary({ totalCents: 62_100, feeCents: 2_100, method: "card" })).toBe(
       "Your card was charged €621.00: deposit €600.00 + Keysfirst fee €21.00 (3.5%, card issued in Europe).",
     );
+    expect(chargedSummary({ totalCents: 21_200, feeCents: 1_200, method: "card" })).toBe(
+      "Your card was charged €212.00: deposit €200.00 + Keysfirst fee €12.00 (minimum, card issued in Europe).",
+    );
   });
   it("falls back to the total when the fee isn't known", () => {
     expect(chargedSummary({ totalCents: 62_100, feeCents: Number.NaN })).toBe("Your card was charged €621.00.");

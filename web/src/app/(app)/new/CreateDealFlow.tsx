@@ -275,7 +275,7 @@ export function CreateDealFlow() {
                 <button type="button" onClick={fillDemoValues} className="font-semibold underline underline-offset-2">
                   Use demo values
                 </button>{" "}
-                (Germany, room in Vallendar, €300 rent, €600.00 deposit, move-in now, 5-minute window).
+                (Germany, “Room in Vallendar”, €300 rent, €600 deposit, move-in now, 5-minute window).
               </Callout>
             </>
           )}
@@ -407,7 +407,7 @@ export function CreateDealFlow() {
             </Button>
           ) : wallet.publicKey ? (
             <Button key="create" type="submit" size="lg" loading={busy} loadingText="Creating your link…" disabled={!values}>
-              Create deposit link
+              Create a deposit link
             </Button>
           ) : (
             <div className="sm:w-80">

@@ -1,10 +1,12 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
 import { Icon } from "@/components/ui/Icon";
 import { LoginButton } from "@/components/wallet/LoginButton";
 import { actionLabel, loginLabel, type NextStepView } from "@/lib/deal-view";
+import { cx } from "@/lib/cx";
 import { explorerTx } from "@/lib/format";
 import type { Action, Role } from "@/lib/rules";
 
@@ -30,6 +32,7 @@ export function NextStep({
   card = null,
   cardBusy = false,
   onPayByCard,
+  share = null,
 }: {
   view: NextStepView;
   role: Role;
@@ -46,19 +49,23 @@ export function NextStep({
   card?: CardOffer | null;
   cardBusy?: boolean;
   onPayByCard?: () => void;
+  /** The landlord's deposit link while nobody has paid: the step itself, so the box is outlined like a primary action. */
+  share?: ReactNode;
 }) {
   const { primary, secondary } = view;
   return (
-    <section aria-labelledby="next-step" className="space-y-4 rounded-lg bg-subtle p-5">
+    <section aria-labelledby="next-step" className={cx("space-y-4 rounded-lg p-5", share != null ? "border-2 border-fg bg-canvas" : "bg-subtle")}>
       <h2 id="next-step" className="label text-fg-muted">
-        {role === "visitor" ? "What happens next" : "Your next step"}
+        {/* A visitor on an unpaid deal is the tenant-to-be: the deal copy speaks to them as "you" */}
+        {role === "visitor" && (paid || settled) ? "What happens next" : "Your next step"}
       </h2>
       <p className="text-body">{view.message}</p>
+      {share}
 
       {/* The tenant is about to pay: nudge them to compare the deposit with the rent in their contract (deposit caps differ by country). */}
       {primary === "fund" && (
         <Callout tone="neutral" title="Check the amount first">
-          By law a deposit is at most 1 to 3 months&apos; rent, depending on the country. Compare it with the rent in your contract before you pay.{" "}
+          By law a deposit is capped, usually at 1 to 3 months&apos; rent, depending on the country and the lease. Compare it with the rent in your contract before you pay.{" "}
           <a href="/faq#law" target="_blank" rel="noreferrer" className="font-semibold underline underline-offset-2">
             Deposit rules by country
             <span className="sr-only"> (opens in a new tab)</span>
@@ -73,7 +80,7 @@ export function NextStep({
       {/* Logged in, but not as this deal's landlord or tenant (e.g. email today, Google when paying): say so instead of a dead end. */}
       {connected && role === "visitor" && paid && !primary && (
         <p className="text-sm text-fg-muted">
-          This account isn&apos;t part of this deal. If you&apos;re its landlord or tenant, log out from the account menu and log in the
+          This account isn&apos;t part of this deal. If you&apos;re its landlord or tenant, tap your account at the top, log out and log in the
           way you did when you created or paid it.
         </p>
       )}
@@ -103,13 +110,15 @@ export function NextStep({
           <LoginButton label={loginLabel(primary)} variant="primary" size="lg" fullWidth />
         ))}
 
+      {/* Under the link, cancelling is set apart and narrower: it must not read as the thing to do next. */}
       {secondary.length > 0 && (
-        <div className="grid gap-2">
+        <div className={cx("grid gap-2", share != null && "border-t border-rule pt-4 sm:justify-items-start")}>
           {secondary.map((action) => (
             <Button
               key={action}
               variant={action === "cancel" ? "danger" : "secondary"}
               fullWidth
+              className={share != null ? "sm:w-auto" : undefined}
               loading={busy === action}
               loadingText="Confirming…"
               disabled={busy !== null}

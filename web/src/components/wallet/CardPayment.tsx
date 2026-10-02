@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
 import { STRIPE_PUBLISHABLE_KEY } from "@/lib/config";
 import { formatEur, fromCents } from "@/lib/format";
-import { feePercent, priceBreakdown } from "@/lib/pricing";
+import { feeRate, priceBreakdown } from "@/lib/pricing";
 
 const UNAVAILABLE = "Card payments are not available right now. Try again in a minute.";
 
@@ -165,8 +165,8 @@ function CardForm({ dealId, account, depositCents, onStarted, onPaid, onBusy }: 
     <form onSubmit={review} className="space-y-4">
       <p className="text-fg-muted">
         Deposit <span className="font-semibold text-fg tabular-nums">{eur(eea.depositCents)}</span> plus the Keysfirst fee:{" "}
-        {feePercent("card")} with a card issued in Europe ({eur(eea.totalCents)} in total), {feePercent("cardIntl")} with other cards (
-        {eur(intl.totalCents)}). You see your exact price before paying. The fee isn&apos;t refunded.
+        {eur(eea.totalCents)} in total with a card issued in Europe ({feeRate(eea.depositCents, "card")} fee), {eur(intl.totalCents)} with
+        other cards ({feeRate(intl.depositCents, "cardIntl")} fee). You see your exact price before paying. The fee isn&apos;t refunded.
       </p>
       <PaymentElement
         options={{ wallets: { applePay: "never", googlePay: "never", link: "never" } }}
@@ -190,7 +190,7 @@ function CardForm({ dealId, account, depositCents, onStarted, onPaid, onBusy }: 
               </div>
               <div className="flex justify-between gap-4">
                 <dt>
-                  Keysfirst fee ({feePercent(quote.method)}, card issued {quote.method === "card" ? "in Europe" : "outside Europe"})
+                  Keysfirst fee ({feeRate(quote.depositCents, quote.method)}, card issued {quote.method === "card" ? "in Europe" : "outside Europe"})
                 </dt>
                 <dd className="tabular-nums">{eur(quote.feeCents)}</dd>
               </div>
@@ -216,7 +216,7 @@ function CardForm({ dealId, account, depositCents, onStarted, onPaid, onBusy }: 
       )}
       <p className="text-sm text-fg-muted">
         Test mode, no real money: use <span className="tabular-nums">4000 0027 6000 0016</span> (a German card) or{" "}
-        <span className="tabular-nums">4242 4242 4242 4242</span> (a US card), any future date and any CVC.
+        <span className="tabular-nums">4242 4242 4242 4242</span> (a US card), any future date and any three digits.
       </p>
     </form>
   );

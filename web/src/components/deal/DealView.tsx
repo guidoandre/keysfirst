@@ -10,7 +10,7 @@ import { DealDetails } from "./DealDetails";
 import { DealHero } from "./DealHero";
 import { DealTimetable } from "./DealTimetable";
 import { NextStep, type CardOffer } from "./NextStep";
-import { ShareBox } from "./ShareBox";
+import { ShareLink } from "./ShareLink";
 
 export interface DealViewProps {
   id: string;
@@ -80,15 +80,18 @@ export function DealView(p: DealViewProps) {
         card={p.card}
         cardBusy={p.cardBusy}
         onPayByCard={p.onPayByCard}
+        // Spec §6.4: while the deal is open and before the deadline (also before payment opens, 180 days ahead).
+        // Sending the link is the landlord's next step, so it sits in that box, above "Cancel this deal".
+        share={
+          role === "landlord" && (phase === "open" || phase === "open-too-early") ? (
+            <ShareLink
+              url={`${p.origin}/deal/${p.id}`}
+              text={`Pay the ${amount} deposit for "${data.title}" safely with Keysfirst:`}
+              subject={`Deposit link for "${data.title}"`}
+            />
+          ) : null
+        }
       />
-      {/* Spec §6.4: while the deal is open and before the deadline (also before payment opens, 180 days ahead). */}
-      {role === "landlord" && (phase === "open" || phase === "open-too-early") && (
-        <ShareBox
-          url={`${p.origin}/deal/${p.id}`}
-          text={`Pay the ${amount} deposit for "${data.title}" safely with Keysfirst:`}
-          subject={`Deposit link for "${data.title}"`}
-        />
-      )}
       <DealTimetable rows={rows} title={data.title} />
       <DealDetails id={p.id} times={times} />
     </div>

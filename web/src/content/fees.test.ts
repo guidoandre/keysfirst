@@ -9,8 +9,8 @@ describe("fee copy", () => {
 
   it("builds the fee lines from pricing, matching the deck", () => {
     expect(CARD_FEE_SHORT).toBe("a Keysfirst fee of 3.5% with a card issued in Europe, 4.5% with other cards, at least €12");
-    expect(feeLine(60_000)).toBe("€600 deposit + €21 fee with a card issued in Europe (€627 with other cards)");
-    expect(feeLine(20_000)).toBe("€200 deposit + €12 fee with a card issued in Europe (€212 with other cards)");
+    expect(feeLine(60_000)).toBe("€600 + €21 card fee (€627 with a non-European card)");
+    expect(feeLine(20_000)).toBe("€200 + €12 card fee (€212 with a non-European card)");
     expect(EXAMPLE_PRICE.totalCents).toBe(62_100);
     expect(EXAMPLE_INTL_PRICE.totalCents).toBe(62_700);
   });

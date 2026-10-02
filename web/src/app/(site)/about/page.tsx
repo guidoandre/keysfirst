@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 const BUILT = [
   "A program on Solana, written with Anchor, with 44 automated tests including the money rules.",
-  "Solana Pay for the code the tenant scans at the handover.",
+  "Solana Pay for approving the handover from Phantom.",
   "A Next.js web app. Deals are read straight from Solana; there is no database.",
 ];
 

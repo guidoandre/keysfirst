@@ -65,7 +65,7 @@ export function WalletChip() {
           </ButtonLink>
           <Button variant="secondary" fullWidth onClick={copy}>
             <Icon name={copied ? "check" : "copy"} size={18} />
-            {copied ? "Copied" : "Copy your Keysfirst ID"}
+            {copied ? "Copied" : "Copy your account number"}
           </Button>
           <p aria-live="polite" className="sr-only">
             {copied ? "Copied to the clipboard" : ""}

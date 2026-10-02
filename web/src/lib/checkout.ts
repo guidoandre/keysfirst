@@ -1,5 +1,5 @@
 import { formatEur, fromCents } from "./format";
-import { cardMethod, feePercent, priceBreakdown } from "./pricing";
+import { cardMethod, feeRate, priceBreakdown } from "./pricing";
 import { canFund, type DealStatus, type DealTimes } from "./rules";
 import { PRODUCTION_URL } from "./site";
 
@@ -34,11 +34,12 @@ export function chargedSummary(c: CardCharged): string {
   if (!Number.isFinite(c.feeCents) || c.feeCents <= 0 || c.feeCents >= c.totalCents) return `Your card was charged ${total}.`;
   const deposit = formatEur(fromCents(c.totalCents - c.feeCents));
   const fee = formatEur(fromCents(c.feeCents));
+  const depositCents = c.totalCents - c.feeCents;
   const why =
     c.method === "cardIntl"
-      ? ` (${feePercent("cardIntl")}, card issued outside Europe)`
+      ? ` (${feeRate(depositCents, "cardIntl")}, card issued outside Europe)`
       : c.method === "card"
-        ? ` (${feePercent("card")}, card issued in Europe)`
+        ? ` (${feeRate(depositCents, "card")}, card issued in Europe)`
         : "";
   return `Your card was charged ${total}: deposit ${deposit} + Keysfirst fee ${fee}${why}.`;
 }

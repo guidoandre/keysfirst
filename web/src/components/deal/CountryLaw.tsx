@@ -13,7 +13,7 @@ export function CountryLaw({ country, housing }: { country: Country; housing: Ho
         <Icon name="info" size={18} className="shrink-0" />
         <span className="min-w-0 flex-1">
           <span className="block font-semibold">What the law says in {country.name}</span>
-          <span className="block text-sm text-fg-muted">Deposit limit, instalments and when it comes back</span>
+          <span className="block text-sm text-fg-muted">Deposit limit, when it&apos;s due and when it comes back</span>
         </span>
         <Icon name="chevron-down" size={20} className="shrink-0 transition-transform duration-150 group-open:rotate-180" />
       </summary>

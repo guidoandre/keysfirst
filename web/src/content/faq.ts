@@ -38,7 +38,7 @@ export const FAQ: FaqGroup[] = [
         id: "countries",
         question: "Which countries does it cover?",
         answer: [
-          "Germany, the Netherlands, Ireland, Spain, France and Italy. In these countries we checked the deposit rules, and when a landlord creates a link Keysfirst checks the deposit against the rent they enter and the country's legal maximum. Always compare it with the rent in your contract.",
+          "Germany, the Netherlands, Ireland, Spain, France and Italy. In these countries we checked the deposit rules, and when a landlord creates a link, Keysfirst checks the deposit against the rent they enter and the country's legal maximum. Always compare it with the rent in your contract.",
           "Rooms in other countries aren't covered yet.",
         ],
         link: { href: "/faq#law", label: "Deposit rules by country" },
@@ -47,7 +47,7 @@ export const FAQ: FaqGroup[] = [
         id: "landlord-paid",
         question: "How does the landlord get paid?",
         answer: [
-          "At the handover the landlord shows a code on their phone or laptop. The tenant checks the room, scans the code with their phone camera and taps “I have the keys”. The deposit reaches the landlord's Keysfirst balance in seconds and the landlord's screen turns green. From there the landlord can withdraw it from their account menu; in this prototype the bank transfer is simulated.",
+          "At the handover the landlord shows a code on their phone or laptop. The tenant checks the room, scans the code with their phone camera and taps “I have the keys”. The deposit reaches the landlord's Keysfirst balance in seconds and the landlord's screen turns green. From there the landlord can withdraw it to their bank from My deals; in this prototype the bank transfer is simulated.",
         ],
       },
       {
@@ -92,7 +92,7 @@ export const FAQ: FaqGroup[] = [
         id: "scan-early",
         question: "Can someone trick me into approving early?",
         answer: [
-          "Scanning the code or tapping “I have the keys” pays the landlord, so only do it standing in the room with the keys. The program only accepts the approval from 24 hours before move-in until the deadline, which blocks \"scan now to reserve the room\" tricks weeks ahead. It can't stop pressure close to move-in, so the rule stays: no keys, no approval.",
+          "Scanning the code or tapping “I have the keys” pays the landlord, so only do it standing in the room with the keys. The program only accepts the approval from 24 hours before move-in until the deadline, which blocks “scan now to reserve the room” tricks weeks ahead. It can't stop pressure close to move-in, so the rule stays: no keys, no approval.",
         ],
       },
       {
@@ -183,14 +183,14 @@ export const FAQ: FaqGroup[] = [
         id: "test-card",
         question: "How do I pay in this prototype?",
         answer: [
-          "By card, on the deal page. Stripe's test mode is on: use 4000 0027 6000 0016 (a German card, 3.5% fee) or 4242 4242 4242 4242 (a US card, 4.5% fee), any future expiry date and any three digits. No real money moves.",
+          `By card, on the deal page. Stripe's test mode is on: use 4000 0027 6000 0016 (a German card, ${CARD_FEE_PERCENT} fee) or 4242 4242 4242 4242 (a US card, ${INTL_CARD_FEE_PERCENT} fee), any future date and any three digits. No real money moves.`,
         ],
       },
       {
         id: "withdraw",
         question: "How do I get money out?",
         answer: [
-          "Tap your account in the top corner to open your account menu, then “Withdraw to bank”, and enter your IBAN. In this prototype the test money leaves your Keysfirst balance, but no real bank transfer happens.",
+          "Go to My deals, tap “Withdraw to bank” under your balance and enter your IBAN. In this prototype the test money leaves your Keysfirst balance, but no real bank transfer happens.",
         ],
       },
       {

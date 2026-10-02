@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MIN_FEE_CENTS, cardMethod, feeCents, feePercent, priceBreakdown } from "./pricing";
+import { MIN_FEE_CENTS, cardMethod, feeCents, feePercent, feeRate, priceBreakdown } from "./pricing";
 
 describe("feeCents", () => {
   it("charges 3.5% by card and 2% by bank transfer", () => {
@@ -28,6 +28,16 @@ describe("feeCents", () => {
 describe("priceBreakdown", () => {
   it("adds the fee on top of the deposit", () => {
     expect(priceBreakdown(60_000, "card")).toEqual({ depositCents: 60_000, feeCents: 2_100, totalCents: 62_100 });
+  });
+});
+
+describe("feeRate", () => {
+  it("names the percentage, or the minimum where the €12 floor applies", () => {
+    expect(feeRate(60_000, "card")).toBe("3.5%");
+    expect(feeRate(60_000, "cardIntl")).toBe("4.5%");
+    expect(feeRate(20_000, "card")).toBe("minimum");
+    expect(feeRate(30_000, "cardIntl")).toBe("4.5%"); // €13.50
+    expect(feeRate(26_000, "cardIntl")).toBe("minimum"); // €11.70 -> €12
   });
 });
 

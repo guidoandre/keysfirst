@@ -18,6 +18,14 @@ export function priceBreakdown(depositCents: number, method: PayMethod) {
   return { depositCents, feeCents: fee, totalCents: depositCents + fee };
 }
 
+/**
+ * What the fee on this deposit is, for copy: "3.5%", or "minimum" where the €12 floor applies (a €200 deposit pays
+ * €12, not 3.5%, so printing the percentage there would be wrong).
+ */
+export function feeRate(depositCents: number, method: PayMethod): string {
+  return Math.round((depositCents * RATE_BP[method]) / 10_000) < MIN_FEE_CENTS ? "minimum" : feePercent(method);
+}
+
 /** "3.5%" / "4.5%" / "2%" for copy. */
 export function feePercent(method: PayMethod): string {
   return `${RATE_BP[method] / 100}%`;

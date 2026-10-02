@@ -10,7 +10,7 @@ import { useLandingRole } from "./LandingRole";
 
 /**
  * The closing Highlighter band. Tenant: the message to send the landlord, WhatsApp, email or copy. Landlord: create a link,
- * and what it costs them. The hero's "Ask your landlord for a deposit link" lands here (#ask).
+ * and what it costs them. The hero's "Ask for a deposit link" lands here (#ask).
  * On phones the items stack in source order; from lg the text and its buttons sit left, the message or terms right.
  */
 export function ClosingCta() {
