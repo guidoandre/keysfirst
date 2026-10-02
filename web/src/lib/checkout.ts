@@ -1,4 +1,5 @@
-import { cardMethod, priceBreakdown } from "./pricing";
+import { formatEur, fromCents } from "./format";
+import { cardMethod, feePercent, priceBreakdown } from "./pricing";
 import { canFund, type DealStatus, type DealTimes } from "./rules";
 import { PRODUCTION_URL } from "./site";
 
@@ -23,6 +24,32 @@ export function cardHold(depositCents: number) {
 export function cardCharge(depositCents: number, cardCountry: string | null | undefined) {
   const method = cardMethod(cardCountry);
   return { method, ...priceBreakdown(depositCents, method) };
+}
+
+/** What fulfil reports a card payment actually cost (from Stripe's capture). */
+export interface CardCharged {
+  totalCents: number;
+  feeCents: number;
+  /** "card" (issued in the EEA) or "cardIntl"; missing for a payment made before fees depended on the card. */
+  method?: string;
+}
+
+/**
+ * The receipt line after a card payment, so the tenant sees which price applied:
+ * "Your card was charged €627.00: deposit €600.00 + Keysfirst fee €27.00 (4.5%, card issued outside Europe)."
+ */
+export function chargedSummary(c: CardCharged): string {
+  const total = formatEur(fromCents(c.totalCents));
+  if (!Number.isFinite(c.feeCents) || c.feeCents <= 0 || c.feeCents >= c.totalCents) return `Your card was charged ${total}.`;
+  const deposit = formatEur(fromCents(c.totalCents - c.feeCents));
+  const fee = formatEur(fromCents(c.feeCents));
+  const why =
+    c.method === "cardIntl"
+      ? ` (${feePercent("cardIntl")}, card issued outside Europe)`
+      : c.method === "card"
+        ? ` (${feePercent("card")}, card issued in Europe)`
+        : "";
+  return `Your card was charged ${total}: deposit ${deposit} + Keysfirst fee ${fee}${why}.`;
 }
 
 /** Stripe's largest single charge in euros: €999,999.99. */

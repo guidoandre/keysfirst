@@ -5,6 +5,7 @@ import { useEffect, useEffectEvent, useState } from "react";
 import { Callout } from "@/components/ui/Callout";
 import { readBalance } from "@/lib/balance";
 import { useConnection } from "@/lib/connection";
+import { chargedSummary, type CardCharged } from "@/lib/checkout";
 import { formatEur } from "@/lib/format";
 import { useAccount } from "./AccountProvider";
 
@@ -14,7 +15,7 @@ import { useAccount } from "./AccountProvider";
  */
 export const pendingKey = (dealId: string, account: string) => `keysfirst:card:${dealId}:${account}`;
 
-type FulfilBody = { error?: string; deal?: string; account?: string; signature?: string };
+type FulfilBody = { error?: string; deal?: string; account?: string; signature?: string; charged?: CardCharged };
 type FulfilResult = { ok: boolean; status: number; body: FulfilBody };
 
 // At most one fulfil request per session in flight per tab: StrictMode's double effects and remounts share it.
@@ -79,7 +80,8 @@ export function CardResume({
   lock: boolean;
   /** True when this account already locked the deal (status past open): a leftover session needs no action. */
   alreadyYours: boolean;
-  onReady: () => void;
+  /** `receipt`: which price the card paid ("Your card was charged €627.00: …"). */
+  onReady: (receipt: string | null) => void;
   onDone: (message: string) => void;
   /** The session needs no more work; `message` explains why when the tenant should know (e.g. an unknown payment). */
   onCancelled: (message?: string) => void;
@@ -157,8 +159,9 @@ export function CardResume({
       if (cancelled) return;
       forget(dealId, me, session);
       stripPaid();
-      if (lock) ready();
-      else done(`Your ${formatEur(amount)} is in your balance. You can withdraw it to your bank from your account menu.`);
+      const receipt = res.body.charged ? chargedSummary(res.body.charged) : null;
+      if (lock) ready(receipt);
+      else done(`${receipt ? `${receipt} ` : ""}Your ${formatEur(amount)} is in your balance. You can withdraw it to your bank from your account menu.`);
     }
     void run();
     return () => {

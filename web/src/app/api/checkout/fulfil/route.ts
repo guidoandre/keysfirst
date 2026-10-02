@@ -1,6 +1,6 @@
 import { Connection, PublicKey, Transaction } from "@solana/web3.js";
 import type Stripe from "stripe";
-import { cardCharge } from "@/lib/checkout";
+import { cardCharge, type CardCharged } from "@/lib/checkout";
 import { SERVER_RPC_URL } from "@/lib/config";
 import { toCents } from "@/lib/format";
 import { faucetKeypair, mintIxs, mintOnceIx } from "@/lib/server/faucet";
@@ -48,8 +48,6 @@ export async function POST(req: Request) {
   if (session.status !== "complete" || !intent || !(held || intent.status === "succeeded") || !meta.deal || !meta.account || !meta.amount) {
     return Response.json({ error: NOT_PAID }, { status: 402 });
   }
-  const paid = { deal: meta.deal, account: meta.account };
-
   if (held) {
     // Charge only what this card owes and release the rest of the hold. The idempotency key makes a retry or a second
     // tab return the same capture instead of charging twice.
@@ -68,6 +66,13 @@ export async function POST(req: Request) {
     if (intent.status !== "succeeded") return Response.json({ error: CHARGE_FAILED }, { status: 503 });
   }
   const paymentId = intent.id;
+  // What the card actually paid, so the deal page can say which price applied (the capture recorded the fee).
+  const charged: CardCharged = {
+    totalCents: intent.amount_received,
+    feeCents: Number(intent.metadata.fee_cents),
+    method: intent.metadata.fee_rate,
+  };
+  const paid = { deal: meta.deal, account: meta.account, charged };
   if (intent.metadata.minted) return Response.json({ signature: intent.metadata.minted, ...paid });
 
   const connection = new Connection(SERVER_RPC_URL, "confirmed");

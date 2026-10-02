@@ -65,6 +65,8 @@ export function DealClient({
   const [resumeError, setResumeError] = useState<string | null>(null);
   const [resumeKey, setResumeKey] = useState(0);
   const [cardDone, setCardDone] = useState<string | null>(null);
+  // After a card payment: which price the card paid (3.5% or 4.5% fee), shown above the deal.
+  const [cardReceipt, setCardReceipt] = useState<string | null>(null);
   const account = wallet.publicKey?.toBase58() ?? null;
 
   // A card payment this account left half-way: saved in this browser, or (closed tab, another device) found at Stripe.
@@ -270,8 +272,9 @@ export function DealClient({
               amount={depositUnits}
               lock={data.status === "open"}
               alreadyYours={data.status !== "open" && data.tenant === me.toBase58()}
-              onReady={() => {
+              onReady={(receipt) => {
                 setPending(null);
+                setCardReceipt(receipt);
                 // Network costs for the lock (a no-op when the account already has enough), then lock.
                 void topUp().finally(() => void execute("fund"));
               }}
@@ -286,6 +289,13 @@ export function DealClient({
               onError={setResumeError}
             />
           )}
+        </div>
+      )}
+      {cardReceipt && !cardDone && (
+        <div className="mx-auto max-w-app px-4 pt-6">
+          <Callout tone="success" role="status" title="Card payment received">
+            {cardReceipt}
+          </Callout>
         </div>
       )}
       {cardDone && (

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cardCharge, cardHold, checkoutExpiry, checkoutProblem, returnOrigin } from "./checkout";
+import { cardCharge, cardHold, chargedSummary, checkoutExpiry, checkoutProblem, returnOrigin } from "./checkout";
 
 const now = 1_800_000_000;
 const times = { moveIn: now + 3 * 86_400, deadline: now + 4 * 86_400 };
@@ -59,5 +59,18 @@ describe("cardHold and cardCharge", () => {
     for (const cents of [1, 30_000, 60_000, 120_000, 999_000_00]) {
       for (const country of ["DE", "US", null]) expect(cardCharge(cents, country).totalCents).toBeLessThanOrEqual(cardHold(cents).totalCents);
     }
+  });
+});
+describe("chargedSummary", () => {
+  it("tells the tenant which price their card paid", () => {
+    expect(chargedSummary({ totalCents: 62_700, feeCents: 2_700, method: "cardIntl" })).toBe(
+      "Your card was charged €627.00: deposit €600.00 + Keysfirst fee €27.00 (4.5%, card issued outside Europe).",
+    );
+    expect(chargedSummary({ totalCents: 62_100, feeCents: 2_100, method: "card" })).toBe(
+      "Your card was charged €621.00: deposit €600.00 + Keysfirst fee €21.00 (3.5%, card issued in Europe).",
+    );
+  });
+  it("falls back to the total when the fee isn't known", () => {
+    expect(chargedSummary({ totalCents: 62_100, feeCents: Number.NaN })).toBe("Your card was charged €621.00.");
   });
 });
