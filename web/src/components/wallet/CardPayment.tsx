@@ -68,6 +68,8 @@ export function CardPayment(props: {
         amount: priceBreakdown(props.depositCents, "card").totalCents,
         currency: "eur",
         allowedPaymentMethodTypes: ["card"],
+        // The rest of the site is in English: keep Stripe's labels in English too, whatever the browser's language.
+        locale: "en",
         appearance: {
           theme: "stripe",
           variables: {
