@@ -15,9 +15,9 @@ const MINT_FAILED = "Your payment arrived, but we couldn't prepare the deposit y
 const CHARGE_FAILED = "We couldn't complete your card payment yet. Try again in a minute.";
 
 /**
- * After Stripe's page: charges the held card payment at the rate for where the card was issued (3.5% EEA, 4.5% elsewhere),
- * then mints exactly the deposit to the payer's account, at most once per payment (spec D6). The mint transaction also creates an empty marker account derived from the payment, so a retry
- * or a second tab can never mint twice: their transaction fails as a whole. Safe to call again.
+ * After a card payment: checks it at Stripe and mints exactly the deposit to the payer's account, at most once per
+ * payment (spec D6). The mint transaction also creates an empty marker account derived from the payment, so a retry or
+ * a second tab can never mint twice: their transaction fails as a whole. Safe to call again.
  */
 export async function POST(req: Request) {
   if (!isJson(req)) return Response.json({ error: "Invalid request." }, { status: 415 });
@@ -28,26 +28,35 @@ export async function POST(req: Request) {
   let id: string;
   try {
     id = (await req.json()).session;
-    if (typeof id !== "string" || !id.startsWith("cs_")) throw new Error("bad id");
+    // A payment from the card form on the deal page (pi_), or a Stripe Checkout session from before it (cs_).
+    if (typeof id !== "string" || !/^(pi|cs)_[A-Za-z0-9_]+$/.test(id)) throw new Error("bad id");
   } catch {
     return Response.json({ error: "Invalid request." }, { status: 400 });
   }
 
-  let session: Stripe.Checkout.Session;
+  let intent: Stripe.PaymentIntent;
   try {
-    session = await stripe.checkout.sessions.retrieve(id, { expand: ["payment_intent.latest_charge"] });
+    let intentId = id;
+    if (id.startsWith("cs_")) {
+      const session = await stripe.checkout.sessions.retrieve(id);
+      const pi = session.payment_intent;
+      if (session.status !== "complete" || !pi) return Response.json({ error: NOT_PAID }, { status: 402 });
+      intentId = typeof pi === "string" ? pi : pi.id;
+    }
+    intent = await stripe.paymentIntents.retrieve(intentId, { expand: ["latest_charge"] });
   } catch (err) {
-    // A session Stripe doesn't know (another account, a changed key) will never be found: say so for good.
+    // A payment Stripe doesn't know (another account, a changed key) will never be found: say so for good.
     if ((err as { code?: string })?.code === "resource_missing") return Response.json({ error: NOT_FOUND }, { status: 404 });
     return Response.json({ error: CARD_UNAVAILABLE }, { status: 503 });
   }
-  let intent = session.payment_intent as Stripe.PaymentIntent | null;
-  const meta = session.metadata ?? {};
-  // A held payment is "requires_capture"; "succeeded" once charged (here earlier, or a session from before holds).
-  const held = intent?.status === "requires_capture";
-  if (session.status !== "complete" || !intent || !(held || intent.status === "succeeded") || !meta.deal || !meta.account || !meta.amount) {
+  const meta = intent.metadata;
+  // "succeeded": charged (the card form charges the exact price). "requires_capture": an older Checkout payment held
+  // at the higher rate, charged below at the rate for the card's issuing country.
+  const held = intent.status === "requires_capture";
+  if (!(held || intent.status === "succeeded") || !meta.deal || !meta.account || !meta.amount) {
     return Response.json({ error: NOT_PAID }, { status: 402 });
   }
+
   if (held) {
     // Charge only what this card owes and release the rest of the hold. The idempotency key makes a retry or a second
     // tab return the same capture instead of charging twice.

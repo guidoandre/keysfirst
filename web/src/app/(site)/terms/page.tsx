@@ -59,9 +59,8 @@ export default function TermsPage() {
         </p>
         <p>
           Fees: the tenant pays a Keysfirst fee on top of the deposit, shown before paying: {CARD_FEE_PERCENT} with a card issued in the
-          European Economic Area, {INTL_CARD_FEE_PERCENT} with a card issued elsewhere, at least {MIN_FEE}. A card payment is first held for
-          the {INTL_CARD_FEE_PERCENT} amount; a card issued in the EEA is then charged only the {CARD_FEE_PERCENT} amount and the rest of the
-          hold is released. The fee is not refunded if the deposit goes back to the tenant. Only card payment is switched on; paying by bank
+          European Economic Area, {INTL_CARD_FEE_PERCENT} with a card issued elsewhere, at least {MIN_FEE}. The exact fee for your card is
+          shown after you enter it and before anything is charged; your card is charged exactly that amount. The fee is not refunded if the deposit goes back to the tenant. Only card payment is switched on; paying by bank
           transfer ({BANK_FEE_PERCENT} fee) isn&apos;t available in this prototype. All payments, the fee included, use Stripe&apos;s test mode
           and test money, so no real money is charged: the fee shown is the one Keysfirst would charge. Withdrawals to a bank account are
           simulated: the test money leaves your balance, but no real bank transfer happens.

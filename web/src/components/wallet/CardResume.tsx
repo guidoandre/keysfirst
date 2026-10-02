@@ -36,10 +36,10 @@ function fulfil(session: string): Promise<FulfilResult> {
   return request;
 }
 
-/** Removes ?paid= from the address bar, so a reload doesn't resume the payment again. */
+/** Removes the payment from the address bar (?paid=, or Stripe's ?payment_intent=…), so a reload doesn't resume it again. */
 function stripPaid() {
   const url = new URL(window.location.href);
-  url.searchParams.delete("paid");
+  for (const key of ["paid", "payment_intent", "payment_intent_client_secret", "redirect_status"]) url.searchParams.delete(key);
   window.history.replaceState(window.history.state, "", url);
 }
 

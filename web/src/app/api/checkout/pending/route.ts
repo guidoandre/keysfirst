@@ -9,8 +9,8 @@ const perIp = rateLimiter(30, 10 * 60_000);
 
 /**
  * A card payment for this deal and account that went through but was never turned into a deposit: the tab closed
- * before Stripe sent the tenant back, or they came back on another device. Returns its Checkout session so the deal
- * page can finish it with the normal fulfil step (which mints at most once), or null when there is none.
+ * right after paying, or the tenant came back on another device. Returns the payment so the deal page can finish it
+ * with the normal fulfil step (which mints at most once), or null when there is none.
  */
 export async function POST(req: Request) {
   if (!isJson(req)) return Response.json({ error: "Send JSON." }, { status: 415 });
@@ -39,9 +39,8 @@ export async function POST(req: Request) {
     const open = found.data.find(
       (intent) => (intent.status === "requires_capture" || intent.status === "succeeded") && !intent.metadata.minted,
     );
-    if (!open) return Response.json({ session: null });
-    const sessions = await stripe.checkout.sessions.list({ payment_intent: open.id, limit: 1 });
-    return Response.json({ session: sessions.data[0]?.id ?? null });
+    // Fulfil takes the payment itself, whichever way it was made.
+    return Response.json({ session: open?.id ?? null });
   } catch {
     // Stripe busy or search unavailable: nothing to resume this time.
     return Response.json({ session: null });

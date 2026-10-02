@@ -62,7 +62,7 @@ export const FAQ: FaqGroup[] = [
         question: "What does it cost?",
         answer: [
           `The tenant pays a Keysfirst fee on top of the deposit: ${CARD_FEE_PERCENT} with a card issued in Europe (the EEA), ${INTL_CARD_FEE_PERCENT} with a card issued anywhere else, or ${BANK_FEE_PERCENT} by bank transfer, and at least ${MIN_FEE}. For a ${eurText(EXAMPLE_PRICE.depositCents)} deposit that is ${eurText(EXAMPLE_PRICE.feeCents)} with a European card and ${eurText(EXAMPLE_INTL_PRICE.feeCents)} with other cards. Landlords pay nothing.`,
-          "Cards from outside Europe cost more than twice as much to accept, so they pay one point more. Your card is held for the higher amount; once we know where it was issued, only the right amount is charged and the rest of the hold is released.",
+          "Cards from outside Europe cost more than twice as much to accept, so they pay one point more. You see your exact price as soon as you enter your card, before anything is charged.",
           "The fee is paid separately, so the deposit itself only ever goes to the tenant or the landlord. It isn't refunded if the deposit comes back. In this prototype every payment, the fee included, uses Stripe's test mode and test money, so no real money is charged. Only card payment is switched on; paying by bank transfer isn't available in this prototype.",
         ],
       },
@@ -183,7 +183,7 @@ export const FAQ: FaqGroup[] = [
         id: "test-card",
         question: "How do I pay in this prototype?",
         answer: [
-          "By card on Stripe's test page. Use the card number 4242 4242 4242 4242, any future expiry date and any three digits. No real money moves.",
+          "By card, on the deal page. Stripe's test mode is on: use 4000 0027 6000 0016 (a German card, 3.5% fee) or 4242 4242 4242 4242 (a US card, 4.5% fee), any future expiry date and any three digits. No real money moves.",
         ],
       },
       {

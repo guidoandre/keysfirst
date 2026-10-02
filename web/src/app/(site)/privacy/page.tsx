@@ -89,9 +89,10 @@ export default function PrivacyPage() {
 
       <LegalSection id="payments" title="Card payments">
         <p>
-          Card payments are processed by Stripe (Stripe Payments Europe, Ltd., Ireland) in test mode. You enter your card details on
-          Stripe&apos;s own page; Keysfirst never sees them. Stripe tells us whether the payment succeeded, the amount, and the deal and account
-          number the payment belongs to.
+          Card payments are processed by Stripe (Stripe Payments Europe, Ltd., Ireland) in test mode. You enter your card details in
+          Stripe&apos;s card form on the deal page (loaded from Stripe&apos;s servers, js.stripe.com); Keysfirst never sees them. Stripe tells
+          us the country where the card was issued (to show the right fee before you pay), whether the payment succeeded, the amount, and
+          the deal and account number the payment belongs to. Stripe may use cookies in its form to prevent fraud.
         </p>
         <p>
           Legal basis: Art. 6(1)(b) GDPR (providing the service you asked for). More:{" "}

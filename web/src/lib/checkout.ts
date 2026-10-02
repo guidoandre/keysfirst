@@ -11,16 +11,7 @@ export function checkoutProblem(o: { status: DealStatus; landlord: string; accou
   return null;
 }
 
-/**
- * A card payment is held at the higher rate (a card issued outside the EEA) because the card isn't known when the
- * payment starts. Once Stripe reports where the card was issued, only this amount is charged and the rest of the hold
- * is released. Never more than the hold: the EEA price is always the lower one.
- */
-export function cardHold(depositCents: number) {
-  return priceBreakdown(depositCents, "cardIntl");
-}
-
-/** What to actually charge for a held card payment, given the card's issuing country. */
+/** What a card pays, given its issuing country: 3.5% fee for a card issued in the EEA, 4.5% for any other (at least €12). */
 export function cardCharge(depositCents: number, cardCountry: string | null | undefined) {
   const method = cardMethod(cardCountry);
   return { method, ...priceBreakdown(depositCents, method) };
@@ -54,18 +45,6 @@ export function chargedSummary(c: CardCharged): string {
 
 /** Stripe's largest single charge in euros: €999,999.99. */
 export const STRIPE_MAX_CENTS = 99_999_999;
-
-// Stripe's shortest Checkout expiry is 30 minutes (plus a minute's margin).
-const CHECKOUT_LIFETIME = 31 * 60;
-
-/**
- * When the card page stops taking payments: as soon as Stripe allows. A card page left open for hours (a second tab,
- * Back from Stripe) could otherwise still be paid after someone else paid the deal or the landlord cancelled it,
- * leaving the deposit in the payer's balance and the non-refundable fee spent for nothing.
- */
-export function checkoutExpiry(now: number): number {
-  return now + CHECKOUT_LIFETIME;
-}
 
 const TRUSTED_HOSTS = ["localhost", "127.0.0.1", "keysfirst.io", "www.keysfirst.io", "keysfirst.vercel.app"];
 // Our Vercel team's preview URLs: keysfirst-<hash or git-branch>-atlas-fee2.vercel.app. Only this team can create them.

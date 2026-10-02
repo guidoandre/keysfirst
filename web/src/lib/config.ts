@@ -18,3 +18,10 @@ if (!privyAppId) {
   throw new Error("NEXT_PUBLIC_PRIVY_APP_ID is not set (see web/.env.example).");
 }
 export const PRIVY_APP_ID = privyAppId;
+
+/**
+ * Stripe's publishable key for the card form on the deal page. Test keys only (spec §1): a live key would take real
+ * money, so anything but pk_test_ counts as missing and card payment is switched off.
+ */
+const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+export const STRIPE_PUBLISHABLE_KEY = stripeKey?.startsWith("pk_test_") ? stripeKey : null;

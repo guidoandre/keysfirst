@@ -11,6 +11,7 @@ import { ReleasedScreen } from "@/components/deal/ReleasedScreen";
 import { Button } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { Sheet } from "@/components/ui/Sheet";
 import { CardResume, pendingKey } from "@/components/wallet/CardResume";
 import { toDealData } from "@/lib/deal-data";
 import { confirmCopy, showReleasedScreen, statusLabel } from "@/lib/deal-view";
@@ -25,6 +26,8 @@ import { useDeal } from "@/lib/use-deal";
 
 // The QR library loads only when the landlord first opens handover mode (spec §10).
 const HandoverMode = dynamic(() => import("@/components/deal/HandoverMode").then((m) => m.HandoverMode), { ssr: false });
+// Stripe's card form loads only when a tenant opens it.
+const CardPayment = dynamic(() => import("@/components/wallet/CardPayment").then((m) => m.CardPayment), { ssr: false });
 
 type WalletAction = Exclude<Action, "showQr">;
 
@@ -58,7 +61,9 @@ export function DealClient({
   const [handoverUsed, setHandoverUsed] = useState(false);
   // Set only by the landlord dismissing the Released screen ("Back to the deal" or Esc): Sheet calls onClose for those alone.
   const [releasedClosed, setReleasedClosed] = useState(false);
-  const [cardBusy, setCardBusy] = useState(false);
+  // The card form (a sheet); `cardPaying` keeps it open while a payment is being made.
+  const [cardOpen, setCardOpen] = useState(false);
+  const [cardPaying, setCardPaying] = useState(false);
   // The Stripe session to finish: from ?paid=, or remembered from before a closed tab (read after mount).
   const [pending, setPending] = useState<string | null>(paid);
   // A resume that failed keeps its session (the card button stays hidden); "Try again" remounts CardResume.
@@ -97,13 +102,10 @@ export function DealClient({
     };
   }, [id, paid, account]);
 
-  // Back from Stripe through the back/forward cache: the page comes back as it was left (card button spinning,
-  // no pending session). Stop the spinner and pick up the session saved before leaving.
+  // Back from a bank check (3-D Secure) through the back/forward cache: pick up the payment saved before leaving.
   useEffect(() => {
     const onShow = (event: PageTransitionEvent) => {
-      if (!event.persisted) return;
-      setCardBusy(false);
-      if (!account) return;
+      if (!event.persisted || !account) return;
       try {
         const saved = localStorage.getItem(pendingKey(id, account));
         if (saved) setPending(saved);
@@ -160,32 +162,17 @@ export function DealClient({
           breakdown:
             `${formatEur(fromCents(price.totalCents))} with a card issued in Europe: deposit ${amount} + Keysfirst fee ` +
             `${formatEur(fromCents(price.feeCents))} (${feePercent("card")}). ${formatEur(fromCents(intl.totalCents))} with other cards ` +
-            `(fee ${feePercent("cardIntl")}). Your card is held for the higher amount and charged the right one. The fee isn't refunded.`,
+            `(fee ${feePercent("cardIntl")}). You see your exact price after entering your card, before you pay. The fee isn't refunded.`,
         }
       : null;
 
-  async function payByCard() {
+  /** The card payment exists: remember it, so a closed tab (or a bank check that leaves the page) can still finish it. */
+  function rememberPayment(payment: string) {
     if (!me) return;
-    setCardBusy(true);
-    setError(null);
     try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ deal: id, account: me.toBase58() }),
-      });
-      const body = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(body.error);
-      try {
-        // Never replace a session that is still waiting to be resolved.
-        if (!localStorage.getItem(pendingKey(id, me.toBase58()))) localStorage.setItem(pendingKey(id, me.toBase58()), body.session);
-      } catch {
-        // Storage blocked: ?paid= on the way back still resumes.
-      }
-      window.location.assign(body.url);
-    } catch (e) {
-      setError(e instanceof Error && e.message ? e.message : "Card payments are not available right now. Try again in a minute.");
-      setCardBusy(false);
+      localStorage.setItem(pendingKey(id, me.toBase58()), payment);
+    } catch {
+      // Storage blocked: the payment is still found at Stripe on the next visit.
     }
   }
 
@@ -321,8 +308,10 @@ export function DealClient({
         signature={signature}
         onAction={onAction}
         card={card}
-        cardBusy={cardBusy}
-        onPayByCard={() => void payByCard()}
+        onPayByCard={() => {
+          setError(null);
+          setCardOpen(true);
+        }}
         atDoor={atDoor}
         offline={loadError !== null}
       />
@@ -339,6 +328,25 @@ export function DealClient({
           now={now}
           offline={loadError !== null}
         />
+      )}
+      {me && (
+        <Sheet open={cardOpen && card !== null} onClose={() => setCardOpen(false)} title="Pay by card" dismissible={!cardPaying}>
+          {cardOpen && (
+            <CardPayment
+              dealId={id}
+              account={me.toBase58()}
+              depositCents={price.depositCents}
+              onBusy={setCardPaying}
+              onStarted={rememberPayment}
+              onPaid={(payment) => {
+                setCardOpen(false);
+                setCardPaying(false);
+                // The usual resume: turn the payment into the deposit (fulfil), show the receipt, lock it.
+                setPending(payment);
+              }}
+            />
+          )}
+        </Sheet>
       )}
       <ReleasedScreen
         open={showReleased}

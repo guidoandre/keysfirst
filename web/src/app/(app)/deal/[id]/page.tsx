@@ -7,7 +7,16 @@ import { fetchDeal, getProgram } from "@/lib/program";
 import { withTimeout } from "@/lib/timeout";
 import { DealClient } from "./DealClient";
 
-type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string | string[]; paid?: string | string[]; handover?: string | string[] }> };
+type Props = {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{
+    created?: string | string[];
+    paid?: string | string[];
+    handover?: string | string[];
+    /** Added by Stripe when a bank check (3-D Secure) sends the tenant back. */
+    payment_intent?: string | string[];
+  }>;
+};
 
 const DESCRIPTION =
   "Protected by Keysfirst: the landlord gets the deposit only when you confirm the key handover.";
@@ -29,14 +38,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function DealPage({ params, searchParams }: Props) {
   const { id } = await params;
-  const { created, paid, handover } = await searchParams;
+  const { created, paid, handover, payment_intent } = await searchParams;
+  // ?paid=cs_… from the old Stripe Checkout page, ?payment_intent=pi_… after a bank check on the card form.
+  const payment = [paid, payment_intent].find((p): p is string => typeof p === "string" && /^(cs|pi)_[A-Za-z0-9_]+$/.test(p)) ?? null;
   return (
     <DealClient
       id={id}
       origin={await getOrigin()}
       created={created === "1"}
       atDoor={handover === "1"}
-      paid={typeof paid === "string" && paid.startsWith("cs_") ? paid : null}
+      paid={payment}
     />
   );
 }

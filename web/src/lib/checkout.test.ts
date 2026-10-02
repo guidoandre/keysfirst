@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cardCharge, cardHold, chargedSummary, checkoutExpiry, checkoutProblem, returnOrigin } from "./checkout";
+import { cardCharge, chargedSummary, checkoutProblem, returnOrigin } from "./checkout";
 
 const now = 1_800_000_000;
 const times = { moveIn: now + 3 * 86_400, deadline: now + 4 * 86_400 };
@@ -44,21 +44,13 @@ describe("returnOrigin", () => {
   });
 });
 
-describe("checkoutExpiry", () => {
-  it("closes the card page after Stripe's 30-minute minimum, whatever the deadline", () => {
-    expect(checkoutExpiry(now)).toBe(now + 31 * 60);
-  });
-});
-describe("cardHold and cardCharge", () => {
-  it("holds the international price and charges an EEA card the lower one", () => {
-    expect(cardHold(60_000)).toEqual({ depositCents: 60_000, feeCents: 2_700, totalCents: 62_700 });
+describe("cardCharge", () => {
+  it("charges an EEA card 3.5% and any other card 4.5%", () => {
     expect(cardCharge(60_000, "DE")).toEqual({ method: "card", depositCents: 60_000, feeCents: 2_100, totalCents: 62_100 });
     expect(cardCharge(60_000, "US")).toEqual({ method: "cardIntl", depositCents: 60_000, feeCents: 2_700, totalCents: 62_700 });
   });
-  it("never charges more than the hold, from the €12 minimum to large deposits", () => {
-    for (const cents of [1, 30_000, 60_000, 120_000, 999_000_00]) {
-      for (const country of ["DE", "US", null]) expect(cardCharge(cents, country).totalCents).toBeLessThanOrEqual(cardHold(cents).totalCents);
-    }
+  it("gives an unknown country the lower rate (never overcharge on a guess)", () => {
+    expect(cardCharge(60_000, null).method).toBe("card");
   });
 });
 describe("chargedSummary", () => {

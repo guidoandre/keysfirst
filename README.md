@@ -11,7 +11,7 @@ Nobody needs a wallet app or crypto: you log in with your email or Google, pay b
 ## Try it in 5 minutes
 
 1. **Landlord:** log in with Google or email, then **Create a deal** (use the demo values for a quick run) and share the link.
-2. **Tenant:** open the link in another browser, log in with a different email and tap **Pay from €621.00 by card**. On Stripe's test page use card `4000 0027 6000 0016` (German test card: €621.00) or `4242 4242 4242 4242` (US test card: €627.00), any future date and any CVC. The deposit locks automatically.
+2. **Tenant:** open the link in another browser, log in with a different email and tap **Pay from €621.00 by card**. Enter Stripe's test card `4000 0027 6000 0016` (German card: €621.00) or `4242 4242 4242 4242` (US card: €627.00), any future date and any CVC, tap **See my price**, then **Pay**. The deposit locks automatically.
 3. **At the door:** the landlord taps **Start the handover** and shows a QR code; the tenant scans it with the phone camera and taps **I have the keys**. The landlord is paid in seconds.
 4. **Withdraw:** the landlord opens the account menu and taps **Withdraw to bank** (the bank payout is simulated in the prototype).
 
@@ -42,7 +42,7 @@ In a live version the Test EUR would be EURC (Circle's euro stablecoin on Solana
 
 ## Business model
 
-The tenant pays a Keysfirst fee on top of the deposit: **3.5% with a card issued in the EEA, 4.5% with other cards, 2% by bank transfer, minimum €12**. A card payment is held at the 4.5% amount and charged at the right rate once Stripe reports where the card was issued (cards from outside the EEA cost more than twice as much to accept, and Germany's surcharge ban covers only EEA consumer cards). Landlords pay nothing. The fee is collected separately, so the deposit itself only ever goes to the tenant or the landlord. The fee is not refunded if the deposit comes back.
+The tenant pays a Keysfirst fee on top of the deposit: **3.5% with a card issued in the EEA, 4.5% with other cards, 2% by bank transfer, minimum €12**. The tenant enters their card on the deal page and sees the exact price for it before paying (Stripe reports where the card was issued) (cards from outside the EEA cost more than twice as much to accept, and Germany's surcharge ban covers only EEA consumer cards). Landlords pay nothing. The fee is collected separately, so the deposit itself only ever goes to the tenant or the landlord. The fee is not refunded if the deposit comes back.
 
 ## Tech stack
 
@@ -84,7 +84,7 @@ npm test && npm run lint && npm run build
 programs/keysfirst/   Anchor program (instructions: create_deal, fund, confirm_handover, refund, cancel_deal)
 web/src/app/(site)/   Marketing pages (no wallet code, fast on phones)
 web/src/app/(app)/    App pages: My deals, create a deal, deal page, handover
-web/src/app/api/      gas, checkout, checkout/fulfil, handover (Solana Pay for Phantom)
+web/src/app/api/      gas, checkout/quote + pay + fulfil + pending, handover (Solana Pay for Phantom)
 web/src/lib/          Deal rules, pricing, IBAN, program helpers (unit-tested)
 docs/                 Specs, plans, brand and design system
 ```
