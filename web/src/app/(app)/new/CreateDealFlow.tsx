@@ -10,6 +10,7 @@ import { Callout } from "@/components/ui/Callout";
 import { TextField } from "@/components/ui/Field";
 import { Segmented } from "@/components/ui/Segmented";
 import { Timetable } from "@/components/ui/Timetable";
+import { BackToDeals } from "@/components/deal/BackToDeals";
 import { CountryLaw } from "@/components/deal/CountryLaw";
 import { LoginButton } from "@/components/wallet/LoginButton";
 import { COUNTRIES, getCountry, type CountryCode } from "@/content/countries";
@@ -196,6 +197,11 @@ export function CreateDealFlow() {
 
   return (
     <div className="mx-auto max-w-app px-4 py-8 sm:py-12">
+      {wallet.publicKey && (
+        <div className="mb-6">
+          <BackToDeals />
+        </div>
+      )}
       <p className="label text-fg-muted">Create a deposit link · Step {step} of 3</p>
       <div aria-hidden="true" className="mt-3 grid grid-cols-3 gap-1.5">
         {([1, 2, 3] as Step[]).map((n) => (
@@ -337,7 +343,6 @@ export function CreateDealFlow() {
 
           {step === 3 && (
             <>
-              {selected && housingOption && <CountryLaw country={selected} housing={housingOption} />}
               {values && handover ? (
                 <Timetable
                   title="How your deal runs"
@@ -376,6 +381,7 @@ export function CreateDealFlow() {
                   {Object.values(errors).join(" ")} Use Back to correct it.
                 </Callout>
               )}
+              {selected && housingOption && <CountryLaw country={selected} housing={housingOption} />}
               {error && (
                 <Callout tone="danger" role="alert">
                   {error}

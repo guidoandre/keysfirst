@@ -98,3 +98,5 @@ export function shortAddress(address: string): string {
 }
 
 export const whatsappUrl = (text: string) => `https://wa.me/?text=${encodeURIComponent(text)}`;
+export const emailUrl = (subject: string, body: string) =>
+  `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;

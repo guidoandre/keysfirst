@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Button, ButtonLink, type ButtonVariant } from "@/components/ui/Button";
+import { Button, ButtonLink, buttonClass, type ButtonSize, type ButtonVariant } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { cx } from "@/lib/cx";
-import { whatsappUrl } from "@/lib/format";
+import { emailUrl, whatsappUrl } from "@/lib/format";
 import { useMounted } from "@/lib/hooks";
 import { PRODUCTION_URL } from "@/lib/site";
 
@@ -16,6 +16,19 @@ export function useLandlordMessage(): string {
   const mounted = useMounted();
   const origin = mounted ? window.location.origin : PRODUCTION_URL;
   return `Hi, could we use Keysfirst for the deposit? You create a deposit link, I pay into it, and you get the money the moment I confirm the key handover at the door: ${origin}${LANDLORD_PAGE}`;
+}
+
+/** The same message by email: the tenant's own mail app opens with it filled in (no recipient: they add the landlord). */
+export function EmailMessageButton({ message, size, className }: { message: string; size?: ButtonSize; className?: string }) {
+  return (
+    <a
+      href={emailUrl("Could we use Keysfirst for the deposit?", message)}
+      className={cx(buttonClass({ variant: "secondary", size }), className)}
+    >
+      <Icon name="mail" size={18} />
+      Ask by email
+    </a>
+  );
 }
 
 /** Copies the message; says "Copied" for 2 s, and tells screen readers. */
@@ -45,14 +58,15 @@ export function CopyMessageButton({ message, variant = "quiet", className }: { m
   );
 }
 
-/** Ask the landlord for a deposit link: WhatsApp or copy. */
+/** Ask the landlord for a deposit link: WhatsApp, email or copy. */
 export function AskLandlord({ tone = "light" }: { tone?: "light" | "dark" }) {
   const message = useLandlordMessage();
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+    <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
       <ButtonLink href={whatsappUrl(message)} external variant="secondary">
         Ask your landlord on WhatsApp
       </ButtonLink>
+      <EmailMessageButton message={message} />
       <CopyMessageButton message={message} className={cx("justify-center", tone === "dark" && "text-fg-inverse")} />
     </div>
   );

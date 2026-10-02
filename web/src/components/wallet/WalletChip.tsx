@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button, ButtonLink } from "@/components/ui/Button";
+import { Avatar } from "@/components/ui/Avatar";
 import { Icon } from "@/components/ui/Icon";
 import { Sheet } from "@/components/ui/Sheet";
 import { formatEur } from "@/lib/format";
@@ -36,9 +37,9 @@ export function WalletChip() {
           void refreshBalance();
         }}
         aria-haspopup="dialog"
-        className="inline-flex h-11 max-w-[8.5rem] min-w-0 sm:max-w-[14rem] items-center gap-2 rounded-full border-[1.5px] border-field px-3.5 text-sm font-semibold hover:bg-subtle"
+        className="inline-flex h-11 max-w-[9.5rem] min-w-0 items-center gap-2 rounded-full border-[1.5px] border-field pr-3.5 pl-1 text-sm font-semibold hover:bg-subtle sm:max-w-[15rem]"
       >
-        <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-released" />
+        <Avatar />
         <span className="sr-only">Your account: </span>
         <span className="truncate">{label}</span>
       </button>

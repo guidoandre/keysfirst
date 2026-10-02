@@ -1,12 +1,14 @@
 "use client";
 
-import { Button, ButtonLink } from "@/components/ui/Button";
+import { Button, ButtonLink, buttonClass } from "@/components/ui/Button";
 import { CopyField } from "@/components/ui/CopyField";
 import { Icon } from "@/components/ui/Icon";
-import { whatsappUrl } from "@/lib/format";
+import { cx } from "@/lib/cx";
+import { emailUrl, whatsappUrl } from "@/lib/format";
 import { useMounted } from "@/lib/hooks";
 
-export function ShareBox({ url, text }: { url: string; text: string }) {
+/** The heading already says "send this link", so the buttons name only the channel (screen readers hear the full action). */
+export function ShareBox({ url, text, subject }: { url: string; text: string; subject: string }) {
   const mounted = useMounted();
   const canShare = mounted && typeof navigator.share === "function";
   return (
@@ -15,14 +17,24 @@ export function ShareBox({ url, text }: { url: string; text: string }) {
         Send this link to your tenant
       </h2>
       <CopyField label="Deposit link" value={url} />
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className={cx("grid gap-2", canShare ? "sm:grid-cols-3" : "sm:grid-cols-2")}>
         <ButtonLink href={whatsappUrl(`${text} ${url}`)} external variant="secondary" fullWidth>
-          Share on WhatsApp
+          <span>
+            <span className="sr-only">Share on </span>WhatsApp
+          </span>
         </ButtonLink>
+        <a href={emailUrl(subject, `${text}\n\n${url}`)} className={buttonClass({ variant: "secondary", fullWidth: true })}>
+          <Icon name="mail" size={18} />
+          <span>
+            <span className="sr-only">Share by </span>Email
+          </span>
+        </a>
         {canShare && (
           <Button variant="secondary" fullWidth onClick={() => void navigator.share({ text, url }).catch(() => undefined)}>
             <Icon name="share" size={18} />
-            More ways to share
+            <span>
+              More<span className="sr-only"> ways to share</span>
+            </span>
           </Button>
         )}
       </div>

@@ -246,6 +246,7 @@
     .card-link:hover { border-color: var(--k-ink); }
     /* A closed FAQ question nudges its chevron toward the answer */
     .faq-item:not([open]) > summary:hover svg { translate: 0 2px; }
+    .disclosure:not([open]) > summary:hover svg:last-child { translate: 0 2px; }
   }
 
   /* ── App pages (Operate): quick and short, never a show ──
@@ -274,15 +275,15 @@
     .demo-pop { animation: demo-pop 360ms var(--ease-settle) both; }
   }
 
-  /* FAQ answers slide open where the browser can animate to height: auto; elsewhere they open instantly. */
+  /* FAQ answers (and .disclosure panels) slide open where the browser can animate to height: auto; elsewhere they open instantly. */
   @supports (interpolate-size: allow-keywords) {
     @media (prefers-reduced-motion: no-preference) {
-      .faq-item { interpolate-size: allow-keywords; }
-      .faq-item::details-content {
+      :is(.faq-item, .disclosure) { interpolate-size: allow-keywords; }
+      :is(.faq-item, .disclosure)::details-content {
         height: 0; overflow: clip;
         transition: height 280ms var(--ease-out), content-visibility 280ms allow-discrete;
       }
-      .faq-item[open]::details-content { height: auto; }
+      :is(.faq-item, .disclosure)[open]::details-content { height: auto; }
     }
   }
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { BackToDeals } from "./BackToDeals";
 import { Callout } from "@/components/ui/Callout";
 import { countdownFor, dealPhase, dealRows, nextStep, type DealData } from "@/lib/deal-view";
 import { formatEur } from "@/lib/format";
@@ -52,6 +53,7 @@ export function DealView(p: DealViewProps) {
 
   return (
     <div className="enter-stack mx-auto max-w-app space-y-5 px-4 py-6 sm:py-10">
+      {p.connected && <BackToDeals />}
       {p.created && role === "landlord" && data.status === "open" && (
         <Callout tone="success" role="status" title="Your deposit link is ready">
           Send it to your tenant. This page shows it as soon as they pay.
@@ -81,7 +83,11 @@ export function DealView(p: DealViewProps) {
       />
       {/* Spec §6.4: while the deal is open and before the deadline (also before payment opens, 180 days ahead). */}
       {role === "landlord" && (phase === "open" || phase === "open-too-early") && (
-        <ShareBox url={`${p.origin}/deal/${p.id}`} text={`Pay the ${amount} deposit for "${data.title}" safely with Keysfirst:`} />
+        <ShareBox
+          url={`${p.origin}/deal/${p.id}`}
+          text={`Pay the ${amount} deposit for "${data.title}" safely with Keysfirst:`}
+          subject={`Deposit link for "${data.title}"`}
+        />
       )}
       <DealTimetable rows={rows} title={data.title} />
       <DealDetails id={p.id} times={times} />

@@ -5,11 +5,11 @@ import { ButtonLink, buttonClass } from "@/components/ui/Button";
 import { CLOSING, LANDLORD_TERMS } from "@/content/landing";
 import { cx } from "@/lib/cx";
 import { whatsappUrl } from "@/lib/format";
-import { CopyMessageButton, useLandlordMessage } from "./AskLandlord";
+import { CopyMessageButton, EmailMessageButton, useLandlordMessage } from "./AskLandlord";
 import { useLandingRole } from "./LandingRole";
 
 /**
- * The closing Highlighter band. Tenant: the message to send the landlord, WhatsApp or copy. Landlord: create a link,
+ * The closing Highlighter band. Tenant: the message to send the landlord, WhatsApp, email or copy. Landlord: create a link,
  * and what it costs them. The hero's "Ask your landlord for a deposit link" lands here (#ask).
  * On phones the items stack in source order; from lg the text and its buttons sit left, the message or terms right.
  */
@@ -61,8 +61,14 @@ export function ClosingCta() {
             </>
           )}
         </div>
-        {/* On phones it follows the WhatsApp button 12 px below (the grid gap is 28); from lg it sits under the message. */}
-        {role === "tenant" && <CopyMessageButton message={message} variant="secondary" className="max-lg:-mt-4 lg:self-start lg:justify-self-start" />}
+        {/* The other ways to send it. On phones they follow the WhatsApp button 12 px below (the grid gap is 28); from lg
+            they sit under the message. */}
+        {role === "tenant" && (
+          <div className="flex flex-col gap-3 max-lg:-mt-4 sm:flex-row sm:flex-wrap lg:self-start">
+            <EmailMessageButton message={message} />
+            <CopyMessageButton message={message} variant="secondary" />
+          </div>
+        )}
       </div>
     </section>
   );
