@@ -6,6 +6,7 @@ import { PublicKey, Transaction } from "@solana/web3.js";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { accountLabel, pickSigningWallet } from "@/lib/account";
 import { readBalance } from "@/lib/balance";
+import { writeLoggedIn } from "@/lib/logged-in";
 import { useConnection } from "@/lib/connection";
 import type { SigningWallet } from "@/lib/send";
 
@@ -119,6 +120,11 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       document.removeEventListener("visibilitychange", onVisible);
     };
   }, [owner, refreshBalance, topUp]);
+
+  // Tell the marketing pages' header (no wallet code there) whether to show "Log in" or the account avatar.
+  useEffect(() => {
+    if (privyReady) writeLoggedIn(authenticated);
+  }, [privyReady, authenticated]);
 
   // The marketing pages' "Log in" link lands on /deals?login=1: open Privy's modal once it is ready.
   useEffect(() => {

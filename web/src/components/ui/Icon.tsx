@@ -23,6 +23,7 @@ const PATHS = {
   ),
   hourglass: <path d="M6 3h12M6 21h12M7.5 3v3.5L12 12l-4.5 5.5V21M16.5 3v3.5L12 12l4.5 5.5V21" />,
   "arrow-right": <path d="M4 12h15M13 6l6 6-6 6" />,
+  "arrow-left": <path d="M20 12H5M11 6l-6 6 6 6" />,
   external: <path d="M7 17L17 7M9 7h8v8" />,
   return: (
     <>
@@ -84,6 +85,18 @@ const PATHS = {
   refresh: <path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v4.5h-4.5" />,
   spinner: <path d="M12 3a9 9 0 1 0 9 9" />,
   logout: <path d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10" />,
+  mail: (
+    <>
+      <rect x="3" y="5.5" width="18" height="13" rx="1.5" />
+      <path d="M3.5 6.5L12 13l8.5-6.5" />
+    </>
+  ),
+  user: (
+    <>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4.5 21c.6-4 3.6-6.5 7.5-6.5s6.9 2.5 7.5 6.5" />
+    </>
+  ),
 } as const;
 
 export type IconName = keyof typeof PATHS;

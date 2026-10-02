@@ -1,7 +1,7 @@
 import { Logo } from "@/components/brand/Logo";
-import { ButtonLink } from "@/components/ui/Button";
 import { MobileMenu } from "./MobileMenu";
 import { NavLinks, type NavItem } from "./NavLinks";
+import { SiteAccount } from "./SiteAccount";
 
 export const SITE_NAV: NavItem[] = [
   { href: "/how-it-works", label: "How it works" },
@@ -28,9 +28,7 @@ export function SiteHeader() {
           <nav aria-label="Main" className="hidden lg:block">
             <NavLinks items={SITE_NAV} />
           </nav>
-          <ButtonLink href="/deals?login=1" prefetch={false} variant="secondary" size="sm">
-            Log in
-          </ButtonLink>
+          <SiteAccount />
           <MobileMenu items={MENU} />
         </div>
       </div>

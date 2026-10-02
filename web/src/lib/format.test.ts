@@ -10,6 +10,7 @@ import {
   shortAddress,
   toCents,
   whatsappUrl,
+  emailUrl,
 } from "./format";
 
 describe("formatEur", () => {
@@ -81,13 +82,18 @@ describe("formatShortDateTime", () => {
   });
 });
 
-describe("shortAddress / whatsappUrl", () => {
+describe("shortAddress / whatsappUrl / emailUrl", () => {
   it("shortens wallet addresses", () => {
     expect(shortAddress("7xKpQ2mZr9sT4uV6wX8yA1bC3dE5fG7hJ9kL3mQe")).toBe("7xKp…3mQe");
     expect(shortAddress("short")).toBe("short");
   });
   it("builds a WhatsApp share link", () => {
     expect(whatsappUrl("Pay here: https://k.app/deal/x")).toBe("https://wa.me/?text=Pay%20here%3A%20https%3A%2F%2Fk.app%2Fdeal%2Fx");
+  });
+  it("builds an email share link with no recipient", () => {
+    expect(emailUrl("Deposit & room", "Pay: https://k.app/deal/x")).toBe(
+      "mailto:?subject=Deposit%20%26%20room&body=Pay%3A%20https%3A%2F%2Fk.app%2Fdeal%2Fx",
+    );
   });
 });
 
