@@ -7,7 +7,7 @@ import { SectionHeader } from "@/components/marketing/SectionHeader";
 import { StepList, type Step } from "@/components/marketing/StepList";
 import { ButtonLink } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
-import { CARD_FEE_PERCENT, MIN_FEE } from "@/content/fees";
+import { CARD_FEES, MIN_FEE } from "@/content/fees";
 import { scenariosFor } from "@/content/scenarios";
 import { isAppRoute } from "@/lib/site";
 
@@ -23,7 +23,7 @@ const STEPS: Step[] = [
   {
     pictogram: "pay-into-lock",
     title: "Pay into the lock",
-    text: `By card, from your phone: the deposit plus a Keysfirst fee of ${CARD_FEE_PERCENT} (at least ${MIN_FEE}, not refunded). The deposit waits; the landlord can't take it.`,
+    text: `By card, from your phone: the deposit plus a Keysfirst fee of ${CARD_FEES} (at least ${MIN_FEE}, not refunded). The deposit waits; the landlord can't take it.`,
   },
   {
     pictogram: "scan-at-door",

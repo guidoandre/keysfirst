@@ -1,7 +1,8 @@
 import { formatEur, fromCents } from "@/lib/format";
 import { feePercent, MIN_FEE_CENTS, priceBreakdown } from "@/lib/pricing";
 
-// Fee figures for marketing and legal copy, always built from pricing.ts so the pages can't drift from what checkout charges.
+// Fee figures for marketing and legal copy, always built from pricing.ts so the pages can't drift from what checkout
+// charges (and from the pitch deck: 3.5% EEA card, 4.5% other cards, 2% bank transfer, minimum €12).
 
 /** 1200 -> "€12", 2150 -> "€21.50": whole euros read better in prose. */
 export function eurText(cents: number): string {
@@ -9,17 +10,23 @@ export function eurText(cents: number): string {
 }
 
 export const CARD_FEE_PERCENT = feePercent("card");
+export const INTL_CARD_FEE_PERCENT = feePercent("cardIntl");
 export const BANK_FEE_PERCENT = feePercent("bank");
 export const MIN_FEE = eurText(MIN_FEE_CENTS);
 
-/** The worked example used across the site: a €600 deposit paid by card. */
+/** "3.5% with a card issued in Europe, 4.5% with other cards" */
+export const CARD_FEES = `${CARD_FEE_PERCENT} with a card issued in Europe, ${INTL_CARD_FEE_PERCENT} with other cards`;
+
+/** The worked example used across the site: a €600 deposit, by a card issued in Europe and by any other card. */
 export const EXAMPLE_PRICE = priceBreakdown(60_000, "card");
+export const EXAMPLE_INTL_PRICE = priceBreakdown(60_000, "cardIntl");
 
-/** "a Keysfirst fee of 3.5% by card, at least €12" */
-export const CARD_FEE_SHORT = `a Keysfirst fee of ${CARD_FEE_PERCENT} by card, at least ${MIN_FEE}`;
+/** "a Keysfirst fee of 3.5% with a card issued in Europe, 4.5% with other cards, at least €12" */
+export const CARD_FEE_SHORT = `a Keysfirst fee of ${CARD_FEES}, at least ${MIN_FEE}`;
 
-/** "€600 deposit + €21 Keysfirst fee (3.5%, not refunded)" */
+/** "€600 deposit + €21 fee with a card issued in Europe (€627 with other cards)", as on the deck's demo slide. */
 export function feeLine(depositCents: number): string {
-  const price = priceBreakdown(depositCents, "card");
-  return `${eurText(price.depositCents)} deposit + ${eurText(price.feeCents)} Keysfirst fee (${CARD_FEE_PERCENT}, not refunded)`;
+  const eea = priceBreakdown(depositCents, "card");
+  const intl = priceBreakdown(depositCents, "cardIntl");
+  return `${eurText(eea.depositCents)} deposit + ${eurText(eea.feeCents)} fee with a card issued in Europe (${eurText(intl.totalCents)} with other cards)`;
 }

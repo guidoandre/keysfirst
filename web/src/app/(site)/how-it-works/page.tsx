@@ -5,7 +5,7 @@ import { SectionHeader } from "@/components/marketing/SectionHeader";
 import { Icon } from "@/components/ui/Icon";
 import { StatusChip } from "@/components/ui/StatusChip";
 import { Timetable } from "@/components/ui/Timetable";
-import { CARD_FEE_PERCENT, MIN_FEE } from "@/content/fees";
+import { CARD_FEES, MIN_FEE } from "@/content/fees";
 import { SCENARIOS } from "@/content/scenarios";
 import idl from "@/idl/keysfirst.json";
 import { explorerAddress } from "@/lib/format";
@@ -61,7 +61,7 @@ export default function HowItWorksPage() {
             title="A deal, start to finish"
             rows={[
               { key: "create", time: "Step 1", title: "The landlord creates the deal", detail: "Room, amount, move-in and the latest handover, at most 14 days after move-in.", state: "done" },
-              { key: "pay", time: "Step 2", title: "The tenant pays into the lock", detail: `The exact deposit, before the deadline. On top, the tenant pays a Keysfirst fee of ${CARD_FEE_PERCENT} by card (at least ${MIN_FEE}), which isn't refunded and stays outside the lock.`, state: "done" },
+              { key: "pay", time: "Step 2", title: "The tenant pays into the lock", detail: `The exact deposit, before the deadline. On top, the tenant pays a Keysfirst fee (${CARD_FEES}, at least ${MIN_FEE}), which isn't refunded and stays outside the lock.`, state: "done" },
               { key: "window", time: "24 h before move-in", title: "The handover window opens", detail: "From now until the deadline, the tenant can release the deposit.", state: "now" },
               { key: "door", time: "At the door", title: "The tenant approves the handover", detail: "By scanning the landlord's code or tapping “I have the keys” on their deal page. The whole deposit goes to the landlord, in seconds.", state: "next" },
               { key: "deadline", time: "After the deadline", title: "No handover?", detail: "The whole deposit goes back to the tenant. Anyone can trigger it.", state: "later" },

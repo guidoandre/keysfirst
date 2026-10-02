@@ -5,7 +5,7 @@ import { SectionHeader } from "@/components/marketing/SectionHeader";
 import { StepList, type Step } from "@/components/marketing/StepList";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon, type IconName } from "@/components/ui/Icon";
-import { CARD_FEE_PERCENT, MIN_FEE } from "@/content/fees";
+import { CARD_FEES, MIN_FEE } from "@/content/fees";
 import { scenariosFor } from "@/content/scenarios";
 
 export const dynamic = "error";
@@ -21,7 +21,7 @@ const WHY: Array<{ icon: IconName; title: string; text: string }> = [
   {
     icon: "check",
     title: "Free for landlords",
-    text: `Landlords pay nothing; the tenant pays a small fee (${CARD_FEE_PERCENT} by card, at least ${MIN_FEE}). This prototype runs on test money.`,
+    text: `Landlords pay nothing; the tenant pays a small fee (${CARD_FEES}, at least ${MIN_FEE}). This prototype runs on test money.`,
   },
 ];
 

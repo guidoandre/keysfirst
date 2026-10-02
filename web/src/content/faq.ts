@@ -1,5 +1,5 @@
 import { COUNTRIES, LAW_CHECKED } from "./countries";
-import { BANK_FEE_PERCENT, CARD_FEE_PERCENT, eurText, EXAMPLE_PRICE, MIN_FEE } from "./fees";
+import { BANK_FEE_PERCENT, CARD_FEE_PERCENT, eurText, EXAMPLE_INTL_PRICE, EXAMPLE_PRICE, INTL_CARD_FEE_PERCENT, MIN_FEE } from "./fees";
 
 export interface FaqEntry {
   id: string;
@@ -61,8 +61,9 @@ export const FAQ: FaqGroup[] = [
         id: "cost",
         question: "What does it cost?",
         answer: [
-          `The tenant pays a Keysfirst fee on top of the deposit: ${CARD_FEE_PERCENT} by card, at least ${MIN_FEE}. For a ${eurText(EXAMPLE_PRICE.depositCents)} deposit that is ${eurText(EXAMPLE_PRICE.feeCents)}. Landlords pay nothing.`,
-          `The fee is paid separately, so the deposit itself only ever goes to the tenant or the landlord. It isn't refunded if the deposit comes back. In this prototype every payment, the fee included, uses Stripe's test mode and test money, so no real money is charged. Only card payment is switched on; paying by bank transfer (${BANK_FEE_PERCENT} fee) isn't available in this prototype.`,
+          `The tenant pays a Keysfirst fee on top of the deposit: ${CARD_FEE_PERCENT} with a card issued in Europe (the EEA), ${INTL_CARD_FEE_PERCENT} with a card issued anywhere else, or ${BANK_FEE_PERCENT} by bank transfer, and at least ${MIN_FEE}. For a ${eurText(EXAMPLE_PRICE.depositCents)} deposit that is ${eurText(EXAMPLE_PRICE.feeCents)} with a European card and ${eurText(EXAMPLE_INTL_PRICE.feeCents)} with other cards. Landlords pay nothing.`,
+          "Cards from outside Europe cost more than twice as much to accept, so they pay one point more. Your card is held for the higher amount; once we know where it was issued, only the right amount is charged and the rest of the hold is released.",
+          "The fee is paid separately, so the deposit itself only ever goes to the tenant or the landlord. It isn't refunded if the deposit comes back. In this prototype every payment, the fee included, uses Stripe's test mode and test money, so no real money is charged. Only card payment is switched on; paying by bank transfer isn't available in this prototype.",
         ],
       },
     ],

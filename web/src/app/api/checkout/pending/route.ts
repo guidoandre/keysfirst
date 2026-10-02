@@ -30,11 +30,15 @@ export async function POST(req: Request) {
   }
 
   try {
-    const paid = await stripe.paymentIntents.search({
-      query: `metadata['deal']:'${deal}' AND metadata['account']:'${account}' AND status:'succeeded'`,
-      limit: 10,
+    // Stripe's search can't mix AND with OR, so the status is checked below: a card payment is held
+    // ("requires_capture") until fulfil charges it at the card's rate, then "succeeded".
+    const found = await stripe.paymentIntents.search({
+      query: `metadata['deal']:'${deal}' AND metadata['account']:'${account}'`,
+      limit: 20,
     });
-    const open = paid.data.find((intent) => !intent.metadata.minted);
+    const open = found.data.find(
+      (intent) => (intent.status === "requires_capture" || intent.status === "succeeded") && !intent.metadata.minted,
+    );
     if (!open) return Response.json({ session: null });
     const sessions = await stripe.checkout.sessions.list({ payment_intent: open.id, limit: 1 });
     return Response.json({ session: sessions.data[0]?.id ?? null });

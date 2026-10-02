@@ -1,3 +1,4 @@
+import { cardMethod, priceBreakdown } from "./pricing";
 import { canFund, type DealStatus, type DealTimes } from "./rules";
 import { PRODUCTION_URL } from "./site";
 
@@ -7,6 +8,21 @@ export function checkoutProblem(o: { status: DealStatus; landlord: string; accou
   if (o.account === o.landlord) return "You created this deal, so you can't pay it. Log in with the tenant's account.";
   if (!canFund(o.times, o.now)) return "This deal can't be paid right now: its handover deadline has passed or is more than 180 days away.";
   return null;
+}
+
+/**
+ * A card payment is held at the higher rate (a card issued outside the EEA) because the card isn't known when the
+ * payment starts. Once Stripe reports where the card was issued, only this amount is charged and the rest of the hold
+ * is released. Never more than the hold: the EEA price is always the lower one.
+ */
+export function cardHold(depositCents: number) {
+  return priceBreakdown(depositCents, "cardIntl");
+}
+
+/** What to actually charge for a held card payment, given the card's issuing country. */
+export function cardCharge(depositCents: number, cardCountry: string | null | undefined) {
+  const method = cardMethod(cardCountry);
+  return { method, ...priceBreakdown(depositCents, method) };
 }
 
 /** Stripe's largest single charge in euros: €999,999.99. */

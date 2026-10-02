@@ -10,6 +10,7 @@ import type { Action, Role } from "@/lib/rules";
 
 /** Card payment for the tenant-to-be whose balance doesn't cover the deposit (spec §4.3). */
 export interface CardOffer {
+  /** The price with a card issued in Europe; other cards pay a little more (the breakdown says how much). */
   total: string;
   breakdown: string;
 }
@@ -82,7 +83,7 @@ export function NextStep({
           primary === "fund" && card && onPayByCard && busy !== "fund" ? (
             <div className="space-y-2">
               <Button size="lg" fullWidth loading={cardBusy} loadingText="Opening the card payment…" disabled={busy !== null || cardBusy} onClick={onPayByCard}>
-                Pay {card.total} by card
+                Pay from {card.total} by card
               </Button>
               <p className="text-sm text-fg-muted">{card.breakdown}</p>
             </div>

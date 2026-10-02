@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { ScanIllustration } from "@/components/guide/GuideIllustrations";
 import { ButtonLink } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
-import { CARD_FEE_PERCENT, MIN_FEE } from "@/content/fees";
+import { CARD_FEES, eurText, EXAMPLE_INTL_PRICE, EXAMPLE_PRICE, MIN_FEE } from "@/content/fees";
 import { GuideLogin } from "./GuideLogin";
 
 export const dynamic = "error";
@@ -54,9 +54,12 @@ export default function GetStartedPage() {
 
         <GuideStep id="pay" number={3} title="As the tenant: pay by card">
           <p>
-            Open the link and log in with a different email. Pay the deposit plus the Keysfirst fee ({CARD_FEE_PERCENT} by card, at least {MIN_FEE}, not refunded). This prototype
-            uses Stripe&apos;s test mode: pay with the card number <strong className="text-fg tabular-nums">4242 4242 4242 4242</strong>, any
-            future date and any three digits. No real money moves.
+            Open the link and log in with a different email. Pay the deposit plus the Keysfirst fee ({CARD_FEES}, at least {MIN_FEE}, not
+            refunded). This prototype uses Stripe&apos;s test mode: pay with the German test card{" "}
+            <strong className="text-fg tabular-nums">4000 0027 6000 0016</strong> (charged {eurText(EXAMPLE_PRICE.totalCents)} on a{" "}
+            {eurText(EXAMPLE_PRICE.depositCents)} deposit) or the US test card{" "}
+            <strong className="text-fg tabular-nums">4242 4242 4242 4242</strong> (charged {eurText(EXAMPLE_INTL_PRICE.totalCents)}), any future
+            date and any three digits. No real money moves.
           </p>
           <p>After the payment the deposit locks automatically. The landlord can&apos;t take it.</p>
           <Callout tone="neutral">The landlord can&apos;t pay their own deal: use a second account for the tenant.</Callout>

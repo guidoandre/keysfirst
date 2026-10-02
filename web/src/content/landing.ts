@@ -111,7 +111,7 @@ export interface PhoneScreen {
 
 export const PHONE: Record<LandingRole, PhoneScreen[]> = {
   tenant: [
-    { body: "Your landlord sent this link. They aren't paid until you have the keys.", meta: feeLine(price.depositCents), button: `Pay ${eur(price.totalCents)} by card` },
+    { body: "Your landlord sent this link. They aren't paid until you have the keys.", meta: feeLine(price.depositCents), button: `Pay from ${eur(price.totalCents)} by card` },
     { body: "Locked until you approve the handover at the door.", meta: "Handover from 24 h before move-in" },
     { body: "Check the room first. Approve only with the keys in your hand.", button: "I have the keys" },
     { body: "Paid to your landlord. Take the keys.", meta: "Public receipt on Solana" },
