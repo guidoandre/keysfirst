@@ -14,7 +14,7 @@ const LOGGED_OUT: NavItem[] = [
 ];
 const LOGGED_IN: NavItem[] = [
   { href: "/deals", label: "My deals" },
-  { href: "/new", label: "Create a deal" },
+  { href: "/new", label: "Create a deposit link" },
   { href: "/how-it-works", label: "How it works" },
   { href: "/faq", label: "FAQ" },
 ];

@@ -24,7 +24,7 @@ describe("landing demo", () => {
   });
 
   it("charges the tenant the card fee on top of the deposit", () => {
-    expect(PHONE.tenant[0].button).toBe("Pay from €621.00 by card");
-    expect(PHONE.tenant[0].meta).toBe("€600 deposit + €21 fee with a card issued in Europe (€627 with other cards)");
+    expect(PHONE.tenant[0].button).toBe("Pay from €621 by card");
+    expect(PHONE.tenant[0].meta).toBe("€600 + €21 card fee (€627 with a non-European card)");
   });
 });

@@ -46,7 +46,7 @@ export default function GetStartedPage() {
 
         <GuideStep id="landlord" number={2} title="As the landlord: create a deposit link">
           <p>
-            Enter the room, the deposit and the move-in date. Use the demo values to see the whole cycle in a few minutes. Send the link to your
+            Choose the country, then enter the room, the monthly rent, the deposit and the move-in date. Use the demo values to see the whole cycle in a few minutes. Send the link to your
             tenant.
           </p>
           <ButtonLink href="/new">Create a deposit link</ButtonLink>
@@ -74,8 +74,8 @@ export default function GetStartedPage() {
 
         <GuideStep id="withdraw" number={5} title="Withdraw to your bank">
           <p>
-            Money you receive, as the landlord or as a tenant whose deposit came back, shows as your balance. Open your account menu (your account in the
-            top corner), then tap &ldquo;Withdraw to bank&rdquo;. In this prototype the test money leaves your balance, but no real bank transfer
+            Money you receive, as the landlord or as a tenant whose deposit came back, shows as your balance. Go to My deals and tap &ldquo;Withdraw to bank&rdquo;
+            under your balance. In this prototype the test money leaves your balance, but no real bank transfer
             happens.
           </p>
         </GuideStep>

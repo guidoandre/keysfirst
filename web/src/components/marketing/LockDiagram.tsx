@@ -33,7 +33,9 @@ export function LockDiagram() {
         <Exit
           muted
           chip={
-            <s className="inline-flex rounded-sm border-[1.5px] border-field px-2 py-1 font-display text-[0.8125rem] font-semibold">To Keysfirst</s>
+            <s className="inline-flex rounded-sm border-[1.5px] border-field px-2 py-1 font-display text-[0.8125rem] font-semibold">
+              <span className="sr-only">Not possible: </span>To Keysfirst
+            </s>
           }
         >
           There is no third way out. Not to us, not to anyone else.

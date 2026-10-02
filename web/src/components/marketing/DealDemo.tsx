@@ -89,17 +89,21 @@ export function DealDemo({ role }: { role: LandingRole }) {
             <span className="font-semibold">{stepLabel(step)}</span> {current.caption}
           </span>
         </p>
-        <div className="flex gap-2">
-          {canSkipToDeadline(step) && (
-            <Button variant="secondary" onClick={() => setStep(DEADLINE_STEP)} className="demo-pop px-3.5 whitespace-nowrap">
-              No handover?
+        {/* Side by side only where both labels fit (they never wrap); on a phone they stack, the next step on top.
+            Without this a 375 px phone scrolled sideways from step 1. */}
+        <div className="@container">
+          <div className="flex flex-col-reverse gap-2 @[21rem]:flex-row">
+            {canSkipToDeadline(step) && (
+              <Button variant="secondary" onClick={() => setStep(DEADLINE_STEP)} className="demo-pop px-3.5 whitespace-nowrap">
+                No handover?
+              </Button>
+            )}
+            <Button onClick={next} className="flex-1 px-3.5 whitespace-nowrap">
+              <span key={current.next} className="demo-in">
+                {current.next}
+              </span>
             </Button>
-          )}
-          <Button onClick={next} className="flex-1 px-3.5 whitespace-nowrap">
-            <span key={current.next} className="demo-in">
-              {current.next}
-            </span>
-          </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -159,7 +163,7 @@ function Phone({ side, viewer, step, onNext }: { side: LandingRole; viewer: Land
             onClick={onNext}
             aria-label={`Demo: ${screen.button}`}
             fullWidth
-            className="mt-auto min-h-11 px-2 text-[length:max(0.75rem,5.8cqi)] whitespace-nowrap max-sm:hidden"
+            className="mt-auto min-h-11 px-2 text-[length:max(0.75rem,5.8cqi)] text-balance max-sm:hidden"
           >
             {screen.button}
           </Button>

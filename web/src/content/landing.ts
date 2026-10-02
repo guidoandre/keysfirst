@@ -1,7 +1,7 @@
 import { formatEur, fromCents } from "@/lib/format";
 import { priceBreakdown } from "@/lib/pricing";
 import type { DealStatus } from "@/lib/rules";
-import { feeLine } from "./fees";
+import { eurText, feeLine } from "./fees";
 
 /** Who the landing page speaks to. The toggle in the hero rewrites the page for one of the two. */
 export type LandingRole = "tenant" | "landlord";
@@ -19,8 +19,8 @@ interface Link {
 export const HERO: Record<LandingRole, { eyebrow: string; lead: string; primary: Link; secondary: Link }> = {
   tenant: {
     eyebrow: "Renting a room in Europe from abroad",
-    lead: "Pay the deposit before you arrive without trusting a stranger. It goes to the landlord only when you approve at the door: scan their code or tap “I have the keys”. If you never do, you can take it back after the deadline.",
-    primary: { label: "Ask your landlord for a deposit link", href: "#ask" },
+    lead: "Pay the deposit before you arrive, without trusting a stranger. It goes to the landlord only when you approve at the door: scan their code or tap “I have the keys”. If you never do, you can take it back after the deadline.",
+    primary: { label: "Ask for a deposit link", href: "#ask" },
     secondary: { label: "How it protects me", href: "/tenants" },
   },
   landlord: {
@@ -111,14 +111,14 @@ export interface PhoneScreen {
 
 export const PHONE: Record<LandingRole, PhoneScreen[]> = {
   tenant: [
-    { body: "Your landlord sent this link. They aren't paid until you have the keys.", meta: feeLine(price.depositCents), button: `Pay from ${eur(price.totalCents)} by card` },
+    { body: "Your landlord sent this link. They aren't paid until you have the keys.", meta: feeLine(price.depositCents), button: `Pay from ${eurText(price.totalCents)} by card` },
     { body: "Locked until you approve the handover at the door.", meta: "Handover from 24 h before move-in" },
     { body: "Check the room first. Approve only with the keys in your hand.", button: "I have the keys" },
     { body: "Paid to your landlord. Take the keys.", meta: "Public receipt on Solana" },
     { body: "No handover by the deadline, so you took it back.", meta: "Public receipt on Solana" },
   ],
   landlord: [
-    { body: "Share this link with your tenant.", button: "Share on WhatsApp" },
+    { body: "Share this link with your tenant.", button: "Send the link" },
     { body: "Your tenant paid into the lock. You're paid when they approve at the door.", button: "Start the handover" },
     { body: "Waiting for your tenant to approve…", qr: true, meta: "Show this code at the door" },
     { body: "Released: hand over the keys.", meta: "In your Keysfirst balance" },

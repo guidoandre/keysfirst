@@ -8,7 +8,7 @@ import { DealLoading, DealMessage } from "@/components/deal/DealStates";
 import { DealView } from "@/components/deal/DealView";
 import type { CardOffer } from "@/components/deal/NextStep";
 import { ReleasedScreen } from "@/components/deal/ReleasedScreen";
-import { Button } from "@/components/ui/Button";
+import { Button, ButtonLink } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Sheet } from "@/components/ui/Sheet";
@@ -18,7 +18,7 @@ import { confirmCopy, showReleasedScreen, statusLabel } from "@/lib/deal-view";
 import { formatEur, fromCents, toCents } from "@/lib/format";
 import { useNow } from "@/lib/hooks";
 import { cancelDealIx, confirmHandoverIx, fundIx, refundIx } from "@/lib/instructions";
-import { feePercent, priceBreakdown } from "@/lib/pricing";
+import { feeRate, priceBreakdown } from "@/lib/pricing";
 import { fetchDeal, getProgram } from "@/lib/program";
 import { isExpired, roleOf, statusOf, type Action, type DealStatus, type DealTimes } from "@/lib/rules";
 import { friendlyError, needsTopUp, signAndSend } from "@/lib/send";
@@ -126,7 +126,18 @@ export function DealClient({
   }, [dealStatus, refreshBalance]);
 
   if (!address) {
-    return <DealMessage title="This isn't a valid deal link">Check that you copied the whole link.</DealMessage>;
+    return (
+      <DealMessage
+        title="This isn't a valid deposit link"
+        action={
+          <ButtonLink href={wallet.publicKey ? "/deals" : "/"} variant="secondary">
+            {wallet.publicKey ? "Go to My deals" : "Go to the homepage"}
+          </ButtonLink>
+        }
+      >
+        Check that you copied the whole link.
+      </DealMessage>
+    );
   }
   // Until the login is restored, the landlord or tenant would be shown the visitor's page (e.g. "Pay €600"): wait for it.
   if (deal === undefined || now === 0 || !ready) return <DealLoading loadError={deal === undefined ? loadError : null} />;
@@ -140,7 +151,7 @@ export function DealClient({
           </Button>
         }
       >
-        If it was just created, wait a few seconds and try again.
+        If it was just created, wait a few seconds and try again. Otherwise check the link with the person who sent it.
       </DealMessage>
     );
   }
@@ -161,8 +172,8 @@ export function DealClient({
           total: formatEur(fromCents(price.totalCents)),
           breakdown:
             `${formatEur(fromCents(price.totalCents))} with a card issued in Europe: deposit ${amount} + Keysfirst fee ` +
-            `${formatEur(fromCents(price.feeCents))} (${feePercent("card")}). ${formatEur(fromCents(intl.totalCents))} with other cards ` +
-            `(fee ${feePercent("cardIntl")}). You see your exact price after entering your card, before you pay. The fee isn't refunded.`,
+            `${formatEur(fromCents(price.feeCents))} (${feeRate(price.depositCents, "card")}). ${formatEur(fromCents(intl.totalCents))} with other cards ` +
+            `(${feeRate(intl.depositCents, "cardIntl")} fee). You see your exact price after entering your card, before you pay. The fee isn't refunded.`,
         }
       : null;
 

@@ -24,9 +24,9 @@ export const EXAMPLE_INTL_PRICE = priceBreakdown(60_000, "cardIntl");
 /** "a Keysfirst fee of 3.5% with a card issued in Europe, 4.5% with other cards, at least €12" */
 export const CARD_FEE_SHORT = `a Keysfirst fee of ${CARD_FEES}, at least ${MIN_FEE}`;
 
-/** "€600 deposit + €21 fee with a card issued in Europe (€627 with other cards)", as on the deck's demo slide. */
+/** "€600 + €21 card fee (€627 with a non-European card)": short enough for the landing demo's small phone. */
 export function feeLine(depositCents: number): string {
   const eea = priceBreakdown(depositCents, "card");
   const intl = priceBreakdown(depositCents, "cardIntl");
-  return `${eurText(eea.depositCents)} deposit + ${eurText(eea.feeCents)} fee with a card issued in Europe (${eurText(intl.totalCents)} with other cards)`;
+  return `${eurText(eea.depositCents)} + ${eurText(eea.feeCents)} card fee (${eurText(intl.totalCents)} with a non-European card)`;
 }

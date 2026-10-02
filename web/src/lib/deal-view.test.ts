@@ -68,7 +68,7 @@ describe("nextStep", () => {
       "Pay €600.00 into the lock. The landlord gets it only when you confirm the key handover at the door. If that doesn't happen by Sun 4 Oct, 14:00, you can take it back.",
     );
     expect(nextStep({ status: "released", role: "landlord", times: t, now: expired, amount, settledAt: moveIn + 420 }).message).toBe(
-      "Your tenant confirmed the handover on Thu 1 Oct, 14:07. The deposit is in your Keysfirst balance. Withdraw it to your bank from your account menu.",
+      "Your tenant confirmed the handover on Thu 1 Oct, 14:07. The deposit is in your Keysfirst balance. Withdraw it to your bank from My deals.",
     );
     expect(nextStep({ status: "cancelled", role: "visitor", times: t, now: before, amount }).message).toBe(
       "The landlord cancelled this deal before anyone paid.",
@@ -84,7 +84,7 @@ describe("nextStep", () => {
       "The deposit went back to the tenant on Thu 1 Oct, 14:07.",
     );
     expect(nextStep({ status: "refunded", role: "tenant", times: t, now: expired, amount, settledAt }).message).toBe(
-      "Your deposit came back to you on Thu 1 Oct, 14:07. It's in your balance: withdraw it to your bank from your account menu.",
+      "Your deposit came back to you on Thu 1 Oct, 14:07. It's in your balance: withdraw it to your bank from My deals.",
     );
     expect(nextStep({ status: "funded", role: "landlord", times: t, now: expired, amount }).message).toBe(
       "The deadline passed without a handover. The deposit can go back to your tenant now.",
@@ -209,7 +209,7 @@ describe("dealRows", () => {
     const funded = { status: "funded" as const, times, signatures: [], now: inWindow, amount };
     const detail = (rows: ReturnType<typeof dealRows>, key: string) => rows.find((r) => r.key === key)?.detail;
     const asTenant = dealRows({ ...funded, role: "tenant" });
-    expect(detail(asTenant, "handover")).toBe(`Until Sun 4 Oct, 14:00. You approve (scan the landlord's code or tap "I have the keys") and €600.00 goes to them.`);
+    expect(detail(asTenant, "handover")).toBe(`Until Sun 4 Oct, 14:00. You approve (scan the landlord's code or tap “I have the keys”) and €600.00 goes to them.`);
     expect(detail(asTenant, "fallback")).toBe("€600.00 goes back to you. Anyone can trigger it.");
     const asLandlord = dealRows({ ...funded, role: "landlord" });
     expect(detail(asLandlord, "handover")).toBe("Until Sun 4 Oct, 14:00. Your tenant scans your code and €600.00 goes to you.");
@@ -228,6 +228,6 @@ describe("dealRows", () => {
     const refunded = dealRows({ status: "refunded", role: "tenant", times: { ...times, settledAt }, signatures: [], now: expired, amount });
     expect(refunded.at(-1)).toMatchObject({ title: "Returned to you", detail: "€600.00 came back to you." });
     const cancelled = dealRows({ status: "cancelled", role: "landlord", times: { ...times, settledAt }, signatures: [], now: expired, amount });
-    expect(cancelled.at(-1)?.detail).toBe("You withdrew the deal before anyone paid.");
+    expect(cancelled.at(-1)?.detail).toBe("You cancelled the deal before anyone paid.");
   });
 });

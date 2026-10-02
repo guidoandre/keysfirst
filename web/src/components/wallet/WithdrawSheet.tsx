@@ -76,7 +76,7 @@ export function WithdrawSheet({ open, onClose }: { open: boolean; onClose: () =>
       {done ? (
         <div className="space-y-4">
           <Callout tone="success" role="status" title={`${done.amount} is on its way`}>
-            To {done.iban}. It usually arrives in 1–2 business days. Demo: no real money moves.
+            To {done.iban}. It usually arrives in 1–2 working days. Demo: no real money moves.
           </Callout>
           <Button fullWidth onClick={close}>
             Done

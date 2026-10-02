@@ -142,7 +142,7 @@ export function MyDeals() {
               <Icon name="refresh" size={18} />
               Refresh
             </Button>
-            <ButtonLink href="/new">Create a deal</ButtonLink>
+            <ButtonLink href="/new">Create a deposit link</ButtonLink>
           </div>
         )}
       </div>

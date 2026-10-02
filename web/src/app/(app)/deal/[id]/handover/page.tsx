@@ -21,7 +21,7 @@ export const metadata: Metadata = { title: "Confirm the key handover", robots: {
 // Rendered on the server (clock in UTC); LocalTime switches to the phone's own time zone once the page is live.
 const at = (seconds: number) => <LocalTime at={seconds} />;
 
-const CHECKLIST = ["You are inside the room.", "You have the keys, or they are in front of you.", "You are logged in with the account that paid the deposit."];
+const CHECKLIST = ["You are inside the room.", "You are holding the keys.", "You are logged in with the account that paid the deposit."];
 
 /** The deal's address, or null when the link's id isn't an address at all (checked before any devnet read). */
 function parseDealId(id: string): PublicKey | null {
@@ -71,9 +71,9 @@ export default async function HandoverPage({ params }: { params: Promise<{ id: s
   const address = parseDealId(id);
   const { data, now } = address ? await loadDeal(address) : { data: undefined, now: 0 };
   const blocked = !address
-    ? "This isn't a valid deal link. Check that you copied the whole link."
+    ? "This isn't a valid deposit link. Check that you copied the whole link."
     : data === null
-      ? "We can't find this deal. Ask the landlord for the deal link."
+      ? "We can't find this deal. Ask the landlord for the deposit link."
       : data
         ? blocker(data, now)
         : null;

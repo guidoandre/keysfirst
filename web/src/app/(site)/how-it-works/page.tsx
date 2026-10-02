@@ -14,7 +14,7 @@ export const dynamic = "error";
 
 export const metadata: Metadata = {
   title: "How it works and safety",
-  description: "Two rules and a clock: only the tenant's approval at the handover pays the landlord; otherwise the deposit goes back to the tenant: the landlord can return it at any time, and after the deadline anyone can. Plus the honest limits.",
+  description: "Two rules and a clock: only the tenant's approval at the handover pays the landlord; otherwise the deposit goes back to the tenant (the landlord can return it at any time, and after the deadline anyone can). Plus the honest limits.",
 };
 
 // Product spec §6, in plain words. Keep in step with the program.
@@ -36,7 +36,7 @@ const LIMITS = [
   "Keysfirst proves the room exists and the keys work, not that the person may legally rent it out. Landlord verification is on the roadmap.",
   "Disputes after move-in, such as damage, are ordinary tenancy law.",
   "A tenant who doesn't show up gets the deposit back; the landlord loses only the time the room was reserved.",
-  "On Solana's test network (devnet) the developer can still update the program with its upgrade key. Before real money that key would be frozen or controlled by several people.",
+  "On Solana's test network (devnet) the developer can still update the program with its upgrade key. Before real money that key would be locked or shared between several people.",
   "How the service would be regulated hasn't been assessed yet.",
 ];
 
@@ -60,7 +60,7 @@ export default function HowItWorksPage() {
             rowsEnterAt={380}
             title="A deal, start to finish"
             rows={[
-              { key: "create", time: "Step 1", title: "The landlord creates the deal", detail: "Room, amount, move-in and the latest handover, at most 14 days after move-in.", state: "done" },
+              { key: "create", time: "Step 1", title: "The landlord creates the deal", detail: "Country, room, rent, deposit, move-in and the latest handover, at most 14 days after move-in.", state: "done" },
               { key: "pay", time: "Step 2", title: "The tenant pays into the lock", detail: `The exact deposit, before the deadline. On top, the tenant pays a Keysfirst fee (${CARD_FEES}, at least ${MIN_FEE}), which isn't refunded and stays outside the lock.`, state: "done" },
               { key: "window", time: "24 h before move-in", title: "The handover window opens", detail: "From now until the deadline, the tenant can release the deposit.", state: "now" },
               { key: "door", time: "At the door", title: "The tenant approves the handover", detail: "By scanning the landlord's code or tapping “I have the keys” on their deal page. The whole deposit goes to the landlord, in seconds.", state: "next" },

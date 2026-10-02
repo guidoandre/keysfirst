@@ -161,7 +161,7 @@ export function CardResume({
       stripPaid();
       const receipt = res.body.charged ? chargedSummary(res.body.charged) : null;
       if (lock) ready(receipt);
-      else done(`${receipt ? `${receipt} ` : ""}Your ${formatEur(amount)} is in your balance. You can withdraw it to your bank from your account menu.`);
+      else done(`${receipt ? `${receipt} ` : ""}Your ${formatEur(amount)} is in your balance. You can withdraw it to your bank from My deals.`);
     }
     void run();
     return () => {

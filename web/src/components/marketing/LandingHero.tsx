@@ -20,7 +20,7 @@ export function LandingHero() {
     <section
       data-wide-page=""
       aria-labelledby="hero-title"
-      className="mx-auto grid max-w-wide items-center gap-y-10 px-4 pt-6 pb-10 sm:px-6 sm:pt-10 lg:px-10 lg:pb-16 xl:grid-cols-[minmax(0,1fr)_auto] xl:gap-x-14 xl:px-16 xl:pt-6 xl:pb-16"
+      className="mx-auto grid max-w-wide grid-cols-[minmax(0,1fr)] items-center gap-y-10 px-4 pt-6 pb-10 sm:px-6 sm:pt-10 lg:px-10 lg:pb-16 xl:grid-cols-[minmax(0,1fr)_auto] xl:gap-x-14 xl:px-16 xl:pt-6 xl:pb-16"
     >
       <div>
         <RoleToggle className="enter" />

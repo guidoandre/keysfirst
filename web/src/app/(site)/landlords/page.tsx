@@ -26,7 +26,7 @@ const WHY: Array<{ icon: IconName; title: string; text: string }> = [
 ];
 
 const STEPS: Step[] = [
-  { pictogram: "laptop-wallet", title: "Create a deposit link", text: "Room, amount, move-in and the latest handover." },
+  { pictogram: "laptop-wallet", title: "Create a deposit link", text: "Country, room, rent, deposit, move-in and the latest handover." },
   { pictogram: "share-link", title: "Send it to your tenant", text: "They pay into the lock. You see it on the deal page and in My deals." },
   { pictogram: "scan-at-door", title: "Start the handover", text: "At the door, your phone or laptop shows a code. Your tenant checks the room and scans it." },
   { pictogram: "keys-change-hands", title: "Released: hand over the keys", text: "Your screen turns green in seconds. Then the keys change hands." },

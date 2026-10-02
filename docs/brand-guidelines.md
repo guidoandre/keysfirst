@@ -35,7 +35,7 @@ Tokens, components and motion rules for the web app live in [docs/design-system.
 
 | Audience | Pain | Key message | Call to action |
 |---|---|---|---|
-| Tenant (international student abroad) | Fear of a fake landlord; can't view the room first | Your deposit waits in a lock until you're at the door with the keys. | "How it protects me" · "Ask your landlord for a deposit link" |
+| Tenant (international student abroad) | Fear of a fake landlord; can't view the room first | Your deposit waits in a lock until you're at the door with the keys. | "How it protects me" · "Ask for a deposit link" |
 | Landlord (often an outgoing student subletting) | Tenants abroad don't trust you; chasing payments | Get paid at the handover, in seconds; look trustworthy from the first message. | "Create a deposit link" |
 | Challenge judges | Understand it fast; see the role of Solana | The rules are code: only the tenant's scan pays, only the clock refunds. | "See how it works" · "Try it with test money" |
 
