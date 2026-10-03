@@ -3,6 +3,9 @@ import { cardMethod, feeRate, priceBreakdown } from "./pricing";
 import { canFund, type DealStatus, type DealTimes } from "./rules";
 import { PRODUCTION_URL } from "./site";
 
+/** Shown when Stripe or the faucet can't take a card payment right now (server answers and the card form). */
+export const CARD_UNAVAILABLE = "Card payments are not available right now. Try again in a minute.";
+
 /** Why `account` can't start a card payment for this deal right now; null if it can. Mirrors the program's fund checks. */
 export function checkoutProblem(o: { status: DealStatus; landlord: string; account: string; times: DealTimes; now: number }): string | null {
   if (o.status !== "open") return "This deposit can't be paid any more. Reload the page to see the deal's status.";
@@ -17,7 +20,7 @@ export function cardCharge(depositCents: number, cardCountry: string | null | un
   return { method, ...priceBreakdown(depositCents, method) };
 }
 
-/** What fulfil reports a card payment actually cost (from Stripe's capture). */
+/** What fulfil reports a card payment actually cost (from the amount and fee recorded on the Stripe payment). */
 export interface CardCharged {
   totalCents: number;
   feeCents: number;
@@ -51,7 +54,7 @@ const TRUSTED_HOSTS = ["localhost", "127.0.0.1", "keysfirst.io", "www.keysfirst.
 // Our Vercel team's preview URLs: keysfirst-<hash or git-branch>-atlas-fee2.vercel.app. Only this team can create them.
 const isOurPreview = (host: string) => host.startsWith("keysfirst-") && host.endsWith("-atlas-fee2.vercel.app");
 
-/** Checkout's success/cancel URLs come back from the Host header, so only trust known hosts (dev, our domain, our Vercel URLs); anything else falls back to production. */
+/** The 3-D Secure return URL is built from the Host header, so only trust known hosts (dev, our domain, our Vercel URLs); anything else falls back to production. */
 export function returnOrigin(requestUrl: string): string {
   const url = new URL(requestUrl);
   const host = url.hostname;

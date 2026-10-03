@@ -1,6 +1,6 @@
 # Keysfirst: euro experience (log in with email, pay by card, withdraw to bank)
 
-Date: 2026-09-28 · Status: approved decisions, awaiting spec review · Network: Solana **devnet only**, Stripe **test mode only**
+Date: 2026-09-28 · Status: implemented (merged into main in 8e4e0ca; later changes to the card flow and fees are in the code and the root README) · Network: Solana **devnet only**, Stripe **test mode only**
 Builds on: [2026-09-27-keysfirst-design.md](2026-09-27-keysfirst-design.md) (product, program, deal rules §6) and [2026-09-28-keysfirst-redesign-design.md](2026-09-28-keysfirst-redesign-design.md) (brand, pages).
 
 ## 1. Goal

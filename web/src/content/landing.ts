@@ -94,7 +94,7 @@ export const DEMO_STEPS: Array<{ status: DealStatus; money: MoneyAt; caption: st
 export const DEADLINE_STEP = 4;
 
 /** Next goes one step forward; from the end of either path it replays the deal. */
-export const nextStep = (step: number) => (step >= 3 ? 0 : step + 1);
+export const nextDemoStep = (step: number) => (step >= 3 ? 0 : step + 1);
 
 /** "No handover?" is offered while the money is in the lock. */
 export const canSkipToDeadline = (step: number) => step === 1 || step === 2;

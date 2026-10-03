@@ -8,7 +8,6 @@ import { emailUrl, whatsappUrl } from "@/lib/format";
 import { useMounted } from "@/lib/hooks";
 import { PRODUCTION_URL } from "@/lib/site";
 
-// Cut rule: if /landlords is cut, point the message at "/".
 const LANDLORD_PAGE = "/landlords";
 
 /** The pre-filled message a tenant sends to their landlord (spec §6.10). */

@@ -1,5 +1,7 @@
 # Solana Pay spike (Task 1)
 
+> Historical record from day 1. The `/spike` pages and `/api/spike` were removed once the real handover (`/deal/[id]/handover`, `/api/handover/[id]`) shipped.
+
 - Date: 2026-09-27
 - Wallet: Phantom mobile on iPhone, Testnet Mode → Solana Devnet
 - Result: **PASS** — Phantom fetched the transaction from `https://keysfirst.vercel.app/api/spike`, the user signed it, and it landed on devnet.

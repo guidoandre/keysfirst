@@ -55,9 +55,9 @@ function forget(dealId: string, account: string, session: string) {
 }
 
 /**
- * Back from Stripe: ask the server to confirm the payment and mint the deposit, wait until the balance shows it,
- * then either hand back to the deal page, which locks it with the normal fund action (spec §4.3 steps 3–4), or,
- * when the deal can't take it any more, report that the money is in the balance.
+ * After a card payment (or one found again): ask the server to confirm the payment and mint the deposit, wait until
+ * the balance shows it, then either hand back to the deal page, which locks it with the normal fund action (spec §4.3
+ * steps 3–4), or, when the deal can't take it any more, report that the money is in the balance.
  * Every paid session ends locked, in the balance, or with an error that keeps the session for a retry.
  */
 export function CardResume({
@@ -102,7 +102,7 @@ export function CardResume({
       const res = await fulfil(session);
       if (cancelled) return;
       if (res.status === 402) {
-        // Not paid (e.g. the tenant went back from Stripe's page): forget it quietly.
+        // Not paid (e.g. the bank's 3-D Secure check was never finished): forget it quietly.
         forget(dealId, me, session);
         cancelledPayment();
         return;

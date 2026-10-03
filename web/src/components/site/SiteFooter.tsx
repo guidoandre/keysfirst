@@ -8,7 +8,6 @@ import { explorerAddress } from "@/lib/format";
 import { OPERATOR } from "@/lib/legal";
 import { isAppRoute } from "@/lib/site";
 
-// Cut rule: remove links to pages that were cut (About, For tenants, For landlords).
 const COLUMNS = [
   {
     title: "Product",

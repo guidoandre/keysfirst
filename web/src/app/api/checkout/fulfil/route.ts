@@ -77,7 +77,8 @@ export async function POST(req: Request) {
     if (intent.status !== "succeeded") return Response.json({ error: CHARGE_FAILED }, { status: 503 });
   }
   const paymentId = intent.id;
-  // What the card actually paid, so the deal page can say which price applied (the capture recorded the fee).
+  // What the card actually paid, so the deal page can say which price applied (/pay or the capture above recorded
+  // the fee).
   const charged: CardCharged = {
     totalCents: intent.amount_received,
     feeCents: Number(intent.metadata.fee_cents),

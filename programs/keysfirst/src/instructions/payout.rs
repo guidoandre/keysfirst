@@ -7,7 +7,8 @@ use crate::{constants::DEAL_SEED, state::Deal};
 
 /// Sends everything in the vault (the deposit plus anything else sent to it) to
 /// `recipient_token`, then closes the vault and returns its rent to `rent_receiver`
-/// (the landlord, who paid for it). Returns the amount paid out.
+/// (normally the landlord; a refund picks the caller when the landlord's wallet can't receive SOL).
+/// Returns the amount paid out.
 pub fn pay_out_and_close_vault<'info>(
     deal: &Account<'info, Deal>,
     vault: &InterfaceAccount<'info, TokenAccount>,

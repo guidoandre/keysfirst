@@ -30,7 +30,6 @@ export function NextStep({
   signature,
   onAction,
   card = null,
-  cardBusy = false,
   onPayByCard,
   share = null,
 }: {
@@ -47,7 +46,6 @@ export function NextStep({
   signature: string | null;
   onAction: (action: Action) => void;
   card?: CardOffer | null;
-  cardBusy?: boolean;
   onPayByCard?: () => void;
   /** The landlord's deposit link while nobody has paid: the step itself, so the box is outlined like a primary action. */
   share?: ReactNode;
@@ -89,7 +87,7 @@ export function NextStep({
         (connected ? (
           primary === "fund" && card && onPayByCard && busy !== "fund" ? (
             <div className="space-y-2">
-              <Button size="lg" fullWidth loading={cardBusy} loadingText="Opening the card payment…" disabled={busy !== null || cardBusy} onClick={onPayByCard}>
+              <Button size="lg" fullWidth disabled={busy !== null} onClick={onPayByCard}>
                 Pay from {card.total} by card
               </Button>
               <p className="text-sm text-fg-muted">{card.breakdown}</p>

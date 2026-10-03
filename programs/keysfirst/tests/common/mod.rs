@@ -102,6 +102,7 @@ pub fn setup() -> Env {
 
 pub fn setup_with(token_program: Pubkey) -> Env {
     let mut svm = LiteSVM::new();
+    // The tests run the program `anchor build` wrote to target/deploy: rebuild after changing the program.
     let program = include_bytes!(concat!(env!("CARGO_TARGET_TMPDIR"), "/../deploy/keysfirst.so"));
     svm.add_program(keysfirst::id(), program).unwrap();
     set_time(&mut svm, T0);

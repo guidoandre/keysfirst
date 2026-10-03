@@ -32,7 +32,7 @@ function parseDealId(id: string): PublicKey | null {
   }
 }
 
-/** `data` is undefined when devnet couldn't be reached: the page then works exactly as before (checklist + button). */
+/** `data` is undefined when devnet couldn't be reached: the page still shows the checklist and the Continue button. */
 async function loadDeal(address: PublicKey): Promise<{ data: DealData | null | undefined; now: number }> {
   const now = Math.floor(Date.now() / 1000);
   try {

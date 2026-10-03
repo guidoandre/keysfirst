@@ -8,7 +8,7 @@ import {
   DEADLINE_STEP,
   DEMO_DEAL,
   DEMO_STEPS,
-  nextStep,
+  nextDemoStep,
   PHONE,
   stepLabel,
   type LandingRole,
@@ -62,7 +62,7 @@ export function DealDemo({ role }: { role: LandingRole }) {
       const was = DEMO_STEPS[demo.step].status;
       return { step: to, from: DEMO_STEPS[to].status === was ? demo.from : was };
     });
-  const next = () => go(nextStep(step));
+  const next = () => go(nextDemoStep(step));
   const current = DEMO_STEPS[step];
   const skippable = canSkipToDeadline(step);
 
