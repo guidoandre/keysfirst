@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { handoverWindow, paymentOpensAt, titleBytes, validateNewDeal, windowSeconds, type NewDealForm } from "./new-deal";
+import { DEMO_WINDOW_SECONDS, handoverWindow, paymentOpensAt, titleBytes, validateNewDeal, windowSeconds, type NewDealForm } from "./new-deal";
 
 const DAY = 86_400;
 const now = 1_790_000_000;
-const good: NewDealForm = { country: "DE", housing: "any", title: "Room in Vallendar", rent: "300", amount: "600", moveIn: now + DAY, window: "3d" };
+const good: NewDealForm = { country: "DE", housing: "any", title: "Room in Vallendar", rent: "300", amount: "600", moveIn: now + DAY, window: "3d", demo: false };
 
 describe("validateNewDeal", () => {
   it("accepts a complete deal and computes the deadline", () => {
@@ -31,11 +31,10 @@ describe("validateNewDeal", () => {
     expect(validateNewDeal({ ...good, moveIn: now - 5 * DAY }, now).errors.moveIn).toMatch(/already in the past/);
   });
 
-  it("gives the tenant at least an hour to pay", () => {
+  it("gives the tenant at least an hour to pay, except in the demo", () => {
     const late = { ...good, window: "1d" as const, moveIn: now - DAY + 30 * 60 };
     expect(validateNewDeal(late, now).errors.moveIn).toMatch(/less than an hour/);
-    // Move-in now with the shortest window still leaves a day to pay.
-    expect(validateNewDeal({ ...good, window: "1d", moveIn: now }, now).errors.moveIn).toBeUndefined();
+    expect(validateNewDeal({ ...good, moveIn: now - 60, demo: true }, now).errors.moveIn).toBeUndefined();
   });
 
   it("refuses a move-in more than a year away (a typo in the year)", () => {
@@ -81,10 +80,10 @@ describe("validateNewDeal", () => {
     expect(validateNewDeal({ ...good, amount: "abc" }, now).errors.amount).toMatch(/euros/);
   });
 
-  it("turns the chosen window into seconds", () => {
-    expect(windowSeconds({ window: "14d" })).toBe(14 * DAY);
-    expect(windowSeconds({ window: "7d" })).toBe(7 * DAY);
-    expect(validateNewDeal({ ...good, window: "1d", moveIn: now }, now).values?.deadline).toBe(now + DAY);
+  it("uses the 5-minute window in demo mode", () => {
+    expect(windowSeconds({ window: "14d", demo: true })).toBe(DEMO_WINDOW_SECONDS);
+    expect(windowSeconds({ window: "7d", demo: false })).toBe(7 * DAY);
+    expect(validateNewDeal({ ...good, moveIn: now, demo: true }, now).values?.deadline).toBe(now + 300);
   });
 
   it("describes the handover window", () => {

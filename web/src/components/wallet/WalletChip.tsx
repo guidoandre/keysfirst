@@ -5,6 +5,8 @@ import { Button, ButtonLink } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
 import { Icon } from "@/components/ui/Icon";
 import { Sheet } from "@/components/ui/Sheet";
+import { cx } from "@/lib/cx";
+import { useDemoMode } from "@/lib/demo-mode";
 import { formatEur } from "@/lib/format";
 import { useAccount } from "./AccountProvider";
 import { WithdrawSheet } from "./WithdrawSheet";
@@ -15,6 +17,7 @@ export function WalletChip() {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [withdrawing, setWithdrawing] = useState(false);
+  const [demoMode, setDemoMode] = useDemoMode(address?.toBase58() ?? null);
   if (!address || !label) return null;
   const accountNumber = address.toBase58();
 
@@ -70,6 +73,33 @@ export function WalletChip() {
           <p aria-live="polite" className="sr-only">
             {copied ? "Copied to the clipboard" : ""}
           </p>
+          {/* A setting, not an action: a switch row (role="switch"), the whole row is the hit area */}
+          <button
+            type="button"
+            role="switch"
+            aria-checked={demoMode}
+            onClick={() => setDemoMode(!demoMode)}
+            className="mt-2 flex w-full items-center justify-between gap-4 rounded-md border-[1.5px] border-field px-4 py-3 text-left hover:bg-subtle"
+          >
+            <span>
+              <span className="block font-semibold">Demo mode</span>
+              <span className="block text-sm text-fg-muted">Shortcuts for trying it out: demo values and a 5-minute window when you create a deal.</span>
+            </span>
+            <span
+              aria-hidden="true"
+              className={cx(
+                "relative h-6 w-11 shrink-0 rounded-full transition-colors duration-200",
+                demoMode ? "bg-fg" : "bg-field",
+              )}
+            >
+              <span
+                className={cx(
+                  "absolute top-0.5 left-0.5 size-5 rounded-full bg-canvas shadow-sm transition-transform duration-200 ease-out",
+                  demoMode && "translate-x-5",
+                )}
+              />
+            </span>
+          </button>
           <Button
             variant="quiet"
             className="mt-2 justify-center"

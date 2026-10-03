@@ -12,7 +12,7 @@ Nobody needs a wallet app or crypto: you log in with your email or Google, pay b
 
 You need two logins (two different emails or Google accounts), for example a normal browser window for the landlord and a private window for the tenant.
 
-1. **Landlord:** log in and tap **Create a deposit link**. Choose Germany, name the room, enter €300 rent and a €600 deposit, tap **Now** for the move-in and keep any handover window: the handover opens 24 hours before move-in, so it is open straight away. Share the link (or copy it into the tenant's window).
+1. **Landlord:** log in, tap your email at the top right and turn on **Demo mode** (it adds test shortcuts; normal users never see them). Tap **Create a deposit link**, then **Use demo values**: a €600 deposit in Germany, move-in now, and a **5-minute** handover window, so the whole flow fits in one sitting. Share the link (or copy it into the tenant's window).
 2. **Tenant:** open the link, log in with the other account and tap **Pay from €621.00 by card**. Stripe's card form opens on the page. Enter a test card, any future date and any three digits, and tap **See my price**: the fee depends on where the card was issued.
    - `4000 0027 6000 0016` (a German card): **€621.00** (deposit €600 + 3.5% fee)
    - `4242 4242 4242 4242` (a US card): **€627.00** (deposit €600 + 4.5% fee)
@@ -21,7 +21,7 @@ You need two logins (two different emails or Google accounts), for example a nor
 3. **At the door:** the landlord taps **Start the handover** and shows a QR code. The tenant scans it with their phone camera (logged in as the tenant) and taps **I have the keys**. On a single computer, the tenant can tap **I have the keys: release the deposit** on their deal page instead. The landlord's screen turns green: paid in seconds.
 4. **Withdraw:** the landlord opens **My deals** and taps **Withdraw to bank** (the bank payout is simulated in the prototype).
 
-**Refund path:** on a second deal, after the tenant pays, the landlord taps **Give the deposit back to your tenant** on the deal page and the money returns to the tenant in seconds. After the handover deadline anyone can return it; the shortest window is one day after move-in. A step-by-step guide is at [/start](https://www.keysfirst.io/start).
+**Refund path:** if nobody confirms within the 5 minutes, the deal page offers to send the deposit back to the tenant (after the deadline anyone can). The landlord can also tap **Give the deposit back to your tenant** at any time. Without Demo mode the shortest handover window is one day. A step-by-step guide is at [/start](https://www.keysfirst.io/start).
 
 ## How a deal works
 

@@ -16,11 +16,13 @@ import { LoginButton } from "@/components/wallet/LoginButton";
 import { COUNTRIES, getCountry, type CountryCode } from "@/content/countries";
 import { capHint, housingOf } from "@/lib/country-rules";
 import { cx } from "@/lib/cx";
+import { useDemoMode } from "@/lib/demo-mode";
 import { formatEur, formatShortDateTime, parseEur, toLocalInputValue } from "@/lib/format";
 import { useNow } from "@/lib/hooks";
 import { createDealIx, randomDealId } from "@/lib/instructions";
 import {
   DEFAULT_WINDOW,
+  DEMO_VALUES,
   handoverWindow,
   paymentOpensAt,
   STEP_FIELDS,
@@ -57,6 +59,10 @@ export function CreateDealFlow() {
   const [rent, setRent] = useState("");
   const [moveInText, setMoveInText] = useState("");
   const [windowChoice, setWindowChoice] = useState<WindowChoice>(DEFAULT_WINDOW);
+  const [demoChoice, setDemo] = useState(false);
+  // The demo shortcuts only exist with Demo mode on (account sheet); a draft from before it was switched off can't keep them.
+  const [demoMode] = useDemoMode(wallet.publicKey?.toBase58() ?? null);
+  const demo = demoMode && demoChoice;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -78,6 +84,7 @@ export function CreateDealFlow() {
           setRent(String(draft.rent ?? ""));
           setMoveInText(String(draft.moveInText ?? ""));
           if (WINDOW_CHOICES.some((choice) => choice.value === draft.windowChoice)) setWindowChoice(draft.windowChoice);
+          setDemo(draft.demo === true);
           if (draft.step === 2 || draft.step === 3) setStep(draft.step);
         }
       } catch {
@@ -91,13 +98,13 @@ export function CreateDealFlow() {
   useEffect(() => {
     if (!draftRead.current) return;
     try {
-      sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ title, amount, country, housing, rent, moveInText, windowChoice, step }));
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ title, amount, country, housing, rent, moveInText, windowChoice, demo: demoChoice, step }));
     } catch {
       // Storage blocked: the form just isn't kept.
     }
-  }, [title, amount, country, housing, rent, moveInText, windowChoice, step]);
+  }, [title, amount, country, housing, rent, moveInText, windowChoice, demoChoice, step]);
 
-  // After Next or Back, start keyboard and screen-reader users at the new step's heading
+  // After Next, Back or "Use demo values", start keyboard and screen-reader users at the new step's heading
   // (the button they pressed is gone or far below). Not on the first render.
   useEffect(() => {
     if (shownStep.current === step) return;
@@ -107,7 +114,7 @@ export function CreateDealFlow() {
 
   // datetime-local values have no zone, so Date.parse reads them in the viewer's time zone.
   const moveIn = moveInText ? Math.floor(Date.parse(moveInText) / 1000) : Number.NaN;
-  const form = { country, housing, title, rent, amount, moveIn, window: windowChoice };
+  const form = { country, housing, title, rent, amount, moveIn, window: windowChoice, demo };
   const { values, errors } = validateNewDeal(form, now);
   const shown = (field: NewDealField) => (checked.includes(field) ? errors[field] : undefined);
   const handover = Number.isFinite(moveIn) ? handoverWindow(moveIn, windowSeconds(form)) : null;
@@ -118,7 +125,7 @@ export function CreateDealFlow() {
   // The tenant can only pay once the deposit would be locked for at most 180 days (program rule).
   const payFrom = handover && paymentOpensAt(handover.deadline) > now ? paymentOpensAt(handover.deadline) : null;
   // A past move-in is allowed (only the deadline must be ahead), but the handover is then open from the start.
-  const moveInPassed = Number.isFinite(moveIn) && now > 0 && moveIn < now - 5 * 60;
+  const moveInPassed = !demo && Number.isFinite(moveIn) && now > 0 && moveIn < now - 5 * 60;
 
   function chooseCountry(code: CountryCode | "") {
     setCountry(code);
@@ -136,6 +143,18 @@ export function CreateDealFlow() {
       return;
     }
     setStep(step === 1 ? 2 : 3);
+  }
+
+  function fillDemoValues() {
+    setTitle(DEMO_VALUES.title);
+    setCountry(DEMO_VALUES.country);
+    setHousing(DEMO_VALUES.housing);
+    setRent(DEMO_VALUES.rent);
+    setAmount(DEMO_VALUES.amount);
+    setMoveInText(toLocalInputValue(new Date()));
+    setDemo(true);
+    setChecked(ALL_FIELDS);
+    setStep(3);
   }
 
   async function submit(event: FormEvent) {
@@ -255,6 +274,15 @@ export function CreateDealFlow() {
                 error={shown("amount")}
                 autoComplete="off"
               />
+              {demoMode && (
+                <Callout tone="neutral">
+                  Just trying Keysfirst?{" "}
+                  <button type="button" onClick={fillDemoValues} className="font-semibold underline underline-offset-2">
+                    Use demo values
+                  </button>{" "}
+                  (Germany, “Room in Vallendar”, €300 rent, €600 deposit, move-in now, 5-minute window).
+                </Callout>
+              )}
             </>
           )}
 
@@ -279,12 +307,30 @@ export function CreateDealFlow() {
                 legend="Latest handover (after move-in)"
                 value={windowChoice}
                 onChange={setWindowChoice}
+                disabled={demo}
                 options={WINDOW_CHOICES.map((choice) => ({
                   value: choice.value,
                   label: choice.label,
                   hint: choice.value === DEFAULT_WINDOW ? "Recommended" : undefined,
                 }))}
               />
+              {demoMode && (
+                <label className="flex cursor-pointer items-start gap-3 rounded-md border-[1.5px] border-dashed border-field p-4">
+                  <input
+                    type="checkbox"
+                    checked={demo}
+                    onChange={(event) => setDemo(event.target.checked)}
+                    className="mt-1 size-5 shrink-0 accent-fg"
+                  />
+                  <span>
+                    <span className="font-semibold">Demo: 5-minute window</span>{" "}
+                    <span className="ml-1 rounded-sm bg-accent px-1.5 py-0.5 text-xs font-semibold">For trying it out</span>
+                    <span className="mt-1 block text-sm text-fg-muted">
+                      Without a handover, your tenant can take the deposit back 5 minutes after move-in. Not for a real room.
+                    </span>
+                  </span>
+                </label>
+              )}
               {moveInPassed && (
                 <Callout tone="neutral">That move-in is in the past, so the handover can happen as soon as your tenant has paid. Check the date.</Callout>
               )}

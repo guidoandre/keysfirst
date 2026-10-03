@@ -65,7 +65,7 @@ export default function PrivacyPage() {
           a card payment in progress is remembered in local storage (&ldquo;keysfirst:card:…&rdquo;) until the deposit is locked, so it survives a
           closed tab; session storage remembers that your account&apos;s network costs were covered this session (&ldquo;keysfirst:gas:…&rdquo;)
           and keeps your create-deal draft (room title, amount, rent, country and move-in; &ldquo;keysfirst:new-deal&rdquo;) until the deal is
-          created or the tab closes; local storage also remembers that this browser is logged in (&ldquo;keysfirst:logged-in&rdquo;, no account details), so the site&apos;s header shows &ldquo;My deals&rdquo; instead of &ldquo;Log in&rdquo;. The name and IBAN you type for a demo withdrawal are not stored or sent anywhere: they never leave your
+          created or the tab closes; local storage also remembers that this browser is logged in (&ldquo;keysfirst:logged-in&rdquo;, no account details), so the site&apos;s header shows &ldquo;My deals&rdquo; instead of &ldquo;Log in&rdquo;, and whether you turned on Demo mode (&ldquo;keysfirst:demo:…&rdquo;). The name and IBAN you type for a demo withdrawal are not stored or sent anywhere: they never leave your
           browser. This is strictly necessary for the service you asked for, so it needs no consent
           (§ 25(2) no. 2 TDDDG). It stays on your device; clearing this site&apos;s data in your browser removes it.
         </p>
