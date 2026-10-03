@@ -80,6 +80,27 @@ export default function GetStartedPage() {
             happens.
           </p>
         </GuideStep>
+
+        <GuideStep id="deadline" number={6} title="No handover? Test the deadline">
+          <p>
+            With Demo mode on, create a second deal with the demo values, pay it as the tenant and skip the handover. The deal page counts
+            down the 5-minute window. When it hits zero, the deposit can no longer go to the landlord, only back to the tenant:
+          </p>
+          <ul className="list-disc space-y-2 pl-5">
+            <li>
+              <strong className="text-fg">Right away:</strong> the tenant taps &ldquo;Take the deposit back&rdquo;. After the deadline anyone
+              can return it to the tenant; it can&apos;t go anywhere else.
+            </li>
+            <li>
+              <strong className="text-fg">If nobody does:</strong> Keysfirst sends it back the next morning (between 08:00 and 09:00 German
+              time). Leave a paid deal alone past its deadline, and the next day its page shows the deposit back with the tenant.
+            </li>
+          </ul>
+          <p>
+            Before the deadline, the landlord can tap &ldquo;Give the deposit back to your tenant&rdquo; at any time. Without Demo mode the
+            shortest handover window is one day.
+          </p>
+        </GuideStep>
       </div>
     </div>
   );
