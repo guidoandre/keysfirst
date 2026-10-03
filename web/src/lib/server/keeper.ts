@@ -15,10 +15,10 @@ export const STATUS_OFFSET = 160;
 /** "2" is the byte 1 (Funded) in base58, the encoding getProgramAccounts filters take. */
 export const FUNDED_BASE58 = "2";
 
-// One run returns at most this many deposits, and starts no new one after RUN_BUDGET_MS, so a backlog can't run the
-// function past its 60-second limit; the rest go out on the next run.
+// One run returns at most this many deposits and starts no new one RUN_BUDGET_MS after it began; with the 15-second
+// limit on the last transaction that stays inside the function's 60 seconds. The rest go out on the next run.
 export const MAX_PER_RUN = 20;
-const RUN_BUDGET_MS = 40_000;
+const RUN_BUDGET_MS = 35_000;
 // A return costs about 0.000005 SOL, plus about 0.002 SOL if the tenant closed their token account. Below this the
 // faucet can't be trusted to pay for a whole run.
 const MIN_FAUCET_BALANCE = 0.05 * LAMPORTS_PER_SOL;
@@ -28,7 +28,7 @@ export interface ExpiredDeal {
   account: DealAccount;
 }
 
-/** Locked deposits whose handover deadline has passed: the program lets anyone send these back to the tenant. */
+/** Locked deposits whose handover deadline has passed, oldest first: the program lets anyone send these back to the tenant. */
 export function selectExpired(items: Array<{ publicKey: PublicKey; account: DealAccount }>, now: number): ExpiredDeal[] {
   return items
     .filter(({ publicKey, account }) => isGenuineDeal(publicKey, account))
@@ -38,7 +38,6 @@ export function selectExpired(items: Array<{ publicKey: PublicKey; account: Deal
       return isExpired({ moveIn: d.moveIn, deadline: d.deadline }, now);
     })
     .sort((a, b) => toDealData(a.account).deadline - toDealData(b.account).deadline)
-    .slice(0, MAX_PER_RUN)
     .map(({ publicKey, account }) => ({ address: publicKey, account }));
 }
 
@@ -60,22 +59,24 @@ export async function returnExpiredDeposits(
   faucet: Keypair,
   now = Math.floor(Date.now() / 1000),
 ): Promise<KeeperResult> {
+  const started = Date.now();
   const items = await withTimeout(
     program.account.deal.all([
       { memcmp: { offset: MINT_OFFSET, bytes: MINT.toBase58() } },
       { memcmp: { offset: STATUS_OFFSET, bytes: FUNDED_BASE58 } },
     ]),
-    20_000,
+    15_000,
   );
   const expired = selectExpired(items, now);
   const result: KeeperResult = { returned: [], failed: [], lowFunds: false };
   if (expired.length === 0) return result;
-  if ((await connection.getBalance(faucet.publicKey)) < MIN_FAUCET_BALANCE) return { ...result, lowFunds: true };
+  if ((await withTimeout(connection.getBalance(faucet.publicKey), 5_000)) < MIN_FAUCET_BALANCE) return { ...result, lowFunds: true };
 
-  // One at a time: they share the faucet as fee payer, and a run is small.
-  const started = Date.now();
+  // One at a time: they share the faucet as fee payer. A deal whose return keeps failing (say, a tenant's token account
+  // that refuses transfers without a memo) is skipped and doesn't count, so a few of them can't block everyone else's.
+  // A failed attempt costs nothing: the network's pre-check rejects it before anything is sent.
   for (const { address, account } of expired) {
-    if (Date.now() - started > RUN_BUDGET_MS) break;
+    if (result.returned.length >= MAX_PER_RUN || Date.now() - started > RUN_BUDGET_MS) break;
     try {
       const ix = await refundIx(program, address, account, faucet.publicKey);
       const signature = await withTimeout(

@@ -109,7 +109,7 @@ export function dealCalendar(deal: CalendarDeal, role: CalendarRole, url: string
       end: deadline + 30 * 60,
       summary: `Handover deadline: ${deal.title}`,
       description: tenant
-        ? `If you didn't get the keys, don't release the deposit. After this time ${amount} goes back to you: take it back on the deal page, or Keysfirst sends it back within a day. Open the deal: ${url}`
+        ? `If you didn't get the keys, don't release the deposit. After this time ${amount} goes back to you: take it back on the deal page, or Keysfirst sends it back by the next morning. Open the deal: ${url}`
         : `The handover closes. If it didn't happen, ${amount} can only go back to your tenant. Open the deal: ${url}`,
       alarm: 2 * 60,
     },

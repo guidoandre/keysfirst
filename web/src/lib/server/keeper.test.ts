@@ -70,10 +70,9 @@ describe("selectExpired", () => {
     expect(selectExpired([elsewhere, otherToken], NOW)).toEqual([]);
   });
 
-  it("returns the oldest deadlines first, at most MAX_PER_RUN per run", () => {
+  it("lists every due deal, oldest deadline first (the run, not the list, stops after MAX_PER_RUN returns)", () => {
     const many = Array.from({ length: MAX_PER_RUN + 5 }, (_, i) => item(deal({ id: 100 + i, deadline: NOW - 1_000 + i })));
     const selected = selectExpired([...many].reverse(), NOW);
-    expect(selected).toHaveLength(MAX_PER_RUN);
-    expect(selected[0].address.toBase58()).toBe(many[0].publicKey.toBase58());
+    expect(selected.map((d) => d.address.toBase58())).toEqual(many.map((d) => d.publicKey.toBase58()));
   });
 });
