@@ -13,7 +13,7 @@ export interface CalendarDeal {
   times: DealTimes;
 }
 
-interface CalendarEvent {
+export interface CalendarEvent {
   uid: string;
   start: number;
   end: number;
@@ -85,14 +85,14 @@ function eventLines(e: CalendarEvent, url: string, now: number): string[] {
 }
 
 /**
- * The deal's two dates as an .ics file: the key handover (at move-in) and the handover deadline. Nothing reminds
- * anyone otherwise (Keysfirst keeps no emails), and the deadline is the tenant's safety net.
+ * The deal's two dates: the key handover (at move-in) and the handover deadline. Nothing reminds anyone otherwise
+ * (Keysfirst keeps no emails), and the deadline is the tenant's safety net.
  */
-export function dealCalendar(deal: CalendarDeal, role: CalendarRole, url: string, now = Math.floor(Date.now() / 1000)): string {
+export function dealEvents(deal: CalendarDeal, role: CalendarRole, url: string): [CalendarEvent, CalendarEvent] {
   const amount = formatEur(deal.amount);
   const { moveIn, deadline } = deal.times;
   const tenant = role === "tenant";
-  const events: CalendarEvent[] = [
+  return [
     {
       uid: `${deal.id}-handover@keysfirst.io`,
       start: moveIn,
@@ -114,14 +114,27 @@ export function dealCalendar(deal: CalendarDeal, role: CalendarRole, url: string
       alarm: 2 * 60,
     },
   ];
+}
+
+/** Both dates as an .ics file (Apple Calendar, Outlook and most other calendar apps). */
+export function dealCalendar(deal: CalendarDeal, role: CalendarRole, url: string, now = Math.floor(Date.now() / 1000)): string {
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//Keysfirst//Deposit deal//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
-    ...events.flatMap((e) => eventLines(e, url, now)),
+    ...dealEvents(deal, role, url).flatMap((e) => eventLines(e, url, now)),
     "END:VCALENDAR",
   ];
   return lines.map(foldLine).join("\r\n") + "\r\n";
+}
+
+/**
+ * One event as a Google Calendar link: it opens Google Calendar (the app on Android) with the event filled in, to save
+ * with one tap. Google takes one event per link and sets its own reminders.
+ */
+export function googleCalendarUrl(e: CalendarEvent): string {
+  const params = new URLSearchParams({ action: "TEMPLATE", text: e.summary, dates: `${stamp(e.start)}/${stamp(e.end)}`, details: e.description });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }

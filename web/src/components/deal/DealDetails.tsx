@@ -1,8 +1,10 @@
-import { buttonClass, HIT_AREA } from "@/components/ui/Button";
+import { HIT_AREA } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { cx } from "@/lib/cx";
 import { explorerAddress, formatShortDateTime, shortAddress } from "@/lib/format";
+import type { CalendarDeal, CalendarRole } from "@/lib/calendar";
 import { handoverOpensAt, type DealTimes } from "@/lib/rules";
+import { AddToCalendar } from "./AddToCalendar";
 
 /** "Europe/Rome" -> "Rome"; the zone every time on the page is shown in (the viewer's device). */
 function deviceZone(): string | null {
@@ -15,10 +17,18 @@ function deviceZone(): string | null {
 }
 
 /**
- * `calendarFor`: the landlord or tenant of a deal that isn't settled yet gets the handover and the deadline as a
- * calendar file. Keysfirst sends no emails, so this is the only reminder they get.
+ * `calendar`: the landlord or tenant of a deal that isn't settled yet can add the handover and the deadline to their
+ * calendar. Keysfirst sends no emails, so this is the only reminder they get.
  */
-export function DealDetails({ id, times, calendarFor = null }: { id: string; times: DealTimes; calendarFor?: "landlord" | "tenant" | null }) {
+export function DealDetails({
+  id,
+  times,
+  calendar = null,
+}: {
+  id: string;
+  times: DealTimes;
+  calendar?: { deal: CalendarDeal; role: CalendarRole; url: string } | null;
+}) {
   const zone = deviceZone();
   const rows: Array<[string, string]> = [
     ["Move-in", formatShortDateTime(times.moveIn)],
@@ -54,12 +64,7 @@ export function DealDetails({ id, times, calendarFor = null }: { id: string; tim
           </dd>
         </div>
       </dl>
-      {calendarFor && (
-        <a href={`/api/calendar/${id}?for=${calendarFor}`} className={cx(buttonClass({ variant: "secondary", fullWidth: true }), "mt-4")}>
-          <Icon name="calendar" size={18} />
-          Add both dates to your calendar
-        </a>
-      )}
+      {calendar && <AddToCalendar {...calendar} />}
     </section>
   );
 }

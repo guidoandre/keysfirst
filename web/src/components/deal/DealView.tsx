@@ -51,6 +51,17 @@ export function DealView(p: DealViewProps) {
     amount,
   });
 
+  // The landlord from the start; the tenant once they have paid (before that, a visitor may never pay). Not after the
+  // deadline: both dates are behind them.
+  const calendarRole =
+    now > data.deadline
+      ? null
+      : role === "landlord" && (data.status === "open" || data.status === "funded")
+        ? "landlord"
+        : role === "tenant" && data.status === "funded"
+          ? "tenant"
+          : null;
+
   return (
     <div className="enter-stack mx-auto max-w-app space-y-5 px-4 py-6 sm:py-10">
       {p.connected && <BackToDeals />}
@@ -96,15 +107,14 @@ export function DealView(p: DealViewProps) {
       <DealDetails
         id={p.id}
         times={times}
-        // The landlord from the start; the tenant once they have paid (before that, a visitor may never pay).
-        calendarFor={
-          now > data.deadline
-            ? null
-            : role === "landlord" && (data.status === "open" || data.status === "funded")
-            ? "landlord"
-            : role === "tenant" && data.status === "funded"
-              ? "tenant"
-              : null
+        calendar={
+          calendarRole
+            ? {
+                deal: { id: p.id, title: data.title, amount: data.amount, times },
+                role: calendarRole,
+                url: `${p.origin}/deal/${p.id}`,
+              }
+            : null
         }
       />
     </div>

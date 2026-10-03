@@ -44,7 +44,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   return new Response(ics, {
     headers: {
       "Content-Type": "text/calendar; charset=utf-8",
-      "Content-Disposition": 'attachment; filename="keysfirst-deal.ics"',
+      // Inline: Safari on iPhone, iPad and Mac then opens Calendar's "Add" screen instead of saving a download. Browsers
+      // that can't show a calendar still download it under this name.
+      "Content-Disposition": 'inline; filename="keysfirst-deal.ics"',
       "Cache-Control": "no-store",
     },
   });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dealCalendar, escapeText, foldLine } from "./calendar";
+import { dealCalendar, dealEvents, escapeText, foldLine, googleCalendarUrl } from "./calendar";
 
 const DAY = 86_400;
 const moveIn = Date.UTC(2026, 9, 1, 14, 0) / 1000; // Thu 1 Oct 2026, 14:00 UTC
@@ -64,5 +64,18 @@ describe("dealCalendar", () => {
     expect(tenant).toContain("Never release it because someone asks you to by message");
     expect(landlord).toContain("tap “Start the handover”");
     expect(landlord).toContain("can only go back to your tenant");
+  });
+});
+
+describe("googleCalendarUrl", () => {
+  it("fills in one event: title, UTC times and the description with the deal link", () => {
+    const [handover, deadline] = dealEvents(deal, "tenant", url);
+    const link = new URL(googleCalendarUrl(handover));
+    expect(link.origin + link.pathname).toBe("https://calendar.google.com/calendar/render");
+    expect(link.searchParams.get("action")).toBe("TEMPLATE");
+    expect(link.searchParams.get("text")).toBe("Key handover: Room in Vallendar, near WHU");
+    expect(link.searchParams.get("dates")).toBe("20261001T140000Z/20261001T150000Z");
+    expect(link.searchParams.get("details")).toContain(url);
+    expect(new URL(googleCalendarUrl(deadline)).searchParams.get("dates")).toBe("20261004T140000Z/20261004T143000Z");
   });
 });
