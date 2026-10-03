@@ -4,9 +4,8 @@
  */
 export const OPERATOR = {
   name: "Guido Andreini",
-  // TODO before submission: replace both placeholders with a real postal address.
-  street: "[Street and house number]",
-  city: "[Postcode and city]",
+  street: "Goethestraße 8",
+  city: "56179 Vallendar",
   country: "Germany",
   email: "info@keysfirst.io",
 };

@@ -29,6 +29,12 @@ const PATHS = {
       {CLOCK_HANDS}
     </>
   ),
+  calendar: (
+    <>
+      <rect x="3.5" y="5" width="17" height="15.5" rx="1.5" />
+      <path d="M3.5 10h17M8 3v4M16 3v4" />
+    </>
+  ),
   hourglass: <path d="M6 3h12M6 21h12M7.5 3v3.5L12 12l-4.5 5.5V21M16.5 3v3.5L12 12l4.5 5.5V21" />,
   "arrow-right": <path d="M4 12h15M13 6l6 6-6 6" />,
   "arrow-left": <path d="M20 12H5M11 6l-6 6 6 6" />,

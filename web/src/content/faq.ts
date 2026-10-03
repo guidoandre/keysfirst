@@ -54,7 +54,7 @@ export const FAQ: FaqGroup[] = [
         id: "no-keys",
         question: "What if I never get the keys?",
         answer: [
-          "Then you never approve the handover, and the landlord is never paid. After the handover deadline the deposit goes back to you. Anyone can trigger that return, including you.",
+          "Then you never approve the handover, and the landlord is never paid. After the handover deadline the deposit goes back to you. Anyone can trigger that return, including you, and if nobody has, Keysfirst does by the next morning.",
         ],
       },
       {
@@ -106,7 +106,7 @@ export const FAQ: FaqGroup[] = [
         id: "no-show",
         question: "What if the tenant doesn't show up?",
         answer: [
-          "After the deadline the tenant can take the deposit back. Anyone can trigger that return. The landlord loses the time the room was reserved, not money.",
+          "After the deadline the tenant can take the deposit back. Anyone can trigger that return, and if nobody has, Keysfirst does by the next morning. The landlord loses the time the room was reserved, not money.",
         ],
       },
       {

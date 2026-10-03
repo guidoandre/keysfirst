@@ -1,4 +1,4 @@
-import { HIT_AREA } from "@/components/ui/Button";
+import { buttonClass, HIT_AREA } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { cx } from "@/lib/cx";
 import { explorerAddress, formatShortDateTime, shortAddress } from "@/lib/format";
@@ -14,7 +14,11 @@ function deviceZone(): string | null {
   }
 }
 
-export function DealDetails({ id, times }: { id: string; times: DealTimes }) {
+/**
+ * `calendarFor`: the landlord or tenant of a deal that isn't settled yet gets the handover and the deadline as a
+ * calendar file. Keysfirst sends no emails, so this is the only reminder they get.
+ */
+export function DealDetails({ id, times, calendarFor = null }: { id: string; times: DealTimes; calendarFor?: "landlord" | "tenant" | null }) {
   const zone = deviceZone();
   const rows: Array<[string, string]> = [
     ["Move-in", formatShortDateTime(times.moveIn)],
@@ -50,6 +54,12 @@ export function DealDetails({ id, times }: { id: string; times: DealTimes }) {
           </dd>
         </div>
       </dl>
+      {calendarFor && (
+        <a href={`/api/calendar/${id}?for=${calendarFor}`} className={cx(buttonClass({ variant: "secondary", fullWidth: true }), "mt-4")}>
+          <Icon name="calendar" size={18} />
+          Add both dates to your calendar
+        </a>
+      )}
     </section>
   );
 }

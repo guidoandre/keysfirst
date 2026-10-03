@@ -24,7 +24,7 @@ const RULES = [
   "Paying only works if the money would be locked for at most 180 days.",
   "Only the tenant who paid can release the deposit to the landlord, from 24 hours before move-in until the deadline.",
   "The landlord can give the deposit back to the tenant at any time.",
-  "After the deadline, anyone can send the deposit back to the tenant.",
+  "After the deadline, anyone can send the deposit back to the tenant. Keysfirst checks once a day and sends back any that are left.",
   "Every deal settles once. The money only ever goes to the tenant or the landlord, and the deal stays on Solana as a receipt.",
 ];
 
@@ -64,7 +64,7 @@ export default function HowItWorksPage() {
               { key: "pay", time: "Step 2", title: "The tenant pays into the lock", detail: `The exact deposit, before the deadline. On top, the tenant pays a Keysfirst fee (${CARD_FEES}, at least ${MIN_FEE}), which isn't refunded and stays outside the lock.`, state: "done" },
               { key: "window", time: "24 h before move-in", title: "The handover window opens", detail: "From now until the deadline, the tenant can release the deposit.", state: "now" },
               { key: "door", time: "At the door", title: "The tenant approves the handover", detail: "By scanning the landlord's code or tapping “I have the keys” on their deal page. The whole deposit goes to the landlord, in seconds.", state: "next" },
-              { key: "deadline", time: "After the deadline", title: "No handover?", detail: "The whole deposit goes back to the tenant. Anyone can trigger it.", state: "later" },
+              { key: "deadline", time: "After the deadline", title: "No handover?", detail: "The whole deposit goes back to the tenant. Anyone can trigger it; if nobody does, Keysfirst does by the next morning.", state: "later" },
             ]}
           />
           <div className="grid gap-4">
