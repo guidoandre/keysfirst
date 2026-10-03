@@ -6,15 +6,37 @@ import { useCallback, useSyncExternalStore } from "react";
  * Demo mode: an account setting, off by default, that brings the test shortcuts into the create flow ("Use demo
  * values" and the 5-minute window). Kept in this browser per account (no database); the account sheet switches it.
  */
-const key = (account: string) => `keysfirst:demo:${account}`;
+export const demoModeKey = (account: string) => `keysfirst:demo:${account}`;
 const CHANGE = "keysfirst:demo-change";
 
-function read(account: string | null): boolean {
-  if (!account) return false;
+type Store = Pick<Storage, "getItem" | "setItem" | "removeItem">;
+
+/** On only when this account switched it on here. No account, or storage blocked: off. */
+export function readDemoMode(account: string | null, store: Store | null): boolean {
+  if (!account || !store) return false;
   try {
-    return localStorage.getItem(key(account)) === "1";
+    return store.getItem(demoModeKey(account)) === "1";
   } catch {
-    return false; // storage blocked: demo mode stays off
+    return false;
+  }
+}
+
+/** Saves the switch for this account; does nothing without an account and never throws (blocked storage). */
+export function writeDemoMode(account: string | null, on: boolean, store: Store | null): void {
+  if (!account || !store) return;
+  try {
+    if (on) store.setItem(demoModeKey(account), "1");
+    else store.removeItem(demoModeKey(account));
+  } catch {
+    // Storage blocked: the switch can't stay on.
+  }
+}
+
+function browserStore(): Store | null {
+  try {
+    return window.localStorage;
+  } catch {
+    return null; // some privacy modes throw on access
   }
 }
 
@@ -29,16 +51,10 @@ function subscribe(onChange: () => void): () => void {
 }
 
 export function useDemoMode(account: string | null): [boolean, (on: boolean) => void] {
-  const on = useSyncExternalStore(subscribe, () => read(account), () => false);
+  const on = useSyncExternalStore(subscribe, () => readDemoMode(account, browserStore()), () => false);
   const set = useCallback(
     (next: boolean) => {
-      if (!account) return;
-      try {
-        if (next) localStorage.setItem(key(account), "1");
-        else localStorage.removeItem(key(account));
-      } catch {
-        // Storage blocked: the switch can't stay on.
-      }
+      writeDemoMode(account, next, browserStore());
       window.dispatchEvent(new Event(CHANGE));
     },
     [account],
