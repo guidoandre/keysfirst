@@ -48,7 +48,8 @@ export function CopyMessageButton({ message, variant = "quiet", className }: { m
   return (
     <>
       <Button variant={variant} onClick={copy} className={className}>
-        <Icon name={copied ? "check" : "copy"} size={18} />
+        {/* Keyed so the check is a fresh element each time, and draws its tick in (globals.css) */}
+        <Icon key={copied ? "check" : "copy"} name={copied ? "check" : "copy"} size={18} className={copied ? "draw-in" : undefined} />
         {copied ? "Copied" : "Copy the message"}
       </Button>
       <p aria-live="polite" className="sr-only">
