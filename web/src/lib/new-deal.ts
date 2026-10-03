@@ -12,12 +12,10 @@ export const WINDOW_CHOICES = [
 export type WindowChoice = (typeof WINDOW_CHOICES)[number]["value"];
 
 export const DEFAULT_WINDOW: WindowChoice = "3d";
-export const DEMO_WINDOW_SECONDS = 300;
-export const DEMO_VALUES = { country: "DE", housing: "any", title: "Room in Vallendar", rent: "300", amount: "600" } as const;
 export const TITLE_MAX_BYTES = 64;
 /** Largest deposit: deposit + card fee must stay under Stripe's €999,999.99 charge limit. Base units (6 decimals). */
 export const MAX_DEPOSIT = 900_000n * 1_000_000n;
-/** Outside the demo, the tenant gets at least an hour to pay. */
+/** The tenant gets at least an hour to pay. */
 const MIN_TIME_TO_PAY = 60 * 60;
 /** A move-in further ahead than this is refused as a likely typo in the year. */
 const MAX_MOVE_IN_AHEAD = 365 * 86_400;
@@ -34,7 +32,6 @@ export interface NewDealForm {
   /** Unix seconds; NaN until chosen. */
   moveIn: number;
   window: WindowChoice;
-  demo: boolean;
 }
 
 export interface NewDealValues {
@@ -52,8 +49,7 @@ export const STEP_FIELDS: Record<1 | 2, NewDealField[]> = { 1: ["country", "titl
 
 export const titleBytes = (title: string) => new TextEncoder().encode(title.trim()).length;
 
-export function windowSeconds(form: Pick<NewDealForm, "window" | "demo">): number {
-  if (form.demo) return DEMO_WINDOW_SECONDS;
+export function windowSeconds(form: Pick<NewDealForm, "window">): number {
   return WINDOW_CHOICES.find((choice) => choice.value === form.window)?.seconds ?? WINDOW_CHOICES[1].seconds;
 }
 
@@ -90,8 +86,8 @@ export function validateNewDeal(form: NewDealForm, now: number): { values: NewDe
   } else {
     deadline = form.moveIn + windowSeconds(form);
     if (deadline <= now) errors.moveIn = `That handover deadline is already in the past. Pick a later move-in or a longer window.`;
-    // Outside the demo, a deadline minutes away would expire before the tenant could even open the link.
-    else if (!form.demo && deadline < now + MIN_TIME_TO_PAY) errors.moveIn = `That leaves your tenant less than an hour to pay. Pick a later move-in or a longer window.`;
+    // A deadline minutes away would expire before the tenant could even open the link.
+    else if (deadline < now + MIN_TIME_TO_PAY) errors.moveIn = `That leaves your tenant less than an hour to pay. Pick a later move-in or a longer window.`;
     // Almost always a typo in the year (dates on the deal page only show the year when it isn't this one).
     else if (form.moveIn > now + MAX_MOVE_IN_AHEAD) errors.moveIn = `That move-in is more than a year away. Check the year.`;
   }
