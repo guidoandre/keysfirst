@@ -14,6 +14,14 @@ describe("escapeText", () => {
   it("escapes the characters iCalendar reserves", () => {
     expect(escapeText("a,b;c\\d\ne")).toBe("a\\,b\\;c\\\\d\\ne");
   });
+
+  it("can't be used to start a new line from a title", () => {
+    const title = "Room\rEND:VEVENT\r\nBEGIN:VEVENT\nURL:https://evil.example\u2028x\u0000\u001b";
+    const escaped = escapeText(title);
+    expect(escaped).not.toMatch(/[\r\n\u2028\u0000-\u001f]/);
+    expect(escaped).toBe("Room\\nEND:VEVENT\\nBEGIN:VEVENT\\nURL:https://evil.example\\nx");
+    expect(escapeText("Move-in 2028/2029")).toBe("Move-in 2028/2029");
+  });
 });
 
 describe("foldLine", () => {

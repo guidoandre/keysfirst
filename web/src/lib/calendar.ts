@@ -28,9 +28,20 @@ function stamp(unixSeconds: number): string {
   return new Date(unixSeconds * 1000).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 }
 
-/** RFC 5545 §3.3.11: backslash, semicolon, comma and line breaks are escaped in text values. */
+/**
+ * RFC 5545 §3.3.11: backslash, semicolon, comma and line breaks are escaped in text values. The landlord writes the
+ * title, so every line break (a lone \r too, which some calendar apps read as one) is escaped and other control
+ * characters are dropped: nothing in a title can start a new line, and so a new property or event, in the file.
+ */
 export function escapeText(text: string): string {
-  return text.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+  return (
+    text
+      .replace(/\\/g, "\\\\")
+      .replace(/;/g, "\\;")
+      .replace(/,/g, "\\,")
+      .replace(/\r\n|\r|\n|\u2028|\u2029/g, "\\n")
+      .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, "")
+  );
 }
 
 /** RFC 5545 §3.1: lines longer than 75 bytes continue on the next line after a space, never inside a character. */
