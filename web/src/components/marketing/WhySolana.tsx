@@ -1,4 +1,4 @@
-import { Icon, type IconName } from "@/components/ui/Icon";
+import { Icon, PlayIcon, type IconName } from "@/components/ui/Icon";
 import idl from "@/idl/keysfirst.json";
 import { cx } from "@/lib/cx";
 import { explorerAddress } from "@/lib/format";
@@ -51,7 +51,7 @@ export function WhySolana() {
             // sits on a wrapper, so a hover never restarts it.
             <li key={fact.title} data-reveal="" data-play="" className="reveal-rule pt-4.5 lg:pt-6">
               <span className="reveal-pop block w-fit">
-                <Icon name={fact.icon} size={26} className={cx("lg:size-7.5", fact.icon === "lock" && "play-hop [--hop:4px]")} />
+                <PlayIcon name={fact.icon} className={cx("size-6.5 lg:size-7.5", fact.icon === "lock" && "play-hop [--hop:4px]")} />
               </span>
               <h3 className="mt-2.5 font-display text-2xl font-bold lg:mt-3">{fact.title}</h3>
               <p className="mt-1.5 leading-[1.55] text-fg-muted lg:mt-2.5 lg:text-[1.0625rem]">{fact.text}</p>

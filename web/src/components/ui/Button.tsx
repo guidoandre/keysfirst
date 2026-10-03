@@ -97,7 +97,13 @@ export function ButtonLink({
   }
   return (
     <Link href={href} prefetch={prefetch} className={cls} {...rest}>
-      {prefetch === false ? <PendingLabel centred={variant !== "quiet"}>{children}</PendingLabel> : children}
+      {prefetch === false ? (
+        <PendingLabel centred={variant !== "quiet"} inPage={href.startsWith("#")}>
+          {children}
+        </PendingLabel>
+      ) : (
+        children
+      )}
     </Link>
   );
 }

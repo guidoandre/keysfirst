@@ -1,13 +1,19 @@
-import type { SVGProps } from "react";
+import type { ReactNode, SVGProps } from "react";
+import { cx } from "@/lib/cx";
+
+// The parts PlayIcon moves on their own (below); the plain icons are drawn from the same shapes.
+const LOCK_SHACKLE = <path d="M7 11V8a5 5 0 0 1 10 0v3" />;
+const LOCK_BODY = <rect x="4.5" y="11" width="15" height="10" rx="1.5" />;
+const CLOCK_FACE = <circle cx="12" cy="12" r="9" />;
+const CLOCK_HANDS = <path d="M12 7v5l3 2" />;
 
 // 24 px grid, 2 px stroke, square caps (design system §7). Always next to a text label, or given `label`.
-// The svg carries data-icon="<name>" so the pointer reactions in globals.css can move its parts: the lock's shackle
-// (its first path), the clock's hands, the check's tick (pathLength 1 lets it draw in).
+// The svg carries data-icon="<name>" for the pointer reactions in globals.css (the check's pathLength 1 lets it draw in).
 const PATHS = {
   lock: (
     <>
-      <path d="M7 11V8a5 5 0 0 1 10 0v3" />
-      <rect x="4.5" y="11" width="15" height="10" rx="1.5" />
+      {LOCK_SHACKLE}
+      {LOCK_BODY}
     </>
   ),
   key: (
@@ -19,8 +25,8 @@ const PATHS = {
   check: <path d="M4 12.5l5 5L20 6.5" pathLength={1} />,
   clock: (
     <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7v5l3 2" />
+      {CLOCK_FACE}
+      {CLOCK_HANDS}
     </>
   ),
   hourglass: <path d="M6 3h12M6 21h12M7.5 3v3.5L12 12l-4.5 5.5V21M16.5 3v3.5L12 12l4.5 5.5V21" />,
@@ -103,6 +109,15 @@ const PATHS = {
 
 export type IconName = keyof typeof PATHS;
 
+const STROKE = {
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 2,
+  strokeLinecap: "square",
+  strokeLinejoin: "miter",
+} as const;
+
 export function Icon({
   name,
   size = 20,
@@ -113,12 +128,7 @@ export function Icon({
     <svg
       width={size}
       height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="square"
-      strokeLinejoin="miter"
+      {...STROKE}
       role={label ? "img" : undefined}
       aria-label={label}
       aria-hidden={label ? undefined : true}
@@ -128,5 +138,32 @@ export function Icon({
     >
       {PATHS[name]}
     </svg>
+  );
+}
+
+// The part that moves, drawn as its own svg on top of the still part, with the class globals.css animates.
+const MOVING: Partial<Record<IconName, { still: ReactNode; moving: ReactNode; part: string }>> = {
+  lock: { still: LOCK_BODY, moving: LOCK_SHACKLE, part: "play-shackle" },
+  clock: { still: CLOCK_FACE, moving: CLOCK_HANDS, part: "play-hands" },
+};
+
+/**
+ * A decorative icon for a pointer reaction (globals.css, design system §5). The lock's shackle and the clock's hands
+ * are separate elements stacked on the still part, so they move as layers of their own instead of the icon being
+ * redrawn every frame (a redrawn moving part can leave slivers behind). At rest it looks exactly like Icon. Other icons
+ * render as Icon. Size it with classes (size-6.5 …).
+ */
+export function PlayIcon({ name, strokeWidth = 2, className }: { name: IconName; strokeWidth?: number; className?: string }) {
+  const parts = MOVING[name];
+  if (!parts) return <Icon name={name} size={24} strokeWidth={strokeWidth} className={className} />;
+  return (
+    <span aria-hidden className={cx("relative block", className)}>
+      <svg {...STROKE} strokeWidth={strokeWidth} focusable="false" className="absolute inset-0 size-full">
+        {parts.still}
+      </svg>
+      <svg {...STROKE} strokeWidth={strokeWidth} focusable="false" className={cx("absolute inset-0 size-full", parts.part)}>
+        {parts.moving}
+      </svg>
+    </span>
   );
 }

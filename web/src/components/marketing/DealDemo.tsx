@@ -111,8 +111,10 @@ export function DealDemo({ role }: { role: LandingRole }) {
 }
 
 /**
- * One side's phone. The other side's phone sits behind, smaller and faded, and can't be focused or clicked.
+ * One side's phone. From `sm` the other side's phone sits behind, smaller and faded; below it the two share one spot and
+ * crossfade, sliding a little toward their side of the toggle. The phone behind can't be focused or clicked.
  * Below `sm` its button is hidden to save height: the controls' Next does the same.
+ * Motion: .demo-phone in globals.css (own compositor layer from the start, so a swap never stalls on its first frame).
  */
 function Phone({ side, viewer, step, onNext }: { side: LandingRole; viewer: LandingRole; step: number; onNext: () => void }) {
   const front = side === viewer;
@@ -122,15 +124,19 @@ function Phone({ side, viewer, step, onNext }: { side: LandingRole; viewer: Land
     <div
       inert={!front}
       className={cx(
-        "@container flex h-full w-(--ph-w) flex-col overflow-hidden rounded-[calc(var(--ph-w)*0.14)] border-[length:max(4px,calc(var(--ph-w)*0.022))] border-fg bg-canvas shadow-pop sm:absolute sm:top-0",
-        "[transition:translate_450ms_var(--ease-settle),scale_450ms_var(--ease-settle),opacity_350ms_var(--ease-out)]",
-        side === "tenant" ? "origin-left sm:left-0" : "origin-right sm:right-0",
-        front ? "z-2" : cx("z-1 scale-90 opacity-55 max-sm:hidden", side === "tenant" ? "translate-x-[14.5%]" : "-translate-x-[14.5%]"),
+        "demo-phone @container absolute top-0 left-0 flex h-full w-(--ph-w) flex-col overflow-hidden rounded-[calc(var(--ph-w)*0.14)] border-[length:max(4px,calc(var(--ph-w)*0.022))] border-fg bg-canvas shadow-pop",
+        side === "tenant" ? "sm:origin-left" : "sm:right-0 sm:left-auto sm:origin-right",
+        front
+          ? "z-2"
+          : cx(
+              "z-1 max-sm:scale-96 max-sm:opacity-0 sm:scale-90 sm:opacity-55",
+              side === "tenant" ? "max-sm:-translate-x-[6%] sm:translate-x-[14.5%]" : "max-sm:translate-x-[6%] sm:-translate-x-[14.5%]",
+            ),
       )}
     >
       <div className="flex h-[max(1.75rem,16cqi)] shrink-0 items-center justify-between border-b border-rule px-[max(0.625rem,5.8cqi)] text-[length:max(0.625rem,4.4cqi)] font-semibold">
         <span>{side === "tenant" ? "Tenant's phone" : "Landlord's phone"}</span>
-        {front && <span className="rounded-[0.25rem] bg-accent px-1.5 py-0.5">You</span>}
+        <span className={cx("demo-you rounded-[0.25rem] bg-accent px-1.5 py-0.5", !front && "scale-75 opacity-0")}>You</span>
       </div>
       <div className={cx("shrink-0 px-[max(0.625rem,5.8cqi)] py-[max(0.5rem,6cqi)] transition-colors duration-350", BAND[status])}>
         <p className="label text-[length:max(0.5625rem,4.4cqi)] opacity-80">{DEMO_DEAL.title}</p>
