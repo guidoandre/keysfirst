@@ -2,6 +2,8 @@
 
 Date: 2026-09-27 · Status: approved design (automated, arbiter-free) · Network: Solana **devnet only**
 
+> The deal rules and invariants in §6 are what the deployed program enforces. Login, payment and the demo script were later replaced by the [euro-experience spec](2026-09-28-keysfirst-euro-experience-design.md) (email login, card payment, no wallet app needed), so the Won't list in §9 and the demo script in §11 are out of date.
+
 ## 1. Challenge and constraints
 
 - Target: Superteam Germany "Build an MVP with Solana at WHU" (https://superteam.fun/earn/listing/build-at-whu).

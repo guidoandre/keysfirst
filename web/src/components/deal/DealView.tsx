@@ -27,7 +27,6 @@ export interface DealViewProps {
   signature: string | null;
   onAction: (action: Action) => void;
   card?: CardOffer | null;
-  cardBusy?: boolean;
   onPayByCard?: () => void;
   /** The tenant came from the handover page: releasing is the main button. */
   atDoor?: boolean;
@@ -89,7 +88,6 @@ export function DealView(p: DealViewProps) {
         signature={p.signature}
         onAction={p.onAction}
         card={p.card}
-        cardBusy={p.cardBusy}
         onPayByCard={p.onPayByCard}
         // Spec §6.4: while the deal is open and before the deadline (also before payment opens, 180 days ahead).
         // Sending the link is the landlord's next step, so it sits in that box, above "Cancel this deal".

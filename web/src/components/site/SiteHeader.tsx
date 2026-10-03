@@ -9,7 +9,6 @@ export const SITE_NAV: NavItem[] = [
   { href: "/faq", label: "FAQ" },
 ];
 
-// Cut rule: if the For tenants / For landlords pages are cut, remove them here.
 const MENU: NavItem[] = [
   ...SITE_NAV.slice(0, 2),
   { href: "/tenants", label: "For tenants" },

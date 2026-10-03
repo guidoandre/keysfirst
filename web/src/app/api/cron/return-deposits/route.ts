@@ -6,7 +6,7 @@ import { faucetKeypair } from "@/lib/server/faucet";
 import { returnExpiredDeposits } from "@/lib/server/keeper";
 
 export const dynamic = "force-dynamic";
-// One account lookup plus up to 20 confirmed transactions; the keeper stops starting new ones after 40 s.
+// One account lookup plus up to 20 confirmed transactions; the keeper stops starting new ones after 35 s.
 export const maxDuration = 60;
 
 /** True only for Vercel Cron's own call, which carries `Authorization: Bearer <CRON_SECRET>`. */

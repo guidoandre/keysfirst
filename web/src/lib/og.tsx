@@ -11,8 +11,7 @@ const MARKER = "#FFE14D";
 const GRAPHITE = "#545B66";
 
 // ImageResponse can't read next/font's woff2 files; it gets the approved TTF, read once per server instance.
-// Controller-directed deviation (Task 17): a failed read must not break every preview, so fall back to null and
-// let ImageResponse use its default font instead of rejecting.
+// A failed read must not break every preview, so fall back to null and let ImageResponse use its default font.
 const displayFont = readFile(join(process.cwd(), "assets/fonts/BarlowSemiCondensed-Bold.ttf")).catch(() => null);
 
 /** A 1200 × 630 link-preview card in the brand: plate logo, big ink title, devnet line. Flexbox only (Satori). */
@@ -39,7 +38,7 @@ export async function ogCard({ kicker, title, subtitle }: { kicker?: string; tit
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
           {kicker ? (
-            // Controller ruling R4: status labels are never uppercased, so no textTransform here (kicker prints STATUS_LABEL verbatim).
+            // Status labels are shown exactly as written, never uppercased, so no textTransform: the kicker prints STATUS_LABEL verbatim.
             <div style={{ display: "flex", fontSize: 30, color: GRAPHITE, letterSpacing: 2 }}>{kicker}</div>
           ) : null}
           <div style={{ display: "flex", fontSize: 80, lineHeight: 1.04, marginTop: 14, maxWidth: 1040 }}>{title}</div>

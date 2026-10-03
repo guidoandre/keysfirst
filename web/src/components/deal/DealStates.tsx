@@ -30,7 +30,7 @@ export function DealLoading({ loadError }: { loadError: string | null }) {
   );
 }
 
-/** Every page has exactly one h1; the invalid-link and not-found states have no other heading, so this is it (ruling R2). */
+/** Every page has exactly one h1; the invalid-link and not-found states have no other heading, so this is it. */
 export function DealMessage({ title, children, action }: { title: string; children?: ReactNode; action?: ReactNode }) {
   return (
     <div className="mx-auto max-w-app px-4 py-12">

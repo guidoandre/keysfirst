@@ -25,10 +25,6 @@ export function fromCents(cents: number): bigint {
   return BigInt(cents) * UNITS_PER_CENT;
 }
 
-export function formatDateTime(unixSeconds: number): string {
-  return new Date(unixSeconds * 1000).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
-}
-
 /** 90061 -> "1 day 1 h"; 125 -> "2 min" */
 export function formatDuration(seconds: number): string {
   const s = Math.max(0, Math.floor(seconds));

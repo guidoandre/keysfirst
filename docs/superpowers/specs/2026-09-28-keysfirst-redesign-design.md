@@ -1,6 +1,6 @@
 # Keysfirst Redesign — Design Spec
 
-Date: 2026-09-28 · Status: design approved in chat, spec for review · Branch: `redesign` (production stays on `main`)
+Date: 2026-09-28 · Status: implemented (merged into main in 48d2b21) · Branch: `redesign` (production stays on `main`)
 Deadline: finished, verified and merged by **Thu 1 Oct 2026, evening**. Fri–Sat are for rehearsal, README, deck and video.
 
 Read with: [brand guidelines](../../brand-guidelines.md) · [design system](../../design-system.md) · [product spec](2026-09-27-keysfirst-design.md) (deal rules §6 and limitations §10 are unchanged) · [spike notes](../../spike.md).

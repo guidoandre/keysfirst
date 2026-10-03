@@ -4,7 +4,7 @@ export type PayMethod = "card" | "cardIntl" | "bank";
 // Spec D8. Basis points keep the maths in whole numbers. Cards issued outside the EEA cost Stripe 3.25% + €0.25
 // instead of 1.5% + €0.25, so they pay one point more: §270a BGB bans card surcharges only where the card issuer and
 // the acquirer are both in the EEA (Chapter II of Regulation (EU) 2015/751), and the extra point stays below the
-// extra cost (§312a(4) BGB), with a cheaper way to pay (bank transfer) always offered.
+// extra cost (§312a(4) BGB). The live version offers a cheaper way to pay (bank transfer); it is off in this prototype.
 const RATE_BP: Record<PayMethod, number> = { card: 350, cardIntl: 450, bank: 200 };
 export const MIN_FEE_CENTS = 1_200;
 

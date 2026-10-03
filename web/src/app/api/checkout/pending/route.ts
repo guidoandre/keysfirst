@@ -30,8 +30,8 @@ export async function POST(req: Request) {
   }
 
   try {
-    // Stripe's search can't mix AND with OR, so the status is checked below: a card payment is held
-    // ("requires_capture") until fulfil charges it at the card's rate, then "succeeded".
+    // Stripe's search can't mix AND with OR, so the status is checked below: the card form charges at once
+    // ("succeeded"); an older Checkout payment may still be held ("requires_capture") until fulfil charges it.
     const found = await stripe.paymentIntents.search({
       query: `metadata['deal']:'${deal}' AND metadata['account']:'${account}'`,
       limit: 20,

@@ -5,11 +5,10 @@ import { loadStripe, type Stripe as StripeJs } from "@stripe/stripe-js";
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
+import { CARD_UNAVAILABLE } from "@/lib/checkout";
 import { STRIPE_PUBLISHABLE_KEY } from "@/lib/config";
 import { formatEur, fromCents } from "@/lib/format";
 import { feeRate, priceBreakdown } from "@/lib/pricing";
-
-const UNAVAILABLE = "Card payments are not available right now. Try again in a minute.";
 
 // Loaded once, and only when a tenant opens the card form: the deal page stays light for everyone else.
 let stripePromise: Promise<StripeJs | null> | null = null;
@@ -58,7 +57,7 @@ export function CardPayment(props: {
   onPaid: (payment: string) => void;
   onBusy: (busy: boolean) => void;
 }) {
-  if (!STRIPE_PUBLISHABLE_KEY) return <Callout tone="danger">{UNAVAILABLE}</Callout>;
+  if (!STRIPE_PUBLISHABLE_KEY) return <Callout tone="danger">{CARD_UNAVAILABLE}</Callout>;
   return (
     <Elements
       stripe={getStripe()}
@@ -121,7 +120,7 @@ function CardForm({ dealId, account, depositCents, onStarted, onPaid, onBusy }: 
       }
       const res = await post("/api/checkout/quote", { deal: dealId, account, token: confirmationToken.id });
       if (!res.ok) {
-        setError(typeof res.body.error === "string" ? res.body.error : UNAVAILABLE);
+        setError(typeof res.body.error === "string" ? res.body.error : CARD_UNAVAILABLE);
         return;
       }
       setQuote({ ...(res.body as unknown as Omit<Quote, "token">), token: confirmationToken.id });
@@ -140,7 +139,7 @@ function CardForm({ dealId, account, depositCents, onStarted, onPaid, onBusy }: 
       if (!res.ok || !payment) {
         // A used or declined card entry can't be paid again: enter it again for a fresh price.
         setQuote(null);
-        setError(typeof res.body.error === "string" ? res.body.error : UNAVAILABLE);
+        setError(typeof res.body.error === "string" ? res.body.error : CARD_UNAVAILABLE);
         return;
       }
       onStarted(payment);

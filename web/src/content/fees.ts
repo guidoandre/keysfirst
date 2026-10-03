@@ -21,9 +21,6 @@ export const CARD_FEES = `${CARD_FEE_PERCENT} with a card issued in Europe, ${IN
 export const EXAMPLE_PRICE = priceBreakdown(60_000, "card");
 export const EXAMPLE_INTL_PRICE = priceBreakdown(60_000, "cardIntl");
 
-/** "a Keysfirst fee of 3.5% with a card issued in Europe, 4.5% with other cards, at least €12" */
-export const CARD_FEE_SHORT = `a Keysfirst fee of ${CARD_FEES}, at least ${MIN_FEE}`;
-
 /** "€600 + €21 card fee (€627 with a non-European card)": short enough for the landing demo's small phone. */
 export function feeLine(depositCents: number): string {
   const eea = priceBreakdown(depositCents, "card");

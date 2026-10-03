@@ -7,4 +7,4 @@ export function stripeClient(): Stripe | null {
   return new Stripe(key);
 }
 
-export const CARD_UNAVAILABLE = "Card payments are not available right now. Try again in a minute.";
+export { CARD_UNAVAILABLE } from "@/lib/checkout";

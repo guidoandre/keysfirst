@@ -25,7 +25,7 @@ Tokens, components and motion rules for the web app live in [docs/design-system.
 
 | Message | Need it answers | Proof we can show |
 |---|---|---|
-| Only the tenant's scan pays the landlord. | "What if the landlord is fake?" | Program rule: the release needs the tenant's own approval; 42 automated tests including the invariants. |
+| Only the tenant's scan pays the landlord. | "What if the landlord is fake?" | Program rule: the release needs the tenant's own approval; 45 automated tests including the invariants. |
 | No handover, no money: it comes back after the deadline. | "What if I can't get in?" | After the deadline anyone can trigger the return; the program checks Solana's clock. |
 | Works with any listing. | "My room is on WG-Gesucht / Facebook / a friend's sublet." | It's a link, not a marketplace. |
 | Paid in seconds at the door. | "Why would a landlord agree?" | Payment on Solana is final in seconds and can't be charged back. |

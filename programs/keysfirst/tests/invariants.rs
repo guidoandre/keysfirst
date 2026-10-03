@@ -79,6 +79,7 @@ fn the_landlord_is_paid_only_through_the_tenants_signature() {
 
 #[test]
 fn each_deal_settles_exactly_once() {
+    use anchor_spl::associated_token::spl_associated_token_account::instruction::create_associated_token_account;
     let mut env = setup();
     let p = DealParams::default();
     let deal = funded_deal(&mut env, &p);
@@ -86,15 +87,20 @@ fn each_deal_settles_exactly_once() {
     let ix = ix_confirm(&env, deal, env.tenant.pubkey());
     assert_ok(&env.run(ix, Who::Tenant));
 
+    // Settling closed the vault. Anyone can re-create it, so do that first: then every attempt below reaches the
+    // deal's status check instead of failing on a missing vault.
+    let vault = create_associated_token_account(&env.stranger.pubkey(), &deal, &env.mint, &env.token_program);
+    assert_ok(&env.run(vault, Who::Stranger));
+
     set_time(&mut env.svm, p.deadline + 1);
     let attempts = [
-        (ix_confirm(&env, deal, env.tenant.pubkey()), Who::Tenant),
-        (ix_refund(&env, deal, env.landlord.pubkey()), Who::Landlord),
-        (ix_refund(&env, deal, env.stranger.pubkey()), Who::Stranger),
-        (ix_cancel(&env, deal, env.landlord.pubkey()), Who::Landlord),
+        (ix_confirm(&env, deal, env.tenant.pubkey()), Who::Tenant, "DealNotFunded"),
+        (ix_refund(&env, deal, env.landlord.pubkey()), Who::Landlord, "DealNotFunded"),
+        (ix_refund(&env, deal, env.stranger.pubkey()), Who::Stranger, "DealNotFunded"),
+        (ix_cancel(&env, deal, env.landlord.pubkey()), Who::Landlord, "DealNotOpen"),
     ];
-    for (ix, who) in attempts {
-        assert!(env.run(ix, who).is_err(), "{who:?} settled a second time");
+    for (ix, who, code) in attempts {
+        assert_err(&env.run(ix, who), code);
     }
     assert_eq!(balance(&env, ata(&env, &env.landlord.pubkey())), AMOUNT);
     assert_eq!(balance(&env, ata(&env, &env.tenant.pubkey())), START_BALANCE - AMOUNT);

@@ -18,8 +18,7 @@ const FACTS: Array<{ icon: IconName; title: string; text: string }> = [
   },
   {
     icon: "return",
-    // Controller-directed deviation from the brief (honesty ruling): the devnet program can still be
-    // upgraded with its upgrade key, so an absolute "nobody controls" claim is out (global constraint).
+    // Not "nobody controls it": the devnet program can still be upgraded with its upgrade key (README limitations).
     title: "The clock decides, not a person",
     text: "After the deadline, anyone can send the deposit back to the tenant. No support ticket, no waiting for someone to decide.",
   },

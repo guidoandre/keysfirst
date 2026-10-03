@@ -7,7 +7,7 @@ const sizes = [16, 32, 48];
 
 const images = await Promise.all(
   sizes.map(async (size) => {
-    const res = await fetch(`${origin}/icon.png?size=${size}&simple=1`);
+    const res = await fetch(`${origin}/icon.png?size=${size}`);
     if (!res.ok) throw new Error(`GET /icon.png?size=${size} answered ${res.status}`);
     return { size, png: Buffer.from(await res.arrayBuffer()) };
   }),

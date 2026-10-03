@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 import { Pictogram, type PictogramName } from "@/components/brand/Pictogram";
 
 /**
- * `headingLevel` (default "h2"): the title's heading element. A later task uses EmptyState as the
- * only heading of a "deal not found" page, so it needs "h1" there — every page has exactly one.
+ * `headingLevel` (default "h2"): the title's heading element. Pass "h1" when EmptyState is the page's only heading
+ * (e.g. a "deal not found" page): every page has exactly one h1.
  */
 export function EmptyState({
   pictogram,

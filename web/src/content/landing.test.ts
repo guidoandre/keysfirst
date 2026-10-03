@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canSkipToDeadline, DEADLINE_STEP, DEMO_STEPS, nextStep, PHONE, stepLabel } from "./landing";
+import { canSkipToDeadline, DEADLINE_STEP, DEMO_STEPS, nextDemoStep, PHONE, stepLabel } from "./landing";
 
 describe("landing demo", () => {
   it("has a screen on both phones for every step", () => {
@@ -8,8 +8,8 @@ describe("landing demo", () => {
   });
 
   it("walks the happy path, then replays from the end of either path", () => {
-    expect([0, 1, 2, 3].map(nextStep)).toEqual([1, 2, 3, 0]);
-    expect(nextStep(DEADLINE_STEP)).toBe(0);
+    expect([0, 1, 2, 3].map(nextDemoStep)).toEqual([1, 2, 3, 0]);
+    expect(nextDemoStep(DEADLINE_STEP)).toBe(0);
   });
 
   it("offers the no-handover branch only while the money is in the lock", () => {
