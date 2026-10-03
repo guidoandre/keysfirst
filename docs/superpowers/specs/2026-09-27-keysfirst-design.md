@@ -75,7 +75,7 @@ A deal stores: landlord, tenant, mint, deal id, amount, move-in time, handover d
 | Handover confirmation | tenant only, Funded only, from 24 hours before move-in until the deadline |
 | Refund | Funded only; landlord at any time; anyone strictly after the deadline; always to the tenant's canonical token account |
 | Cancel | landlord only, Open only |
-| Settlement | pays out the full vault balance, closes the vault, returns the vault's rent to the landlord; the deal account stays as an on-chain receipt |
+| Settlement | pays out the full vault balance, closes the vault, returns the vault's rent to the landlord (on a refund, to the caller instead if the landlord's wallet was turned into a program and can't receive it; upgrade of 3 Oct 2026); the deal account stays as an on-chain receipt |
 
 ### Invariants (tests must prove)
 
@@ -121,13 +121,14 @@ Won't (roadmap only): card/fiat on-ramps, email login/embedded wallets/gasless, 
 
 ## 10. Known limitations (state honestly)
 
-- A tenant pressured into scanning remotely close to move-in can still be tricked; the 24-hour guard and wallet/UI copy reduce, not remove, this risk.
+- A tenant pressured into scanning remotely close to move-in can still be tricked; the 24-hour guard and wallet/UI copy reduce, not remove, this risk. The guard counts from the move-in the landlord typed, so a scam landlord can set it to now: the deal page warns the tenant before paying when the handover is already open, and the release dialog names the room and says to stop if asked by message.
 - At the door the tenant scans first, so a landlord could take the money and keep the keys; this is an in-person theft by an identifiable person at a real address, far rarer than the anonymous online scam.
 - Fake copies of the website are out of scope (roadmap: verified domain).
 - The escrow proves the room exists and the keys work, not that the person may legally rent it (roadmap: landlord verification).
 - Disputes after move-in (damage etc.) are ordinary tenancy law.
 - A no-show tenant gets the deposit back; the landlord loses only the reservation time.
-- The program is upgradeable by the deploy key on devnet; disclose, roadmap: freeze or multisig.
+- The program is upgradeable by the deploy key on devnet; disclose, roadmap: freeze or multisig. Before mainnet also pin the mint in `create_deal` (today the app rejects deals in any other token).
+- Card payments (Stripe test mode) are turned into deposits that settle irreversibly, so with real money a chargeback after the release, or a stolen card paying a deal its owner controls, would cost Keysfirst, not the landlord. Before taking real cards: hold card-funded deposits for a while before they can be released, handle refunds and disputes (webhooks), Stripe Radar and 3-D Secure, landlord verification, and tie each payment to the logged-in account (server-side Privy token check).
 - Regulatory treatment: the devnet prototype moves only valueless test tokens and never controls funds, so it is not a payment service. A mainnet version with EURC needs a BaFin check (ZAG money remittance, MiCA/PSD2 for e-money tokens since 2 March 2026); plan: remove the upgrade authority, keep fees outside the vault, use a licensed partner if required. Landlords must hold released deposits per §551(3) BGB. Summary for users: FAQ "German law"; legal pages /impressum, /privacy, /terms.
 
 ## 11. Demo script (~90 s)

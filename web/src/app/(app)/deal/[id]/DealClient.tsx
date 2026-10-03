@@ -2,7 +2,7 @@
 
 import { useAccount } from "@/components/wallet/AccountProvider";
 import { useConnection } from "@/lib/connection";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { DealLoading, DealMessage } from "@/components/deal/DealStates";
 import { DealView } from "@/components/deal/DealView";
@@ -66,6 +66,10 @@ export function DealClient({
   const [cardPaying, setCardPaying] = useState(false);
   // The Stripe session to finish: from ?paid=, or remembered from before a closed tab (read after mount).
   const [pending, setPending] = useState<string | null>(paid);
+  // A payment made in this browser (card form, or saved before a closed tab or a bank check): its deposit locks right
+  // away, the Pay button was the confirmation. One found at Stripe or in a link may have been made by someone else for
+  // this account, so locking it asks first.
+  const ownPayments = useRef(new Set<string>());
   // A resume that failed keeps its session (the card button stays hidden); "Try again" remounts CardResume.
   const [resumeError, setResumeError] = useState<string | null>(null);
   const [resumeKey, setResumeKey] = useState(0);
@@ -73,6 +77,16 @@ export function DealClient({
   // After a card payment: which price the card paid (3.5% or 4.5% fee), shown above the deal.
   const [cardReceipt, setCardReceipt] = useState<string | null>(null);
   const account = wallet.publicKey?.toBase58() ?? null;
+
+  // Back from a bank check with ?payment_intent=: it's this browser's payment if it saved it before leaving.
+  useEffect(() => {
+    if (!paid || !account) return;
+    try {
+      if (localStorage.getItem(pendingKey(id, account)) === paid) ownPayments.current.add(paid);
+    } catch {
+      // Storage blocked: locking it asks first.
+    }
+  }, [id, paid, account]);
 
   // A card payment this account left half-way: saved in this browser, or (closed tab, another device) found at Stripe.
   useEffect(() => {
@@ -82,6 +96,7 @@ export function DealClient({
       try {
         const saved = localStorage.getItem(pendingKey(id, account));
         if (saved) {
+          ownPayments.current.add(saved);
           setPending(saved);
           return;
         }
@@ -108,7 +123,10 @@ export function DealClient({
       if (!event.persisted || !account) return;
       try {
         const saved = localStorage.getItem(pendingKey(id, account));
-        if (saved) setPending(saved);
+        if (saved) {
+          ownPayments.current.add(saved);
+          setPending(saved);
+        }
       } catch {
         // Storage blocked: nothing to pick up.
       }
@@ -180,6 +198,7 @@ export function DealClient({
   /** The card payment exists: remember it, so a closed tab (or a bank check that leaves the page) can still finish it. */
   function rememberPayment(payment: string) {
     if (!me) return;
+    ownPayments.current.add(payment);
     try {
       localStorage.setItem(pendingKey(id, me.toBase58()), payment);
     } catch {
@@ -231,14 +250,14 @@ export function DealClient({
       setHandoverOpen(true);
       return;
     }
-    if (confirmCopy(action, role, amount, expired)) {
+    if (confirmCopy(action, role, amount, expired, data.title)) {
       setConfirming(action);
       return;
     }
     void execute(action);
   }
 
-  const copy = confirming ? confirmCopy(confirming, role, amount, expired) : null;
+  const copy = confirming ? confirmCopy(confirming, role, amount, expired, data.title) : null;
   // The landlord sees the Released screen when the tenant approves during handover mode, or while this page is open.
   const showReleased = showReleasedScreen({ role, status: data.status, handoverOpen, justReleased, dismissed: releasedClosed });
 
@@ -271,10 +290,13 @@ export function DealClient({
               lock={data.status === "open"}
               alreadyYours={data.status !== "open" && data.tenant === me.toBase58()}
               onReady={(receipt) => {
+                const own = pending !== null && ownPayments.current.has(pending);
                 setPending(null);
                 setCardReceipt(receipt);
-                // Network costs for the lock (a no-op when the account already has enough), then lock.
-                void topUp().finally(() => void execute("fund"));
+                // Network costs for the lock (a no-op when the account already has enough), then lock: right away for
+                // this browser's own payment, after "Lock the deposit?" for one found elsewhere (it stays in the
+                // balance if the tenant says no).
+                void topUp().finally(() => (own ? void execute("fund") : setConfirming("fund")));
               }}
               onDone={(message) => {
                 setPending(null);

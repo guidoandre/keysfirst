@@ -65,12 +65,19 @@ pub fn handle_refund(ctx: Context<Refund>) -> Result<()> {
     let by_landlord = ctx.accounts.caller.key() == deal.landlord;
     require!(by_landlord || now > deal.deadline, KeysfirstError::DeadlineNotReached);
 
+    // The vault's rent goes back to the landlord, who paid it. A landlord who turned their wallet into a program can't
+    // receive lamports any more, which would block every refund: then whoever returns the deposit gets the rent.
+    let rent_receiver = if ctx.accounts.landlord.executable {
+        ctx.accounts.caller.to_account_info()
+    } else {
+        ctx.accounts.landlord.to_account_info()
+    };
     pay_out_and_close_vault(
         &ctx.accounts.deal,
         &ctx.accounts.vault,
         &ctx.accounts.mint,
         &ctx.accounts.tenant_token,
-        ctx.accounts.landlord.to_account_info(),
+        rent_receiver,
         &ctx.accounts.token_program,
     )?;
 

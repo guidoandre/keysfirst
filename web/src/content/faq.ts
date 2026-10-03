@@ -92,7 +92,7 @@ export const FAQ: FaqGroup[] = [
         id: "scan-early",
         question: "Can someone trick me into approving early?",
         answer: [
-          "Scanning the code or tapping “I have the keys” pays the landlord, so only do it standing in the room with the keys. The program only accepts the approval from 24 hours before move-in until the deadline, which blocks “scan now to reserve the room” tricks weeks ahead. It can't stop pressure close to move-in, so the rule stays: no keys, no approval.",
+          "Scanning the code or tapping “I have the keys” pays the landlord, so only do it standing in the room with the keys. The program only accepts the approval from 24 hours before the move-in shown on the deal until the deadline, which blocks “scan now to reserve the room” tricks weeks ahead, as long as that date matches your agreement: the landlord sets it, so check it before you pay. It can't stop pressure close to move-in, so the rule stays: no keys, no approval.",
         ],
       },
       {

@@ -148,13 +148,19 @@ export function nextStep(o: {
   const settled = o.settledAt ? formatShortDateTime(o.settledAt) : "";
 
   switch (dealPhase(status, t, now)) {
-    case "open":
-      return role === "landlord"
-        ? { message: "Send the link to your tenant. Once they pay, the deposit stays locked until the key handover.", ...pick(undefined, ["cancel"]) }
-        : {
-            message: `Pay ${amount} into the lock. The landlord gets it only when you confirm the key handover at the door. If that doesn't happen by ${deadline}, you can take it back.`,
-            ...pick("fund", []),
-          };
+    case "open": {
+      if (role === "landlord") {
+        return { message: "Send the link to your tenant. Once they pay, the deposit stays locked until the key handover.", ...pick(undefined, ["cancel"]) };
+      }
+      // The landlord picks the move-in, so the handover can already be open before anyone pays (the 24-hour rule then
+      // protects nothing): say so before the tenant pays.
+      const alreadyOpen =
+        now >= handoverOpensAt(t) ? " The handover is already open, so only release it at the door with the keys in hand, never because someone asks you to by message." : "";
+      return {
+        message: `Pay ${amount} into the lock. The landlord gets it only when you confirm the key handover at the door. If that doesn't happen by ${deadline}, you can take it back.${alreadyOpen}`,
+        ...pick("fund", []),
+      };
+    }
     case "open-too-early":
       return role === "landlord"
         ? { message: `Your tenant can pay from ${payFrom}, so the money is never locked for more than 180 days.`, ...pick(undefined, ["cancel"]) }
@@ -252,13 +258,15 @@ export interface ConfirmCopy {
 /**
  * In-page confirmation before irreversible steps; null means "just ask the wallet".
  * `expired` (spec §6.4): once the deadline has passed, the landlord's refund needs no confirmation dialog,
- * same as everyone else's refund.
+ * same as everyone else's refund. `title`: the room, named in the release dialog.
  */
-export function confirmCopy(action: Action, role: Role, amount: string, expired = false): ConfirmCopy | null {
+export function confirmCopy(action: Action, role: Role, amount: string, expired = false, title?: string): ConfirmCopy | null {
   if (action === "confirmInApp") {
+    // Embedded accounts sign without a wallet pop-up, and a scam landlord may ask for this by message.
+    const room = title ? `in “${title}”` : "in the room";
     return {
       title: "Release the deposit?",
-      body: `Only continue if you are holding the keys. ${amount} goes to the landlord immediately and can't be undone.`,
+      body: `Only continue if you are ${room} holding the keys. ${amount} goes to the landlord immediately and can't be undone. If someone asked you to do this by message, stop.`,
       confirm: "Yes, release it",
       danger: false,
     };

@@ -46,7 +46,7 @@ export const SCENARIOS: Scenario[] = [
   {
     id: "scan-early",
     question: "What if someone asks me to scan or approve before I arrive?",
-    answer: "Don't. Scanning the code or tapping “I have the keys” pays the landlord. Only do it standing in the room with the keys; the handover can't even start earlier than 24 hours before move-in.",
+    answer: "Don't. Scanning the code or tapping “I have the keys” pays the landlord. Only do it standing in the room with the keys; the handover can't start earlier than 24 hours before the move-in shown on the deal, so check that date matches your agreement.",
     rule: "The release only works from 24 hours before move-in until the deadline.",
     audience: "tenant",
     pictogram: "phone-wallet",

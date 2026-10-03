@@ -133,3 +133,29 @@ fn a_landlord_who_reassigns_their_wallet_cannot_block_the_refund() {
     assert_eq!(get_deal(&env, deal).status, DealStatus::Refunded);
     assert_eq!(balance(&env, ata(&env, &env.tenant.pubkey())), START_BALANCE);
 }
+
+#[test]
+fn a_landlord_who_turns_their_wallet_into_a_program_cannot_block_the_refund() {
+    let mut env = setup();
+    let p = DealParams::default();
+    let deal = funded_deal(&mut env, &p);
+    // The landlord deploys a program at their wallet's address: it becomes an executable account of the upgradeable
+    // loader, and the refund still has to send it the vault's rent.
+    let landlord = env.landlord.pubkey();
+    let mut account = env.svm.get_account(&landlord).unwrap();
+    let mut program = vec![2, 0, 0, 0]; // UpgradeableLoaderState::Program { programdata_address }
+    program.extend_from_slice(Pubkey::new_unique().as_ref());
+    account.owner = anchor_lang::solana_program::bpf_loader_upgradeable::ID;
+    account.executable = true;
+    account.data = program;
+    env.svm.set_account(landlord, account).unwrap();
+    assert!(env.svm.get_account(&landlord).unwrap().executable);
+    let landlord_lamports = lamports(&env, landlord);
+
+    set_time(&mut env.svm, p.deadline + 1);
+    let ix = ix_refund(&env, deal, env.stranger.pubkey());
+    assert_ok(&env.run(ix, Who::Stranger));
+    assert_eq!(get_deal(&env, deal).status, DealStatus::Refunded);
+    assert_eq!(balance(&env, ata(&env, &env.tenant.pubkey())), START_BALANCE);
+    assert_eq!(lamports(&env, landlord), landlord_lamports, "the vault's rent went to the caller instead");
+}

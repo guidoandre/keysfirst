@@ -1,9 +1,9 @@
 import { createAssociatedTokenAccountIdempotentInstruction, createMintToCheckedInstruction } from "@solana/spl-token";
 import { Keypair, LAMPORTS_PER_SOL, PublicKey, SystemProgram, type Connection, type TransactionInstruction } from "@solana/web3.js";
-import { createHash } from "node:crypto";
 import { MINT, TOKEN_PROGRAM_ID } from "@/lib/config";
 import { DECIMALS } from "@/lib/format";
 import { tokenAccount } from "@/lib/program";
+import { legacyMarkerSeed, markerSeed } from "./mint-proof";
 
 // Small on purpose: /api/gas is open (rate-limited per account and IP), so every top-up is SOL someone could drain with fresh accounts.
 const SOL_TOP_UP = 0.02 * LAMPORTS_PER_SOL;
@@ -38,23 +38,26 @@ export async function topUpIx(connection: Connection, faucet: PublicKey, owner: 
 /**
  * An empty account at an address derived from the payment: creating it in the same transaction as the mint makes
  * the mint happen at most once per payment, because a second creation (a retry, a second tab) fails the whole
- * transaction. Returns the marker's address and the instruction that creates it.
+ * transaction. The address is keyed by the faucet's secret (markerSeed), so nobody else can occupy it first.
+ * Returns the marker, the address older payments used (legacyMarker, only ever read) and the creating instruction.
  */
-export async function mintOnceIx(connection: Connection, faucet: PublicKey, paymentId: string) {
-  // Seeds are at most 32 characters: a hash of the payment id always fits.
-  const seed = createHash("sha256").update(paymentId).digest("base64url").slice(0, 32);
-  const marker = await PublicKey.createWithSeed(faucet, seed, SystemProgram.programId);
-  const lamports = await connection.getMinimumBalanceForRentExemption(0);
+export async function mintOnceIx(connection: Connection, faucet: Keypair, paymentId: string) {
+  const seed = markerSeed(faucet.secretKey, paymentId);
+  const [marker, legacyMarker, lamports] = await Promise.all([
+    PublicKey.createWithSeed(faucet.publicKey, seed, SystemProgram.programId),
+    PublicKey.createWithSeed(faucet.publicKey, legacyMarkerSeed(paymentId), SystemProgram.programId),
+    connection.getMinimumBalanceForRentExemption(0),
+  ]);
   const ix = SystemProgram.createAccountWithSeed({
-    fromPubkey: faucet,
-    basePubkey: faucet,
+    fromPubkey: faucet.publicKey,
+    basePubkey: faucet.publicKey,
     seed,
     newAccountPubkey: marker,
     lamports,
     space: 0,
     programId: SystemProgram.programId,
   });
-  return { marker, ix };
+  return { marker, legacyMarker, ix };
 }
 
 /** Creates the owner's Test EUR account if needed and mints `amount` (base units) into it. */

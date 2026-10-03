@@ -75,6 +75,13 @@ describe("nextStep", () => {
     );
   });
 
+  it("warns the tenant-to-be when the landlord's move-in leaves the handover already open", () => {
+    const warning = "The handover is already open, so only release it at the door with the keys in hand, never because someone asks you to by message.";
+    expect(nextStep({ status: "open", role: "visitor", times: t, now: inWindow, amount }).message).toContain(warning);
+    expect(nextStep({ status: "open", role: "visitor", times: t, now: before, amount }).message).not.toContain(warning);
+    expect(nextStep({ status: "open", role: "landlord", times: t, now: inWindow, amount }).message).not.toContain(warning);
+  });
+
   it("speaks to the viewer as you, and names the other side", () => {
     const settledAt = moveIn + 420;
     expect(nextStep({ status: "refunded", role: "landlord", times: t, now: expired, amount, settledAt }).message).toBe(
@@ -143,6 +150,13 @@ describe("labels", () => {
     expect(confirmCopy("refund", "landlord", amount)?.body).toBe("€600.00 goes back to your tenant and the deal ends.");
     expect(confirmCopy("refund", "tenant", amount)).toBeNull();
     expect(confirmCopy("fund", "visitor", amount)?.body).toMatch(/leaves your balance/);
+  });
+
+  it("names the room in the release dialog and says to stop if asked by message", () => {
+    expect(confirmCopy("confirmInApp", "tenant", amount, false, "Room in Vallendar")?.body).toBe(
+      "Only continue if you are in “Room in Vallendar” holding the keys. €600.00 goes to the landlord immediately and can't be undone. If someone asked you to do this by message, stop.",
+    );
+    expect(confirmCopy("confirmInApp", "tenant", amount)?.body).toMatch(/^Only continue if you are in the room holding the keys\./);
   });
 
   it("skips the landlord's refund confirmation once the deadline has passed", () => {
