@@ -93,7 +93,20 @@ export function DealView(p: DealViewProps) {
         }
       />
       <DealTimetable rows={rows} title={data.title} />
-      <DealDetails id={p.id} times={times} />
+      <DealDetails
+        id={p.id}
+        times={times}
+        // The landlord from the start; the tenant once they have paid (before that, a visitor may never pay).
+        calendarFor={
+          now > data.deadline
+            ? null
+            : role === "landlord" && (data.status === "open" || data.status === "funded")
+            ? "landlord"
+            : role === "tenant" && data.status === "funded"
+              ? "tenant"
+              : null
+        }
+      />
     </div>
   );
 }

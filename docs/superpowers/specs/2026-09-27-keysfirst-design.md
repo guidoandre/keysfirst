@@ -115,7 +115,7 @@ Known limits, accepted for the devnet prototype (review of 1 Oct 2026; fix befor
 
 Must: program (5 instructions) + full tests; devnet deploy; Vercel web app (create, fund, deal status, handover QR, in-app confirm, refund, cancel); Solana Pay handover working with Phantom mobile on devnet; faucet; README; deck; demo video.
 
-Should: "Why this exists" landing section; WhatsApp share with preview; optional daily keeper cron (not needed for correctness).
+Should: "Why this exists" landing section; WhatsApp share with preview; optional daily keeper cron (not needed for correctness). Built 3 Oct 2026: /api/cron/return-deposits (web/vercel.json, daily 06:00 UTC) returns expired locked deposits, signed by the faucet as "anyone"; plus an .ics download of the handover and deadline on the deal page.
 
 Won't (roadmap only): card/fiat on-ramps, email login/embedded wallets/gasless, landlord verification/KYC, deposit held for the whole tenancy, reputation, mainnet, multiple languages, verified domain, smart-lock integration.
 

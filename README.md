@@ -31,7 +31,7 @@ A step-by-step guide is at [/start](https://www.keysfirst.io/start).
 | Create | Landlord | A deal account and its vault are created: amount, move-in, handover deadline |
 | Fund | Tenant | The exact deposit moves into the vault; whoever pays becomes the tenant |
 | Confirm handover | Tenant | From 24 h before move-in until the deadline, the tenant's signature releases the vault to the landlord |
-| Refund | Landlord any time; anyone after the deadline | The vault goes back to the tenant |
+| Refund | Landlord any time; anyone after the deadline | The vault goes back to the tenant. If nobody does it, a daily job (Vercel Cron, signed by the server as "anyone") returns every expired deposit |
 | Cancel | Landlord, before anyone paid | The deal closes, no money moves |
 
 No arbiter, no admin key over the vault: the rules are in the program. Full rules: [product spec §6](docs/superpowers/specs/2026-09-27-keysfirst-design.md).
@@ -46,6 +46,7 @@ When creating a deal, the landlord picks the country of the room (Germany, the N
 | Never pays network fees | The server tops up each account with a little devnet SOL (`/api/gas`, rate-limited) |
 | Pays by card and sees the exact price first | Stripe's card form (Payment Element) on the deal page. The server reads where the card was issued and quotes the price (`/api/checkout/quote`), then charges exactly that amount (`/api/checkout/pay`). It then mints exactly the deposit in Test EUR to the tenant (`/api/checkout/fulfil`, at most once per payment, enforced on-chain), and the deal page locks it in the vault |
 | Withdraws to a bank | The Test EUR are burned on-chain; the bank payout is a labelled demo |
+| Gets reminded of the handover and the deadline | "Add both dates to your calendar" downloads an .ics file built from the deal's on-chain times (`/api/calendar/[id]`) |
 
 In a live version the Test EUR would be EURC (Circle's euro stablecoin on Solana), with a licensed partner for card and bank payments.
 
@@ -59,7 +60,7 @@ The tenant pays a Keysfirst fee on top of the deposit: **3.5% with a card issued
 
 ## Tech stack
 
-- **Program:** Anchor 1.2 (Rust), Token-2022 "Test EUR" (6 decimals), 44 LiteSVM tests. Program id `BeRg2HQAhUELdoedXaz8HnKnTt9TeQeD7n94iQxFLcbP` (devnet).
+- **Program:** Anchor 1.2 (Rust), Token-2022 "Test EUR" (6 decimals), 45 LiteSVM tests. Program id `BeRg2HQAhUELdoedXaz8HnKnTt9TeQeD7n94iQxFLcbP` (devnet).
 - **Web:** Next.js 16 (App Router), React 19, Tailwind CSS 4, `@solana/web3.js`, `@anchor-lang/core`, Privy, Stripe (Payment Element), vitest. Deployed on Vercel.
 - **No database:** deals are read straight from Solana, logins live in Privy, payments in Stripe.
 
@@ -90,6 +91,7 @@ npm test && npm run lint && npm run build
 | `NEXT_PUBLIC_PRIVY_APP_ID` | Privy app id (dashboard.privy.io); add `http://localhost:3000` to its allowed domains |
 | `STRIPE_SECRET_KEY` | Server only. Stripe **test** secret key (`sk_test_…`); live keys are refused |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe **test** publishable key (`pk_test_…`) for the card form; live keys are refused |
+| `CRON_SECRET` | Server only. Any long random string; Vercel Cron sends it to `/api/cron/return-deposits` (the daily return of expired deposits), which refuses every other caller |
 
 `.env.local` is never committed. On Vercel, set the same variables under Project → Settings → Environment Variables.
 
@@ -99,7 +101,7 @@ npm test && npm run lint && npm run build
 programs/keysfirst/   Anchor program (instructions: create_deal, fund, confirm_handover, refund, cancel_deal)
 web/src/app/(site)/   Marketing pages (no wallet code, fast on phones)
 web/src/app/(app)/    App pages: My deals, create a deal, deal page, handover
-web/src/app/api/      gas, checkout/quote + pay + fulfil + pending, handover (Solana Pay for Phantom)
+web/src/app/api/      gas, checkout/quote + pay + fulfil + pending, handover (Solana Pay for Phantom), calendar, cron/return-deposits
 web/src/lib/          Deal rules, pricing, IBAN, program helpers (unit-tested)
 docs/                 Specs, plans, research, brand and design system
 ```

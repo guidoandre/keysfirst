@@ -94,7 +94,10 @@ describe("nextStep", () => {
       "Your deposit came back to you on Thu 1 Oct, 14:07. It's in your balance: withdraw it to your bank from My deals.",
     );
     expect(nextStep({ status: "funded", role: "landlord", times: t, now: expired, amount }).message).toBe(
-      "The deadline passed without a handover. The deposit can go back to your tenant now.",
+      "The deadline passed without a handover. The deposit can go back to your tenant now. If nobody sends it, Keysfirst does within a day.",
+    );
+    expect(nextStep({ status: "funded", role: "tenant", times: t, now: expired, amount }).message).toBe(
+      "The deadline passed without a handover. You can take your deposit back now. If you don't, Keysfirst sends it back to you within a day.",
     );
   });
 });
@@ -224,12 +227,12 @@ describe("dealRows", () => {
     const detail = (rows: ReturnType<typeof dealRows>, key: string) => rows.find((r) => r.key === key)?.detail;
     const asTenant = dealRows({ ...funded, role: "tenant" });
     expect(detail(asTenant, "handover")).toBe(`Until Sun 4 Oct, 14:00. You approve (scan the landlord's code or tap “I have the keys”) and €600.00 goes to them.`);
-    expect(detail(asTenant, "fallback")).toBe("€600.00 goes back to you. Anyone can trigger it.");
+    expect(detail(asTenant, "fallback")).toBe("€600.00 goes back to you. Take it back yourself, or Keysfirst sends it within a day.");
     const asLandlord = dealRows({ ...funded, role: "landlord" });
     expect(detail(asLandlord, "handover")).toBe("Until Sun 4 Oct, 14:00. Your tenant scans your code and €600.00 goes to you.");
-    expect(detail(asLandlord, "fallback")).toBe("€600.00 goes back to your tenant. Anyone can trigger it.");
+    expect(detail(asLandlord, "fallback")).toBe("€600.00 goes back to your tenant. Anyone can send it; if nobody does, Keysfirst does within a day.");
     const asVisitor = dealRows({ ...funded, role: "visitor" });
-    expect(detail(asVisitor, "fallback")).toBe("€600.00 goes back to the tenant. Anyone can trigger it.");
+    expect(detail(asVisitor, "fallback")).toBe("€600.00 goes back to the tenant. Anyone can send it; if nobody does, Keysfirst does within a day.");
 
     // Before anyone pays, a visitor is the tenant-to-be.
     const open = { status: "open" as const, times: { ...times, fundedAt: 0 }, signatures: [], now: before, amount };

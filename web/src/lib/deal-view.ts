@@ -195,8 +195,8 @@ export function nextStep(o: {
       }
       return { message: `The deposit is locked until the key handover or ${deadline}.`, ...pick(undefined, []) };
     case "funded-expired":
-      if (role === "landlord") return { message: "The deadline passed without a handover. The deposit can go back to your tenant now.", ...pick("refund", []) };
-      if (role === "tenant") return { message: "The deadline passed without a handover. You can take your deposit back now.", ...pick("refund", []) };
+      if (role === "landlord") return { message: "The deadline passed without a handover. The deposit can go back to your tenant now. If nobody sends it, Keysfirst does within a day.", ...pick("refund", []) };
+      if (role === "tenant") return { message: "The deadline passed without a handover. You can take your deposit back now. If you don't, Keysfirst sends it back to you within a day.", ...pick("refund", []) };
       return { message: "The deadline passed without a handover. Anyone can now return the deposit to the tenant.", ...pick("refund", []) };
     case "released":
       if (role === "landlord") return { message: `Your tenant confirmed the handover on ${settled}. The deposit is in your Keysfirst balance. Withdraw it to your bank from My deals.`, secondary: [] };
@@ -383,7 +383,9 @@ export function dealRows(o: {
       key: "fallback",
       time: formatShortDateTime(t.deadline),
       title: "No handover by then?",
-      detail: `${amount} goes back to ${tenant ? "you" : landlord ? "your tenant" : "the tenant"}. Anyone can trigger it.`,
+      detail: tenant
+        ? `${amount} goes back to you. Take it back yourself, or Keysfirst sends it within a day.`
+        : `${amount} goes back to ${landlord ? "your tenant" : "the tenant"}. Anyone can send it; if nobody does, Keysfirst does within a day.`,
       state: status === "funded" && expired ? "now" : "later",
     },
   ];

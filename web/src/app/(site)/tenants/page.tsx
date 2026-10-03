@@ -30,7 +30,7 @@ const STEPS: Step[] = [
     title: "At the door: check, then approve",
     text: "Look at the room, then scan the landlord's code or tap “I have the keys” on your deal page, and take the keys. The landlord is paid only then.",
   },
-  { pictogram: "back-to-you", title: "No handover? You take it back", text: "If the handover never happens, you can take the deposit back after the deadline." },
+  { pictogram: "back-to-you", title: "No handover? You take it back", text: "If the handover never happens, the deposit comes back to you after the deadline: take it back yourself, or Keysfirst sends it within a day." },
 ];
 
 const NEEDS = [
