@@ -46,7 +46,8 @@ export default function GetStartedPage() {
 
         <GuideStep id="landlord" number={2} title="As the landlord: create a deposit link">
           <p>
-            Choose the country, then enter the room, the monthly rent, the deposit and the move-in date. Send the link to your
+            Choose the country, then enter the room, the monthly rent, the deposit and the move-in date. To see the whole cycle in a few
+            minutes, first turn on Demo mode in your account (tap your email at the top) and use the demo values. Send the link to your
             tenant.
           </p>
           <ButtonLink href="/new">Create a deposit link</ButtonLink>

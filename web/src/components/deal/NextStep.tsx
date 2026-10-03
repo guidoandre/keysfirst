@@ -110,43 +110,25 @@ export function NextStep({
           <LoginButton label={loginLabel(primary)} variant="primary" size="lg" fullWidth />
         ))}
 
-      {/* Under the link, cancelling is a footer row: a line on when it's possible, the button at the right edge, so it
-          reads as the way out rather than the thing to do next (rules: the landlord can cancel only while unpaid). */}
-      {secondary.length > 0 &&
-        (share != null ? (
-          <div className="flex flex-col gap-3 border-t border-rule pt-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-            <p className="text-sm text-fg-muted">Changed your mind? You can cancel until your tenant pays.</p>
-            {secondary.map((action) => (
-              <Button
-                key={action}
-                variant={action === "cancel" ? "danger" : "secondary"}
-                className="shrink-0 max-sm:w-full"
-                loading={busy === action}
-                loadingText="Confirming…"
-                disabled={busy !== null}
-                onClick={() => onAction(action)}
-              >
-                {actionLabel(action, role, amount)}
-              </Button>
-            ))}
-          </div>
-        ) : (
-          <div className="grid gap-2">
-            {secondary.map((action) => (
-              <Button
-                key={action}
-                variant={action === "cancel" ? "danger" : "secondary"}
-                fullWidth
-                loading={busy === action}
-                loadingText="Confirming…"
-                disabled={busy !== null}
-                onClick={() => onAction(action)}
-              >
-                {actionLabel(action, role, amount)}
-              </Button>
-            ))}
-          </div>
-        ))}
+      {/* Under the link, cancelling is set apart and narrower: it must not read as the thing to do next. */}
+      {secondary.length > 0 && (
+        <div className={cx("grid gap-2", share != null && "border-t border-rule pt-4 sm:justify-items-start")}>
+          {secondary.map((action) => (
+            <Button
+              key={action}
+              variant={action === "cancel" ? "danger" : "secondary"}
+              fullWidth
+              className={share != null ? "sm:w-auto" : undefined}
+              loading={busy === action}
+              loadingText="Confirming…"
+              disabled={busy !== null}
+              onClick={() => onAction(action)}
+            >
+              {actionLabel(action, role, amount)}
+            </Button>
+          ))}
+        </div>
+      )}
 
       {error && (
         <Callout tone="danger" role="alert">
