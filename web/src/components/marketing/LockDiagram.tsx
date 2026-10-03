@@ -1,18 +1,19 @@
 import type { ReactNode } from "react";
-import { Icon } from "@/components/ui/Icon";
+import { Icon, PlayIcon } from "@/components/ui/Icon";
 import { StatusChip } from "@/components/ui/StatusChip";
 import { DEMO_DEAL } from "@/content/landing";
 import { cx } from "@/lib/cx";
 
 /**
  * Tenant → the lock → exactly two ways out. One row from xl; stacked with down arrows below it.
- * Pointer reactions (globals.css): the lock arrives open and clicks shut, and jumps and locks again when the pointer
- * arrives; the tenant and both real ways out lean their arrow toward where the money goes; "To Keysfirst" shakes its head.
+ * Pointer reactions (globals.css, PlayOnPointer): the lock arrives open and clicks shut, and jumps and locks again when
+ * the pointer settles on it; resting on the tenant or a real way out leans that arrow toward where the money goes
+ * (data-lean); "To Keysfirst" shakes its head.
  */
 export function LockDiagram() {
   return (
-    <div data-reveal="" className="lock-flow mt-8 flex flex-col lg:mt-12 xl:grid xl:grid-cols-[15rem_3.5rem_18.75rem_3.5rem_minmax(0,1fr)] xl:items-center">
-      <div className="flow-in rounded-lg border-2 border-fg px-4.5 py-4 xl:px-5 xl:py-5.5">
+    <div data-reveal="" data-flow="" className="mt-8 flex flex-col lg:mt-12 xl:grid xl:grid-cols-[15rem_3.5rem_18.75rem_3.5rem_minmax(0,1fr)] xl:items-center">
+      <div data-lean="in" className="rounded-lg border-2 border-fg px-4.5 py-4 xl:px-5 xl:py-5.5">
         <p className="label text-fg-muted">Tenant</p>
         <p className="mt-1.5 font-display text-2xl leading-[1.1] font-bold xl:mt-2.5 xl:text-[1.625rem]">Pays {DEMO_DEAL.amount} into the lock</p>
         <p className="mt-1 text-[0.9375rem] text-fg-muted xl:mt-2">By card, before arriving.</p>
@@ -25,7 +26,7 @@ export function LockDiagram() {
         {/* Two layers: the pop when the block arrives and the jump on hover each own an element, so neither restarts the other */}
         <div className="reveal-pop w-fit">
           <div className="play-hop grid size-12 place-items-center rounded-md bg-accent text-fg xl:size-14 xl:rounded-[0.75rem]">
-            <Icon name="lock" size={26} strokeWidth={2.2} className="xl:size-7.5" />
+            <PlayIcon name="lock" strokeWidth={2.2} className="size-6.5 xl:size-7.5" />
           </div>
         </div>
         <div>
@@ -69,10 +70,11 @@ function Exit({ chip, muted = false, children }: { chip: ReactNode; muted?: bool
   return (
     <li
       data-play=""
+      data-lean={muted ? undefined : "out"}
       className={
         muted
           ? "flex flex-col items-start gap-1.5 rounded-lg border-2 border-dashed border-field px-4 py-3 text-fg-muted xl:grid xl:grid-cols-[auto_1fr] xl:items-center xl:gap-4 xl:px-5 xl:py-3.5"
-          : "flow-out flex flex-col items-start gap-2 rounded-lg border-2 border-fg px-4 py-3.5 xl:grid xl:grid-cols-[auto_1fr] xl:items-center xl:gap-4 xl:px-5 xl:py-4.5"
+          : "flex flex-col items-start gap-2 rounded-lg border-2 border-fg px-4 py-3.5 xl:grid xl:grid-cols-[auto_1fr] xl:items-center xl:gap-4 xl:px-5 xl:py-4.5"
       }
     >
       {chip}

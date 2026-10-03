@@ -276,20 +276,20 @@
   }
 
   /* ── Pointer reactions: every icon acts out its word (design system §5) ──
-     [data-play]          a block that plays its reaction when a mouse arrives or a finger taps it. PlayOnPointer (the (site)
-                          layout) sets data-playing and clears it once the play-* animations have run: a quick pass never
-                          cuts one short, nothing loops, the next arrival replays it
-       lock               the shackle pops open and snaps shut; .play-hop on what jumps with it (the icon, or its plate)
-       clock              the hands sweep one turn          return   swings back and settles
-       check              the tick draws again              .play-shake   shakes its head: the way out that doesn't exist
+     [data-play]          a block that plays its reaction once a mouse settles on it (70 ms, so a quick sweep sets nothing
+                          off) or a finger taps it. PlayOnPointer (the (site) layout) sets data-playing and clears it once
+                          the play-* animations have run: a reaction is never cut short, never loops, the next visit replays it
+       lock               the shackle pops open and snaps shut (.play-shackle); .play-hop on what jumps with it (the icon, or its plate)
+       clock              the hands sweep one turn (.play-hands)       return   swings back and settles
+       check              the tick draws again                         .play-shake   shakes its head: the way out that doesn't exist
      .lock-shuts          LockDiagram: the lock arrives open and clicks shut once its block has risen into view
-     .lock-flow           LockDiagram: hovering the tenant or a real way out leans the arrow toward where the money goes
+     [data-flow]          LockDiagram: resting on a [data-lean] card sets data-leaning and its arrow leans toward where the
+                          money goes; it leans after 60 ms and lets go 160 ms after the pointer leaves (no twitch in the gaps)
      .nudge-x             an arrow inside a link or button leans forward while hovered; external-link arrows lean out
      .draw-in             a check that appears (Copied) draws its tick
-     Hops, squashes and sweeps are transforms on small SVGs only. Under reduced motion nothing here moves.
-     No smears: whatever moves as a box (the plate, the chip, the arrows) has its own compositor layer for good, so the
-     card behind is never repainted mid-move (a repainted plate left slivers of its top edge behind), and it moves by
-     whole pixels. The lock's svg lets the open shackle rise past its box instead of clipping the arch. */
+     No smears: everything that moves is a box of its own moved by transform on the compositor, by whole pixels, and
+     never redrawn mid-move: the plate, the chip, the arrows, and the lock's shackle and the clock's hands, which PlayIcon
+     draws as separate layers (a redrawn moving part left slivers of its edge behind). Under reduced motion nothing here moves. */
   @keyframes play-hop {
     0% { transform: translateY(0) scale(1, 1); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
     36% { transform: translateY(calc(var(--hop, 8px) * -1)) scale(1, 1); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.6); }
@@ -297,9 +297,9 @@
     100% { transform: translateY(0) scale(1, 1); }
   }
   @keyframes play-shackle {
-    0% { transform: none; animation-timing-function: var(--ease-out); }
+    0% { transform: translateY(0); animation-timing-function: var(--ease-out); }
     24%, 48% { transform: translateY(-3px); animation-timing-function: cubic-bezier(0.7, 0, 1, 0.5); }
-    58%, 100% { transform: none; }
+    58%, 100% { transform: translateY(0); }
   }
   @keyframes play-sweep { to { transform: rotate(1turn); } }
   @keyframes play-return { 38% { transform: translateX(-2px) rotate(-16deg); } }
@@ -312,37 +312,64 @@
   }
 
   .play-hop { transform-origin: 50% 100%; }
-  [data-play] [data-icon="lock"] { overflow: visible; }
-  .lock-flow .flow-arrow > svg,
+  .flow-arrow > svg,
   .nudge-x,
-  [data-icon="external"] { transition: transform 180ms var(--ease-out); }
+  [data-icon="external"] { transition: transform 200ms var(--ease-out); }
 
   @media (prefers-reduced-motion: no-preference) {
-    .play-hop, .play-shake, [data-play] [data-icon="return"], .lock-flow .flow-arrow > svg { will-change: transform; }
+    :is(.play-hop, .play-shackle, .play-hands, .play-shake, [data-play] [data-icon="return"], .flow-arrow > svg) { will-change: transform; }
     [data-playing] .play-hop { animation: play-hop 640ms linear; }
-    [data-playing] [data-icon="lock"] > path:first-child { animation: play-shackle 640ms linear; }
-    [data-playing] [data-icon="clock"] > path { transform-origin: 12px 12px; animation: play-sweep 820ms cubic-bezier(0.5, 0, 0.2, 1); }
+    [data-playing] .play-shackle { animation: play-shackle 640ms linear; }
+    [data-playing] .play-hands { animation: play-sweep 820ms cubic-bezier(0.5, 0, 0.2, 1); }
     [data-playing] [data-icon="return"] { animation: play-return 560ms var(--ease-settle); }
     [data-playing] [data-icon="check"] > path,
     .draw-in > path { stroke-dasharray: 1 1; animation: play-tick 380ms cubic-bezier(0.65, 0, 0.35, 1) both; }
     [data-playing] .play-shake { animation: play-shake 460ms ease-in-out; }
 
     /* The shackle stands open while the block waits below the fold, and clicks shut just after the plate has popped in.
-       A transition, not an animation, so it never fights the hover replay on the same path. */
-    .lock-shuts [data-icon="lock"] > path:first-child {
-      transition: translate 200ms cubic-bezier(0.7, 0, 1, 0.5) calc(var(--reveal-delay, 0ms) + 680ms);
-    }
-    [data-reveal="pending"] .lock-shuts [data-icon="lock"] > path:first-child { translate: 0 -3px; }
+       `translate`, not `transform`, so it never fights the hover replay on the same element. */
+    .lock-shuts .play-shackle { transition: translate 200ms cubic-bezier(0.7, 0, 1, 0.5) calc(var(--reveal-delay, 0ms) + 680ms); }
+    [data-reveal="pending"] .lock-shuts .play-shackle { translate: 0 -3px; }
+
+    [data-leaning="in"] .flow-arrow-in > svg,
+    [data-leaning="out"] .flow-arrow-out > svg { transform: translateX(6px); transition-duration: 320ms; transition-timing-function: var(--ease-settle); }
   }
 
   @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    .lock-flow:has(.flow-in:hover) .flow-arrow-in > svg,
-    .lock-flow:has(.flow-out:hover) .flow-arrow-out > svg { transform: translateX(6px); }
     :is(a, button):hover .nudge-x { transform: translateX(4px); }
     a:hover [data-icon="external"] { transform: translate(2px, -2px); }
-    :is(.lock-flow:hover .flow-arrow > svg, :is(a, button):hover .nudge-x, a:hover [data-icon="external"]) {
-      transition-duration: 280ms; transition-timing-function: var(--ease-settle);
-    }
+    :is(:is(a, button):hover .nudge-x, a:hover [data-icon="external"]) { transition-duration: 280ms; transition-timing-function: var(--ease-settle); }
+  }
+
+  /* ── Landing role switch ("I'm renting" / "I'm letting"): one gesture, everything moves together, nothing reflows ──
+     .role-fill      the toggle's ink fill and the white labels it carries: equal and opposite slides, so the white
+                     text is exactly where the ink is (LandingRole)
+     .role-variant   a RoleSwap version: the outgoing one fades fast and drifts off toward its own side of the toggle,
+                     the incoming one glides in from its side (renting left, letting right) a beat later, so the two
+                     texts barely overlap. [--swap-x] sets the drift (12 px; 6 px for short labels)
+     .demo-phone     the demo phones: from sm one slides forward as the other slides behind; below sm they share a
+                     spot and crossfade, the outgoing one gone before the incoming one is up
+     All transform and opacity on layers of their own, and all CSS transitions, so a second click mid-switch simply
+     turns everything around from where it is. Under reduced motion every change is instant (base layer). */
+  .role-fill { transition: translate 380ms var(--ease-settle); }
+  .role-variant {
+    transition: opacity 260ms var(--ease-out) 70ms, transform 440ms var(--ease-settle) 70ms;
+  }
+  .role-variant[inert] {
+    opacity: 0;
+    transition: opacity 130ms var(--ease-out), transform 260ms var(--ease-in);
+  }
+  .role-variant[data-role="tenant"][inert] { transform: translateX(calc(var(--swap-x, 12px) * -1)); }
+  .role-variant[data-role="landlord"][inert] { transform: translateX(var(--swap-x, 12px)); }
+
+  .demo-phone { transition: translate 480ms var(--ease-settle), scale 480ms var(--ease-settle), opacity 360ms var(--ease-out); }
+  .demo-you { transition: opacity 200ms var(--ease-out), scale 320ms var(--ease-settle); }
+  @media (width < 40rem) {
+    .demo-phone:not([inert]) { transition-delay: 0ms, 0ms, 90ms; transition-duration: 480ms, 480ms, 280ms; }
+    .demo-phone[inert] { transition-duration: 300ms, 300ms, 150ms; transition-timing-function: var(--ease-in), var(--ease-in), var(--ease-out); }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .role-fill, .demo-phone { will-change: translate, scale, opacity; }
   }
 
   /* FAQ answers (and .disclosure panels) slide open where the browser can animate to height: auto; elsewhere they open instantly. */
