@@ -20,8 +20,9 @@ You need two logins (two different emails or Google accounts), for example a nor
    Tap **Pay €…**. The deposit locks by itself and the page shows what the card was charged.
 3. **At the door:** the landlord taps **Start the handover** and shows a QR code. The tenant scans it with their phone camera (logged in as the tenant) and taps **I have the keys**. On a single computer, the tenant can tap **I have the keys: release the deposit** on their deal page instead. The landlord's screen turns green: paid in seconds.
 4. **Withdraw:** the landlord opens **My deals** and taps **Withdraw to bank** (the bank payout is simulated in the prototype).
+5. **Test the deadline (refund path):** with Demo mode still on, create a second deal with **Use demo values**, let the tenant pay, and skip the handover. The deal page counts down the 5-minute window; when it hits zero the deposit can no longer go to the landlord, and the tenant taps **Take the deposit back** (after the deadline anyone can return it to the tenant). The landlord can also tap **Give the deposit back to your tenant** at any time before that. Without Demo mode the shortest handover window is one day, so the deadline can only be tested this quickly with Demo mode on.
 
-**Refund path:** if nobody confirms within the 5 minutes, the deal page offers to send the deposit back to the tenant (after the deadline anyone can). The landlord can also tap **Give the deposit back to your tenant** at any time. Without Demo mode the shortest handover window is one day. A step-by-step guide is at [/start](https://www.keysfirst.io/start).
+A step-by-step guide is at [/start](https://www.keysfirst.io/start).
 
 ## How a deal works
 
