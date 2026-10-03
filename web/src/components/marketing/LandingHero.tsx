@@ -43,7 +43,7 @@ export function LandingHero() {
           >
             <span className="inline-flex items-center gap-2.5">
               {copy.primary.label}
-              <Icon name="arrow-right" size={20} />
+              <Icon name="arrow-right" size={20} className="nudge-x" />
             </span>
           </ButtonLink>
           <ButtonLink href={copy.secondary.href} variant="quiet" className="self-start text-base sm:self-auto lg:text-[1.0625rem]">

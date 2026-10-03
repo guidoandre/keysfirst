@@ -275,6 +275,71 @@
     .demo-pop { animation: demo-pop 360ms var(--ease-settle) both; }
   }
 
+  /* ── Pointer reactions: every icon acts out its word (design system §5) ──
+     [data-play]          a block that plays its reaction when a mouse arrives or a finger taps it. PlayOnPointer (the (site)
+                          layout) sets data-playing and clears it once the play-* animations have run: a quick pass never
+                          cuts one short, nothing loops, the next arrival replays it
+       lock               the shackle pops open and snaps shut; .play-hop on what jumps with it (the icon, or its plate)
+       clock              the hands sweep one turn          return   swings back and settles
+       check              the tick draws again              .play-shake   shakes its head: the way out that doesn't exist
+     .lock-shuts          LockDiagram: the lock arrives open and clicks shut once its block has risen into view
+     .lock-flow           LockDiagram: hovering the tenant or a real way out leans the arrow toward where the money goes
+     .nudge-x             an arrow inside a link or button leans forward while hovered; external-link arrows lean out
+     .draw-in             a check that appears (Copied) draws its tick
+     Hops, squashes and sweeps are transforms on small SVGs only. Under reduced motion nothing here moves. */
+  @keyframes play-hop {
+    0% { transform: none; animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+    36% { transform: translateY(-16%); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.6); }
+    58% { transform: scale(1.05, 0.93); animation-timing-function: var(--ease-settle); }
+    100% { transform: none; }
+  }
+  @keyframes play-shackle {
+    0% { transform: none; animation-timing-function: var(--ease-out); }
+    24%, 48% { transform: translateY(-3px); animation-timing-function: cubic-bezier(0.7, 0, 1, 0.5); }
+    58%, 100% { transform: none; }
+  }
+  @keyframes play-sweep { to { transform: rotate(1turn); } }
+  @keyframes play-return { 38% { transform: translateX(-14%) rotate(-16deg); } }
+  @keyframes play-tick { from { stroke-dashoffset: 1; } }
+  @keyframes play-shake {
+    18% { transform: translateX(-5px); }
+    38% { transform: translateX(4px); }
+    58% { transform: translateX(-2.5px); }
+    78% { transform: translateX(1px); }
+  }
+
+  .play-hop { transform-origin: 50% 100%; }
+  .lock-flow .flow-arrow > svg,
+  .nudge-x,
+  [data-icon="external"] { transition: transform 180ms var(--ease-out); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    [data-playing] .play-hop { animation: play-hop 640ms linear; }
+    [data-playing] [data-icon="lock"] > path:first-child { animation: play-shackle 640ms linear; }
+    [data-playing] [data-icon="clock"] > path { transform-origin: 12px 12px; animation: play-sweep 820ms cubic-bezier(0.5, 0, 0.2, 1); }
+    [data-playing] [data-icon="return"] { animation: play-return 560ms var(--ease-settle); }
+    [data-playing] [data-icon="check"] > path,
+    .draw-in > path { stroke-dasharray: 1 1; animation: play-tick 380ms cubic-bezier(0.65, 0, 0.35, 1) both; }
+    [data-playing] .play-shake { animation: play-shake 460ms ease-in-out; }
+
+    /* The shackle stands open while the block waits below the fold, and clicks shut just after the plate has popped in.
+       A transition, not an animation, so it never fights the hover replay on the same path. */
+    .lock-shuts [data-icon="lock"] > path:first-child {
+      transition: translate 200ms cubic-bezier(0.7, 0, 1, 0.5) calc(var(--reveal-delay, 0ms) + 680ms);
+    }
+    [data-reveal="pending"] .lock-shuts [data-icon="lock"] > path:first-child { translate: 0 -3px; }
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .lock-flow:has(.flow-in:hover) .flow-arrow-in > svg,
+    .lock-flow:has(.flow-out:hover) .flow-arrow-out > svg { transform: translateX(6px); }
+    :is(a, button):hover .nudge-x { transform: translateX(4px); }
+    a:hover [data-icon="external"] { transform: translate(2px, -2px); }
+    :is(.lock-flow:hover .flow-arrow > svg, :is(a, button):hover .nudge-x, a:hover [data-icon="external"]) {
+      transition-duration: 280ms; transition-timing-function: var(--ease-settle);
+    }
+  }
+
   /* FAQ answers (and .disclosure panels) slide open where the browser can animate to height: auto; elsewhere they open instantly. */
   @supports (interpolate-size: allow-keywords) {
     @media (prefers-reduced-motion: no-preference) {

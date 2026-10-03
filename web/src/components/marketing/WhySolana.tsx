@@ -1,5 +1,6 @@
 import { Icon, type IconName } from "@/components/ui/Icon";
 import idl from "@/idl/keysfirst.json";
+import { cx } from "@/lib/cx";
 import { explorerAddress } from "@/lib/format";
 import { LockDiagram } from "./LockDiagram";
 import { NoCryptoNote } from "./NoCryptoNote";
@@ -46,8 +47,12 @@ export function WhySolana() {
 
         <ul className="mt-10 grid gap-7 md:grid-cols-3 lg:mt-16 lg:gap-10">
           {FACTS.map((fact) => (
-            <li key={fact.title} data-reveal="" className="reveal-rule pt-4.5 lg:pt-6">
-              <Icon name={fact.icon} size={26} className="reveal-pop lg:size-7.5" />
+            // data-play: the icon acts out its title when the pointer arrives (globals.css). The pop when the block arrives
+            // sits on a wrapper, so a hover never restarts it.
+            <li key={fact.title} data-reveal="" data-play="" className="reveal-rule pt-4.5 lg:pt-6">
+              <span className="reveal-pop block w-fit">
+                <Icon name={fact.icon} size={26} className={cx("lg:size-7.5", fact.icon === "lock" && "play-hop")} />
+              </span>
               <h3 className="mt-2.5 font-display text-2xl font-bold lg:mt-3">{fact.title}</h3>
               <p className="mt-1.5 leading-[1.55] text-fg-muted lg:mt-2.5 lg:text-[1.0625rem]">{fact.text}</p>
             </li>

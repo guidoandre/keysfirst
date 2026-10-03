@@ -1,6 +1,8 @@
 import type { SVGProps } from "react";
 
 // 24 px grid, 2 px stroke, square caps (design system §7). Always next to a text label, or given `label`.
+// The svg carries data-icon="<name>" so the pointer reactions in globals.css can move its parts: the lock's shackle
+// (its first path), the clock's hands, the check's tick (pathLength 1 lets it draw in).
 const PATHS = {
   lock: (
     <>
@@ -14,7 +16,7 @@ const PATHS = {
       <path d="M12 12h9M17 12v4M20.5 12v3" />
     </>
   ),
-  check: <path d="M4 12.5l5 5L20 6.5" />,
+  check: <path d="M4 12.5l5 5L20 6.5" pathLength={1} />,
   clock: (
     <>
       <circle cx="12" cy="12" r="9" />
@@ -121,6 +123,7 @@ export function Icon({
       aria-label={label}
       aria-hidden={label ? undefined : true}
       focusable="false"
+      data-icon={name}
       {...rest}
     >
       {PATHS[name]}
