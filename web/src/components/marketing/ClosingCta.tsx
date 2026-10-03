@@ -6,7 +6,7 @@ import { CLOSING, LANDLORD_TERMS } from "@/content/landing";
 import { cx } from "@/lib/cx";
 import { whatsappUrl } from "@/lib/format";
 import { CopyMessageButton, EmailMessageButton, useLandlordMessage } from "./AskLandlord";
-import { useLandingRole } from "./LandingRole";
+import { useLaterRole } from "./LandingRole";
 
 /**
  * The closing Highlighter band. Tenant: the message to send the landlord, WhatsApp, email or copy. Landlord: create a link,
@@ -14,7 +14,8 @@ import { useLandingRole } from "./LandingRole";
  * On phones the items stack in source order; from lg the text and its buttons sit left, the message or terms right.
  */
 export function ClosingCta() {
-  const { role } = useLandingRole();
+  // Three screens below the toggle: it follows a frame after the hero (useLaterRole).
+  const role = useLaterRole();
   const message = useLandlordMessage();
   const cta = CLOSING[role];
   return (

@@ -129,7 +129,8 @@
 }
 
 @layer base {
-  html { color-scheme: light; -webkit-text-size-adjust: 100%; }
+  /* No grey tap flash on phones: every control shows its own press state instead (active styles, design system §5) */
+  html { color-scheme: light; -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
   /* An open modal (sheet, menu, handover mode) holds the page still behind it, iOS included */
   html:has(dialog[open]) { overflow: hidden; }
   body { background: var(--color-canvas); color: var(--color-fg); font-family: var(--font-sans); }
@@ -145,6 +146,8 @@
     transition-timing-function: var(--ease-out);
   }
   :where(a, button):active { transition-duration: 80ms; }
+  /* A tap acts at once: no wait to tell a tap from a double-tap zoom (pinch zoom still works) */
+  :where(a, button, label, summary) { touch-action: manipulation; }
   /* Plain underlined text links thicken on hover */
   @media (hover: hover) {
     :where(a.underline):hover { text-decoration-thickness: 2px; }
@@ -260,19 +263,40 @@
     .step-in { animation: rise-in 280ms var(--ease-out) both; }
   }
 
-  /* ── Landing deal demo: every step change moves, nothing snaps (remounted per step with a React key) ──
-     .demo-stagger   a phone screen's lines rise in one after another, 60 ms apart
-     .demo-in        one element fades and rises in (the caption, a button's new label)
-     .demo-pop       a control that appears settles in from slightly smaller ("No handover?") */
+  /* ── Landing deal demo: every step change moves, nothing snaps, nothing is repainted while it moves ──
+     .demo-stagger       a phone screen's lines rise in one after another (remounted per step with a React key);
+       .demo-stagger-late  the lines after the handover code: 120 ms, 180 ms
+     .demo-qr            the handover code rising in between them when its step comes (it stays mounted, hidden)
+     .demo-band-in       the new status band fading in over the old one (no colour transition: that repaints)
+       .demo-chip          its status chip flipping in from edge-on, like a split-flap board, once the band is there
+     .demo-in            one element fades and rises in (the caption, the Next label)
+     .demo-glide         the money tag and the ink behind it (own layers)
+     .demo-skip          "What if there's no handover?" fading in and out in its own row
+     Below sm the phone behind is invisible, so it skips every animation (half the work on a phone). */
   @keyframes demo-rise { from { opacity: 0; transform: translateY(6px); } }
-  @keyframes demo-pop { from { opacity: 0; transform: scale(0.9); } }
+  @keyframes demo-fade { from { opacity: 0; } }
+  @keyframes chip-in { from { opacity: 0; transform: rotateX(-90deg); } }
+  .demo-glide { transition: translate 700ms var(--ease-settle), scale 700ms var(--ease-settle); }
+  .demo-skip {
+    transition: opacity 220ms var(--ease-out), translate 360ms var(--ease-settle), text-decoration-color 180ms var(--ease-out),
+      text-decoration-thickness 180ms var(--ease-out);
+  }
+  .demo-skip[inert] { transition-duration: 140ms, 200ms, 180ms, 180ms; }
   @media (prefers-reduced-motion: no-preference) {
     .demo-stagger > * { animation: demo-rise 380ms var(--ease-settle) both; }
     .demo-stagger > :nth-child(2) { animation-delay: 60ms; }
     .demo-stagger > :nth-child(3) { animation-delay: 120ms; }
     .demo-stagger > :nth-child(n + 4) { animation-delay: 180ms; }
+    .demo-stagger-late > :nth-child(1) { animation-delay: 120ms; }
+    .demo-stagger-late > :nth-child(n + 2) { animation-delay: 180ms; }
+    .demo-qr { animation: demo-rise 380ms var(--ease-settle) 60ms both; }
+    .demo-band-in { animation: demo-fade 300ms var(--ease-out) both; }
+    .demo-band-in .demo-chip { animation: chip-in 420ms var(--ease-settle) 90ms both; }
     .demo-in { animation: demo-rise 320ms var(--ease-settle) both; }
-    .demo-pop { animation: demo-pop 360ms var(--ease-settle) both; }
+    .demo-glide { will-change: translate, scale; }
+    @media (width < 40rem) {
+      .demo-phone[inert] * { animation: none !important; }
+    }
   }
 
   /* ── Pointer reactions: every icon acts out its word (design system §5) ──

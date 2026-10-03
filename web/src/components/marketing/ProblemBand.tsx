@@ -1,11 +1,12 @@
 "use client";
 
 import { PROBLEM } from "@/content/landing";
-import { RoleSwap } from "./LandingRole";
+import { LaterRoleSwap } from "./LandingRole";
 
 /**
  * The problem, told to the side the toggle picked: the fake-landlord scam, from the tenant's or the landlord's end.
- * Both versions stay in place (RoleSwap), so switching the role glides the text without moving the band.
+ * Both versions stay in place (LaterRoleSwap: a frame after the hero), so switching the role glides the text without
+ * moving the band.
  */
 export function ProblemBand() {
   const { tenant, landlord } = PROBLEM;
@@ -18,10 +19,10 @@ export function ProblemBand() {
             id="problem"
             className="mt-3 max-w-[62.5rem] font-display text-[clamp(2.25rem,1.5rem_+_2.4vw,3.75rem)] leading-[0.96] font-bold tracking-[-0.015em] lg:mt-4"
           >
-            <RoleSwap as="span" className="w-full" tenant={tenant.title} landlord={landlord.title} />
+            <LaterRoleSwap as="span" className="w-full" tenant={tenant.title} landlord={landlord.title} />
           </h2>
           <p className="mt-4 max-w-[60ch] text-[1.0625rem] leading-normal text-fg-inverse-muted lg:mt-5 lg:text-lg">
-            <RoleSwap as="span" className="w-full" tenant={tenant.lead} landlord={landlord.lead} />
+            <LaterRoleSwap as="span" className="w-full" tenant={tenant.lead} landlord={landlord.lead} />
           </p>
         </div>
         <ol className="mt-8 md:mt-12 md:grid md:grid-cols-3 md:border-t-[1.5px] md:border-fg-muted">
@@ -32,7 +33,7 @@ export function ProblemBand() {
               className="grid grid-cols-[2.25rem_1fr] gap-2 border-t-[1.5px] border-fg-muted py-5 md:flex md:flex-col md:gap-3.5 md:border-t-0 md:pt-8 md:pr-10 md:pb-0"
             >
               <span className="pt-1 font-display text-[1.0625rem] font-bold text-accent tabular-nums md:pt-0 md:text-xl">0{i + 1}</span>
-              <RoleSwap tenant={<ProblemItem {...tenant.items[i]} />} landlord={<ProblemItem {...landlord.items[i]} />} />
+              <LaterRoleSwap tenant={<ProblemItem {...tenant.items[i]} />} landlord={<ProblemItem {...landlord.items[i]} />} />
             </li>
           ))}
         </ol>
