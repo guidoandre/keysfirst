@@ -286,12 +286,15 @@
      .lock-flow           LockDiagram: hovering the tenant or a real way out leans the arrow toward where the money goes
      .nudge-x             an arrow inside a link or button leans forward while hovered; external-link arrows lean out
      .draw-in             a check that appears (Copied) draws its tick
-     Hops, squashes and sweeps are transforms on small SVGs only. Under reduced motion nothing here moves. */
+     Hops, squashes and sweeps are transforms on small SVGs only. Under reduced motion nothing here moves.
+     No smears: whatever moves as a box (the plate, the chip, the arrows) has its own compositor layer for good, so the
+     card behind is never repainted mid-move (a repainted plate left slivers of its top edge behind), and it moves by
+     whole pixels. The lock's svg lets the open shackle rise past its box instead of clipping the arch. */
   @keyframes play-hop {
-    0% { transform: none; animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
-    36% { transform: translateY(-16%); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.6); }
-    58% { transform: scale(1.05, 0.93); animation-timing-function: var(--ease-settle); }
-    100% { transform: none; }
+    0% { transform: translateY(0) scale(1, 1); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+    36% { transform: translateY(calc(var(--hop, 8px) * -1)) scale(1, 1); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.6); }
+    58% { transform: translateY(0) scale(1.05, 0.93); animation-timing-function: var(--ease-settle); }
+    100% { transform: translateY(0) scale(1, 1); }
   }
   @keyframes play-shackle {
     0% { transform: none; animation-timing-function: var(--ease-out); }
@@ -299,21 +302,23 @@
     58%, 100% { transform: none; }
   }
   @keyframes play-sweep { to { transform: rotate(1turn); } }
-  @keyframes play-return { 38% { transform: translateX(-14%) rotate(-16deg); } }
+  @keyframes play-return { 38% { transform: translateX(-2px) rotate(-16deg); } }
   @keyframes play-tick { from { stroke-dashoffset: 1; } }
   @keyframes play-shake {
     18% { transform: translateX(-5px); }
     38% { transform: translateX(4px); }
-    58% { transform: translateX(-2.5px); }
+    58% { transform: translateX(-3px); }
     78% { transform: translateX(1px); }
   }
 
   .play-hop { transform-origin: 50% 100%; }
+  [data-play] [data-icon="lock"] { overflow: visible; }
   .lock-flow .flow-arrow > svg,
   .nudge-x,
   [data-icon="external"] { transition: transform 180ms var(--ease-out); }
 
   @media (prefers-reduced-motion: no-preference) {
+    .play-hop, .play-shake, [data-play] [data-icon="return"], .lock-flow .flow-arrow > svg { will-change: transform; }
     [data-playing] .play-hop { animation: play-hop 640ms linear; }
     [data-playing] [data-icon="lock"] > path:first-child { animation: play-shackle 640ms linear; }
     [data-playing] [data-icon="clock"] > path { transform-origin: 12px 12px; animation: play-sweep 820ms cubic-bezier(0.5, 0, 0.2, 1); }
