@@ -76,6 +76,8 @@ The tenant pays a Keysfirst fee on top of the deposit: **3.5% with a card issued
 
 ## Run it locally
 
+The web app uses the program already deployed on devnet (its address comes from the committed IDL), so you don't need to deploy your own. For the keys in the table below you need a free [Privy](https://dashboard.privy.io) app and a [Stripe](https://dashboard.stripe.com) account in test mode.
+
 Program (WSL / Linux, Rust + Solana CLI + Anchor 1.2):
 
 ```bash
